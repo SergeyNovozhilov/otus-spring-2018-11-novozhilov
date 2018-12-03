@@ -1,5 +1,8 @@
 package ru.otus.ResourceService;
 
+import java.util.List;
+import java.util.Map;
+
 public interface IResourceService {
-	public String readQuestions();
+	Map<String, List<String>> readQuestions();
 }

@@ -1,33 +1,25 @@
 package ru.otus.ResourceService;
 
+import lombok.Setter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ResourceServiceImpl implements IResourceService {
+	@Setter
+	private String fileName;
 
-	public String readQuestions() {
-		String fileName = "questions.csv";
-		String out = "";
-		//		ClassLoader classLoader = getClass().getClassLoader();
-		//		File file = new File(classLoader.getResource(fileName).getFile());
-		//		if(file.exists()) {
-		//			System.out.println("exists");
-		//			try {
-		//				out = FileUtils.readFileToString(file);
-		//			} catch (IOException e) {
-		//				e.printStackTrace();
-		//			}
-		//		} else {
-		//			System.out.println("not exists");
-		//		}
-		//		return out;
-
-
+	public Map<String, List<String>> readQuestions() {
+		Map<String, List<String>> questions = new HashMap<>();
 		try {
 			ClassLoader classLoader = getClass().getClassLoader();
 			BufferedReader reader
@@ -39,14 +31,27 @@ public class ResourceServiceImpl implements IResourceService {
 				if(record.getRecordNumber() == 1L) {
 					return;
 				}
-				System.out.println("question: " + record.get("Question"));
-				System.out.println("correct: " + record.get("Correct answer"));
+				String question = record.get("Question");
+				String correct = record.get("Correct answer");
+				if (StringUtils.isBlank(question) || StringUtils.isBlank(correct)) {
+					return;
+				}
+				List<String> answers = new ArrayList<>();
+				answers.add(0, correct);
+				String first = record.get("First answer");
+				if (StringUtils.isBlank(first)) {
+					answers.add(first);
+				}
+				String second = record.get("Second answer");
+				if (StringUtils.isBlank(second)) {
+					answers.add(second);
+				}
+				questions.put(question, answers);
 			});
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		return out;
-
+		return questions;
 	}
 
 }

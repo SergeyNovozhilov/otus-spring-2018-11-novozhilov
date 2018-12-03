@@ -10,15 +10,11 @@ public class ConsoleServiceImpl implements IConsoleService {
 
 	private IScanner scanner = new ScannerImpl();
 
-	@Setter
-	private Map<String, List<String>> questions;
-
 	@Override
-	public Map<String, String> getAnswers() {
+	public Map<String, String> getAnswers(Map<String, List<String>> questions) {
 		Map<String, String> answers = new HashMap<>();
 		System.out.println("Please answer the questions: ");
 		questions.forEach((k, v) -> {
-			Collections.shuffle(v);
 			boolean gotAnswer = false;
 			while (!gotAnswer) {
 				gotAnswer = true;

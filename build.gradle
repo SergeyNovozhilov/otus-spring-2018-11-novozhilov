@@ -20,5 +20,8 @@ dependencies {
     compile "org.apache.commons:commons-csv:1.5"
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compile group: 'org.projectlombok', name: 'lombok', version: '1.18.4'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
+
 
 }
