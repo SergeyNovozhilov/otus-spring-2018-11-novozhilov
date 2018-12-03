@@ -19,6 +19,7 @@ public class Examiner {
 	public Examiner() {
 
 		resourceService = new ResourceServiceImpl();
+		((ResourceServiceImpl) resourceService).setFileName("questions.csv");
 		consoleService = new ConsoleServiceImpl();
 	}
 

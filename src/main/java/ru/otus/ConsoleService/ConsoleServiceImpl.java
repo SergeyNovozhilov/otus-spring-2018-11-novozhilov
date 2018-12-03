@@ -15,6 +15,7 @@ public class ConsoleServiceImpl implements IConsoleService {
 		Map<String, String> answers = new HashMap<>();
 		System.out.println("Please answer the questions: ");
 		questions.forEach((k, v) -> {
+			System.out.println(k);
 			boolean gotAnswer = false;
 			while (!gotAnswer) {
 				gotAnswer = true;
@@ -24,8 +25,8 @@ public class ConsoleServiceImpl implements IConsoleService {
 				String answer = scanner.getInput();
 				int number = -1;
 				try {
-					number = Integer.getInteger(answer);
-					if (number <= 0 || number >= v.size()) {
+					number = Integer.valueOf(answer);
+					if (number <= 0 || number - 1 >= v.size()) {
 						gotAnswer = false;
 					}
 				} catch (Exception e) {

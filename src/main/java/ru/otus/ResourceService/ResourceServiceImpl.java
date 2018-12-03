@@ -39,11 +39,11 @@ public class ResourceServiceImpl implements IResourceService {
 				List<String> answers = new ArrayList<>();
 				answers.add(0, correct);
 				String first = record.get("First answer");
-				if (StringUtils.isBlank(first)) {
+				if (!StringUtils.isBlank(first)) {
 					answers.add(first);
 				}
 				String second = record.get("Second answer");
-				if (StringUtils.isBlank(second)) {
+				if (!StringUtils.isBlank(second)) {
 					answers.add(second);
 				}
 				questions.put(question, answers);
@@ -54,4 +54,7 @@ public class ResourceServiceImpl implements IResourceService {
 		return questions;
 	}
 
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 }
