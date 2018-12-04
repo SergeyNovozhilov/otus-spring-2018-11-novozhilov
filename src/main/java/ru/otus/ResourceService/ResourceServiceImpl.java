@@ -4,6 +4,7 @@ import lombok.Setter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.lang3.StringUtils;
+import ru.otus.Utils.Headers;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,6 +19,8 @@ public class ResourceServiceImpl implements IResourceService {
 	@Setter
 	private String fileName;
 
+	private static int CORRECT_ANSWER_INDEX = 0;
+
 	public Map<String, List<String>> readQuestions() {
 		Map<String, List<String>> questions = new HashMap<>();
 		try {
@@ -25,28 +28,21 @@ public class ResourceServiceImpl implements IResourceService {
 			BufferedReader reader
 					= new BufferedReader(new FileReader(new File(classLoader.getResource(fileName).getFile())));
 			CSVParser csvParser = new CSVParser(reader,
-					CSVFormat.DEFAULT.withHeader("Question", "Correct answer", "First answer", "Second answer")
-							.withIgnoreHeaderCase().withTrim());
+					CSVFormat.DEFAULT.withHeader(Headers.class)
+					.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
 			csvParser.getRecords().stream().forEach(record -> {
-				if(record.getRecordNumber() == 1L) {
-					return;
-				}
-				String question = record.get("Question");
-				String correct = record.get("Correct answer");
-				if (StringUtils.isBlank(question) || StringUtils.isBlank(correct)) {
+				if (StringUtils.isBlank(record.get(Headers.Question)) || StringUtils.isBlank(record.get(Headers.Correct))) {
 					return;
 				}
 				List<String> answers = new ArrayList<>();
-				answers.add(0, correct);
-				String first = record.get("First answer");
-				if (!StringUtils.isBlank(first)) {
-					answers.add(first);
+				answers.add(CORRECT_ANSWER_INDEX, record.get(Headers.Correct));
+				if (!StringUtils.isBlank(record.get(Headers.First))) {
+					answers.add(record.get(Headers.First));
 				}
-				String second = record.get("Second answer");
-				if (!StringUtils.isBlank(second)) {
-					answers.add(second);
+				if (!StringUtils.isBlank(record.get(Headers.Second))) {
+					answers.add(record.get(Headers.Second));
 				}
-				questions.put(question, answers);
+				questions.put(record.get(Headers.Question), answers);
 			});
 		} catch (IOException e1) {
 			e1.printStackTrace();
