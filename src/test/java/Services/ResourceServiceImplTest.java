@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import ru.otus.ResourceService.ResourceServiceImpl;
 import ru.otus.Utils.Headers;
 
@@ -24,8 +23,8 @@ import java.util.*;
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertFalse;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(value = { ResourceServiceImpl.class })
+//@RunWith(PowerMockRunner.class)
+//@PrepareForTest(value = { ResourceServiceImpl.class })
 public class ResourceServiceImplTest {
 	private ResourceServiceImpl underTest;
 	private static String QUESTION = "question";
@@ -49,8 +48,8 @@ public class ResourceServiceImplTest {
 		File file = PowerMockito.mock(File.class);
 		FileReader fileReader = Mockito.mock(FileReader.class);
 		BufferedReader bufferedReader = Mockito.mock(BufferedReader.class);
-		CSVParser csvParser = Mockito.mock(CSVParser.class);
-		CSVRecord record = Mockito.mock(CSVRecord.class);
+		CSVParser csvParser = PowerMockito.mock(CSVParser.class);
+		CSVRecord record = PowerMockito.mock(CSVRecord.class);
 
 		try {
 //			PowerMockito.whenNew(URL.class).withParameterTypes(String.class).withArguments(Mockito.anyString()).thenReturn(url);
@@ -78,6 +77,6 @@ public class ResourceServiceImplTest {
 
 		Map<String, List<String>> actual = underTest.readQuestions();
 
-		assertFalse(actual != null);
+		assertFalse(actual == null);
 	}
 }
