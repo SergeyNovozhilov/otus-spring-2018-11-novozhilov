@@ -1,14 +1,18 @@
-package ru.otus.ConsoleService;
+package ru.otus.OutService;
 
-import lombok.Setter;
 import ru.otus.Scanner.IScanner;
-import ru.otus.Scanner.ScannerImpl;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class ConsoleServiceImpl implements IConsoleService {
+public class ConsoleService implements IOutService {
 
-	private IScanner scanner = new ScannerImpl();
+	private IScanner scanner;
+
+	public ConsoleService(IScanner scanner) {
+		this.scanner = scanner;
+	}
 
 	@Override
 	public Map<String, String> getAnswers(Map<String, List<String>> questions) {
