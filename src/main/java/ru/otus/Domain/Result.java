@@ -1,8 +1,6 @@
 package ru.otus.Domain;
 
-import lombok.Setter;
 
-@Setter
 public class Result {
 	private String name;
 	private int correct;

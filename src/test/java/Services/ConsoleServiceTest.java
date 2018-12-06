@@ -26,6 +26,7 @@ public class ConsoleServiceTest {
 
 	@Test
 	public void testGetName() {
+		System.out.println("testGetName()");
 		String expected = "name";
 		when(scanner.getInput()).thenReturn(expected);
 		String actual = underTest.getName();
@@ -34,6 +35,7 @@ public class ConsoleServiceTest {
 
 	@Test
 	public void testGetAnswers() {
+		System.out.println("testGetAnswers()");
 		String expectedQuestion = "Question";
 		String expectedAnswer = "Answer";
 		Map<String, List<String>> questions = new HashMap<>();

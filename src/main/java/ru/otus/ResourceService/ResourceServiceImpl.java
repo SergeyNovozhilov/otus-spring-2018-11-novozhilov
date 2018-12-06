@@ -1,19 +1,17 @@
 package ru.otus.ResourceService;
 
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ResourceServiceImpl implements IResourceService {
-	@Setter
 	private String fileName;
 
 	private final String SEPARATOR = ",";
@@ -26,12 +24,17 @@ public class ResourceServiceImpl implements IResourceService {
 
 	public Map<String, List<String>> readQuestions() {
 		Map<String, List<String>> questions = new HashMap<>();
-		try {
-			List<String> lines = Files.readAllLines(Paths.get(this.getClass().getResource("/" + fileName).toURI()));
+		ClassLoader classLoader = getClass().getClassLoader();
 
-			lines.stream().map(line -> line.split(SEPARATOR)).forEach(record -> {
+		try (InputStream is = classLoader.getResourceAsStream(fileName);
+			 InputStreamReader isr = new InputStreamReader(is);
+			 BufferedReader br = new BufferedReader(isr)){
+			String line;
+			while ((line = br.readLine()) != null)
+			{
+				String[] record = line.split(SEPARATOR);
 				if (StringUtils.isBlank(record[QUESTION]) || StringUtils.isBlank(record[CORRECT_ANSWER])) {
-					return;
+					continue;
 				}
 				List<String> answers = new ArrayList<>();
 				answers.add(CORRECT_ANSWER_INDEX, record[CORRECT_ANSWER]);
@@ -42,12 +45,11 @@ public class ResourceServiceImpl implements IResourceService {
 					answers.add(record[SECOND_ANSWER]);
 				}
 				questions.put(record[QUESTION], answers);
-			});
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		} catch (URISyntaxException e) {
+			}
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 		return questions;
 	}
 
