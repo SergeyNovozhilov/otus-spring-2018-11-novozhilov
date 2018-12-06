@@ -1,15 +1,12 @@
 package ru.otus.ResourceService;
 
 import lombok.Setter;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.lang3.StringUtils;
-import ru.otus.Utils.Headers;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,33 +16,37 @@ public class ResourceServiceImpl implements IResourceService {
 	@Setter
 	private String fileName;
 
-	private static int CORRECT_ANSWER_INDEX = 0;
+	private final String SEPARATOR = ",";
+
+	private final int CORRECT_ANSWER_INDEX = 0;
+	private final int QUESTION = 0;
+	private final int CORRECT_ANSWER = 1;
+	private final int FIRST_ANSWER = 2;
+	private final int SECOND_ANSWER = 3;
 
 	public Map<String, List<String>> readQuestions() {
 		Map<String, List<String>> questions = new HashMap<>();
 		try {
-			ClassLoader classLoader = getClass().getClassLoader();
-			BufferedReader reader
-					= new BufferedReader(new FileReader(new File(classLoader.getResource(fileName).getFile())));
-			CSVParser csvParser = new CSVParser(reader,
-					CSVFormat.DEFAULT.withHeader(Headers.class)
-					.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
-			csvParser.getRecords().stream().forEach(record -> {
-				if (StringUtils.isBlank(record.get(Headers.Question)) || StringUtils.isBlank(record.get(Headers.Correct))) {
+			List<String> lines = Files.readAllLines(Paths.get(this.getClass().getResource("/" + fileName).toURI()));
+
+			lines.stream().map(line -> line.split(SEPARATOR)).forEach(record -> {
+				if (StringUtils.isBlank(record[QUESTION]) || StringUtils.isBlank(record[CORRECT_ANSWER])) {
 					return;
 				}
 				List<String> answers = new ArrayList<>();
-				answers.add(CORRECT_ANSWER_INDEX, record.get(Headers.Correct));
-				if (!StringUtils.isBlank(record.get(Headers.First))) {
-					answers.add(record.get(Headers.First));
+				answers.add(CORRECT_ANSWER_INDEX, record[CORRECT_ANSWER]);
+				if (!StringUtils.isBlank(record[FIRST_ANSWER])) {
+					answers.add(record[FIRST_ANSWER]);
 				}
-				if (!StringUtils.isBlank(record.get(Headers.Second))) {
-					answers.add(record.get(Headers.Second));
+				if (!StringUtils.isBlank(record[SECOND_ANSWER])) {
+					answers.add(record[SECOND_ANSWER]);
 				}
-				questions.put(record.get(Headers.Question), answers);
+				questions.put(record[QUESTION], answers);
 			});
 		} catch (IOException e1) {
 			e1.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
 		}
 		return questions;
 	}
