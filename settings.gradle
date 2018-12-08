@@ -1,0 +1,3 @@
+rootProject.name = 'SpringHW001'
+include 'main'
+
