@@ -9,8 +9,10 @@
         <constructor-arg name="resourceService" ref="resourceService"/>
         <constructor-arg name="outService" ref="outService"/>
     </bean>
+    <bean id="classLoaderWrapper" class="ru.otus.Wrappers.ClassLoaderWrapper"/>
     <bean id="resourceService" class="ru.otus.ResourceService.ResourceServiceImpl">
         <property name="fileName" value="questions.csv"/>
+        <property name="classLoaderWrapper" ref="classLoaderWrapper"/>
     </bean>
     <bean id="outService" class="ru.otus.OutService.ConsoleService">
         <constructor-arg>

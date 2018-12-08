@@ -6,6 +6,25 @@ group 'ru.otus'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+task fatJar(type: Jar) {
+    sourceSets {
+        main {
+            resources {
+                srcDirs "src/main/resources"
+            }
+        }
+    }
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File',
+                'Implementation-Version': version,
+                'Main-Class': 'ru.otus.app.App'
+    }
+    baseName = project.name + '-with-dependencies'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
 
 repositories {
     mavenCentral()
@@ -20,6 +39,12 @@ dependencies {
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'
 // https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4-common
     compile group: 'org.powermock', name: 'powermock-module-junit4-common', version: '1.7.4'
+    // https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4
+    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.4'
+    // https://mvnrepository.com/artifact/org.assertj/assertj-core
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
+
+
 
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-io
