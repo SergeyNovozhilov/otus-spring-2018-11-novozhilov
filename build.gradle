@@ -43,7 +43,8 @@ dependencies {
     testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.4'
     // https://mvnrepository.com/artifact/org.assertj/assertj-core
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
-
+    // https://mvnrepository.com/artifact/org.springframework/spring-test
+    testCompile group: 'org.springframework', name: 'spring-test', version: '4.0.5.RELEASE'
 
 
 

@@ -2,7 +2,13 @@ package Services;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.otus.ResourceService.ResourceServiceImpl;
 import ru.otus.Wrappers.ClassLoaderWrapper;
 
@@ -18,7 +24,10 @@ import static ru.otus.ResourceService.ResourceServiceImpl.SEPARATOR;
 
 import static org.mockito.Mockito.when;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfiguration.class})
 public class ResourceServiceImplTest {
+	@Autowired
 	private ResourceServiceImpl underTest;
 	private ClassLoaderWrapper wrapper;
 	private final String QUESTION = "question";
@@ -29,7 +38,6 @@ public class ResourceServiceImplTest {
 	@Before
 	public void init() {
 		wrapper = Mockito.mock(ClassLoaderWrapper.class);
-		underTest = new ResourceServiceImpl();
 		underTest.setClassLoaderWrapper(wrapper);
 		underTest.setFileName("");
 	}
@@ -45,4 +53,5 @@ public class ResourceServiceImplTest {
 		Map<String, List<String>> actual = underTest.readQuestions();
 		assertTrue(actual != null);
 	}
+
 }
