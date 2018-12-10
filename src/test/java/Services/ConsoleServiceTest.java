@@ -1,7 +1,10 @@
 package Services;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import ru.otus.OutService.ConsoleService;
 import ru.otus.Scanner.ScannerImpl;
 
@@ -11,18 +14,15 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ConsoleServiceTest {
-	private ConsoleService underTest;
-	private ScannerImpl scanner;
 
-	@Before
-	public void init() {
-		scanner = mock(ScannerImpl.class);
-		underTest = new ConsoleService(scanner);
-	}
+@RunWith(MockitoJUnitRunner.class)
+public class ConsoleServiceTest {
+	@Mock
+	private ScannerImpl scanner;
+	@InjectMocks
+	private ConsoleService underTest;
 
 	@Test
 	public void testGetName() {

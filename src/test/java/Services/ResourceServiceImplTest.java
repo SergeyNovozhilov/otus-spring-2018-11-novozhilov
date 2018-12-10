@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,12 +25,13 @@ import static ru.otus.ResourceService.ResourceServiceImpl.SEPARATOR;
 
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfiguration.class})
+@RunWith(MockitoJUnitRunner.class)
 public class ResourceServiceImplTest {
-	@Autowired
-	private ResourceServiceImpl underTest;
+	@Mock
 	private ClassLoaderWrapper wrapper;
+	@InjectMocks
+	private ResourceServiceImpl underTest;
+
 	private final String QUESTION = "question";
 	private final String CORRECT = "correct";
 	private final String FIRST = "first";
@@ -37,8 +39,6 @@ public class ResourceServiceImplTest {
 
 	@Before
 	public void init() {
-		wrapper = Mockito.mock(ClassLoaderWrapper.class);
-		underTest.setClassLoaderWrapper(wrapper);
 		underTest.setFileName("");
 	}
 
