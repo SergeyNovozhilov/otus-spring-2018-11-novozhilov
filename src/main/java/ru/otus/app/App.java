@@ -11,20 +11,20 @@ import java.util.Locale;
 
 @Configuration
 @ComponentScan(basePackages = "ru.otus")
-@PropertySource("classpath:application.properties")
+//@PropertySource("classpath:application.properties")
 public class App {
 	public static void main(String[] args) {
 		ApplicationContext ctx = new AnnotationConfigApplicationContext(App.class);
 		Examiner ex = ctx.getBean(Examiner.class);
-		ex.setLocale(new Locale("es"));
+		ex.setLocale(new Locale("ru_RU"));
 
 		ex.start();
 	}
 
-	@Bean
-	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-		return new PropertySourcesPlaceholderConfigurer();
-	}
+//	@Bean
+//	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+//		return new PropertySourcesPlaceholderConfigurer();
+//	}
 
 	@Bean
 	public MessageSource messageSource () {

@@ -5,6 +5,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.otus.OutService.ConsoleService;
 import ru.otus.Scanner.ScannerImpl;
 
@@ -17,11 +21,13 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ActiveProfiles("test")
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = AppTest.class)
 public class ConsoleServiceTest {
-	@Mock
+	@Autowired
 	private ScannerImpl scanner;
-	@InjectMocks
+	@Autowired
 	private ConsoleService underTest;
 
 	@Test
