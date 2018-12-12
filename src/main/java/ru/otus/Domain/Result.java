@@ -5,6 +5,7 @@ public class Result {
 	private String name;
 	private int correct;
 	private int total;
+	private String resultString;
 
 	public void setName(String name) {
 		this.name = name;
@@ -18,7 +19,11 @@ public class Result {
 		this.total = total;
 	}
 
+	public void setResultString(String resultString) {
+		this.resultString = resultString;
+	}
+
 	public String getResult() {
-		return this.name + ": " + this.correct + " correct answers from " + this.total;
+		return this.name + ": " + this.correct + " " + resultString + " " + this.total;
 	}
 }

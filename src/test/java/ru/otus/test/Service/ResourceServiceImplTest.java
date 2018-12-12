@@ -1,13 +1,11 @@
-package Services;
+package ru.otus.test.Service;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.otus.ResourceService.ResourceServiceImpl;
@@ -20,16 +18,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 import static ru.otus.ResourceService.ResourceServiceImpl.SEPARATOR;
 
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
+@ActiveProfiles("test")
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = ServiceTestConfiguration.class)
 public class ResourceServiceImplTest {
-	@Mock
+
+	@Autowired
 	private ClassLoaderWrapper wrapper;
-	@InjectMocks
+	@Autowired
 	private ResourceServiceImpl underTest;
 
 	private final String QUESTION = "question";
@@ -51,7 +51,6 @@ public class ResourceServiceImplTest {
 		when(wrapper.getResourceAsStream(Mockito.any(), Mockito.anyString())).thenReturn(is);
 
 		Map<String, List<String>> actual = underTest.readQuestions();
-		assertTrue(actual != null);
+		assertEquals(actual, expected);
 	}
-
 }
