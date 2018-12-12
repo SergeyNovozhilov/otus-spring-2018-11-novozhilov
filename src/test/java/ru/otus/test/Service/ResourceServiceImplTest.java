@@ -1,4 +1,4 @@
-package Services;
+package ru.otus.test.Service;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,13 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static ru.otus.ResourceService.ResourceServiceImpl.SEPARATOR;
 
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = AppTest.class)
+@ContextConfiguration(classes = ServiceTestConfiguration.class)
 public class ResourceServiceImplTest {
 
 	@Autowired

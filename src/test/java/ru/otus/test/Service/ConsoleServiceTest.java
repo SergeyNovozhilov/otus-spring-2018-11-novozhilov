@@ -1,10 +1,7 @@
-package Services;
+package ru.otus.test.Service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -23,7 +20,7 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = AppTest.class)
+@ContextConfiguration(classes = ServiceTestConfiguration.class)
 public class ConsoleServiceTest {
 	@Autowired
 	private ScannerImpl scanner;

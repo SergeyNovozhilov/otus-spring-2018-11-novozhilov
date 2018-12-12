@@ -3,6 +3,7 @@ package ru.otus.Examiner;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.Local;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import ru.otus.Domain.Result;
@@ -18,8 +19,8 @@ public class Examiner {
 	@Autowired
 	private MessageSource messageSource;
 
-//	@Value("#{systemProperties[user.region]}")
-	private Locale locale = Locale.ENGLISH;
+	@Value("${locale}")
+	private String localeString = "en_US";
 
 	public Examiner(IResourceService resourceService, IOutService outService) {
 		this.resourceService = resourceService;
@@ -28,6 +29,7 @@ public class Examiner {
 
 	public void start() {
 		Result result = new Result();
+		Locale locale = new Locale(localeString);
 		result.setResultString(messageSource.getMessage("result.string", null, locale));
 		resourceService.setFileName(messageSource.getMessage("file.name", null, locale));
 		outService.setAskName(messageSource.getMessage("ask.name", null, locale));
@@ -60,8 +62,4 @@ public class Examiner {
 		});
 		return questionAnswer;
 	}
-
-    public void setLocale(Locale locale) {
-        this.locale = locale;
-    }
 }

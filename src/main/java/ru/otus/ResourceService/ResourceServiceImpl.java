@@ -18,7 +18,6 @@ import java.util.Map;
 @Service
 public class ResourceServiceImpl implements IResourceService {
 
-	@Value("${fileName}")
 	private String fileName;
 	private ClassLoaderWrapper classLoaderWrapper;
 
