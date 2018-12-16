@@ -1,14 +1,18 @@
 package ru.otus.OutService;
 
+import org.springframework.stereotype.Service;
 import ru.otus.Scanner.IScanner;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class ConsoleService implements IOutService {
 
 	private IScanner scanner;
+	private String askName;
+	private String askQuestions;
 
 	public ConsoleService(IScanner scanner) {
 		this.scanner = scanner;
@@ -17,7 +21,7 @@ public class ConsoleService implements IOutService {
 	@Override
 	public Map<String, String> getAnswers(Map<String, List<String>> questions) {
 		Map<String, String> answers = new HashMap<>();
-		System.out.println("Please answer the questions: ");
+		System.out.println(askQuestions);
 		questions.forEach((k, v) -> {
 			System.out.println(k);
 			boolean gotAnswer = false;
@@ -48,9 +52,19 @@ public class ConsoleService implements IOutService {
 	@Override
 	public String getName() {
 		String username;
-		System.out.println("Enter your full name: ");
+		System.out.println(askName);
 		username = scanner.getInput();
 
 		return username;
 	}
+
+	@Override
+    public void setAskName(String askName) {
+        this.askName = askName;
+    }
+
+    @Override
+    public void setAskQuestions(String askQuestions) {
+        this.askQuestions = askQuestions;
+    }
 }

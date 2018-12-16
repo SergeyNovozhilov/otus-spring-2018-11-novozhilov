@@ -5,4 +5,5 @@ import java.util.Map;
 
 public interface IResourceService {
 	Map<String, List<String>> readQuestions();
+	void setFileName(String fileName);
 }

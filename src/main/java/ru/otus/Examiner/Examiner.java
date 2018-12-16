@@ -1,18 +1,26 @@
 package ru.otus.Examiner;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.Local;
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Component;
 import ru.otus.Domain.Result;
 import ru.otus.OutService.IOutService;
 import ru.otus.ResourceService.IResourceService;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+@Component
 public class Examiner {
 	private IResourceService resourceService;
 	private IOutService outService;
+	@Autowired
+	private MessageSource messageSource;
+
+	@Value("${locale}")
+	private String localeString = "en_US";
 
 	public Examiner(IResourceService resourceService, IOutService outService) {
 		this.resourceService = resourceService;
@@ -21,6 +29,11 @@ public class Examiner {
 
 	public void start() {
 		Result result = new Result();
+		Locale locale = new Locale(localeString);
+		result.setResultString(messageSource.getMessage("result.string", null, locale));
+		resourceService.setFileName(messageSource.getMessage("file.name", null, locale));
+		outService.setAskName(messageSource.getMessage("ask.name", null, locale));
+		outService.setAskQuestions(messageSource.getMessage("ask.questions", null, locale));
 		Map<String, List<String>> questions = resourceService.readQuestions();
 		Map<String, String> questionsAnswers = prepareQuestions(questions);
 		String name = outService.getName();
