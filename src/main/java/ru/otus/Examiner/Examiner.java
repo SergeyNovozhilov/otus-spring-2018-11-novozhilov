@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.Local;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
+import ru.otus.Config.ApplicationProps;
 import ru.otus.Domain.Result;
 import ru.otus.OutService.IOutService;
 import ru.otus.ResourceService.IResourceService;
@@ -17,10 +18,7 @@ public class Examiner {
 	private IResourceService resourceService;
 	private IOutService outService;
 	@Autowired
-	private MessageSource messageSource;
-
-	@Value("${locale}")
-	private String localeString = "en_US";
+	private ApplicationProps properties;
 
 	public Examiner(IResourceService resourceService, IOutService outService) {
 		this.resourceService = resourceService;
@@ -31,7 +29,7 @@ public class Examiner {
 		Result result = new Result();
 		Locale locale = new Locale(localeString);
 		result.setResultString(messageSource.getMessage("result.string", null, locale));
-		resourceService.setFileName(messageSource.getMessage("file.name", null, locale));
+		resourceService.setFileName("questions_es.csv");
 		outService.setAskName(messageSource.getMessage("ask.name", null, locale));
 		outService.setAskQuestions(messageSource.getMessage("ask.questions", null, locale));
 		Map<String, List<String>> questions = resourceService.readQuestions();
