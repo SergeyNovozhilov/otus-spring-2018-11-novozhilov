@@ -4,31 +4,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties
 public class ApplicationProps {
-    private String result;
-    private String askName;
-    private String askQuestions;
+    private String locale;
 
-    public String getResult() {
-        return result;
+    public String getLocale() {
+        return locale;
     }
 
-    public void setResult(String result) {
-        this.result = result;
-    }
-
-    public String getAskName() {
-        return askName;
-    }
-
-    public void setAskName(String askName) {
-        this.askName = askName;
-    }
-
-    public String getAskQuestions() {
-        return askQuestions;
-    }
-
-    public void setAskQuestions(String askQuestions) {
-        this.askQuestions = askQuestions;
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 }

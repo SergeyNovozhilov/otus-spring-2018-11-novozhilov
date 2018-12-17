@@ -1,20 +1,20 @@
 package ru.otus.OutService;
 
 import org.springframework.stereotype.Service;
-import ru.otus.Scanner.IScanner;
+import ru.otus.Scanner.Scanner;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class ConsoleService implements IOutService {
+public class ConsoleService implements OutService {
 
-	private IScanner scanner;
+	private Scanner scanner;
 	private String askName;
 	private String askQuestions;
 
-	public ConsoleService(IScanner scanner) {
+	public ConsoleService(Scanner scanner) {
 		this.scanner = scanner;
 	}
 

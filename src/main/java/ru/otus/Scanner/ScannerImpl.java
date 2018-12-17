@@ -2,15 +2,13 @@ package ru.otus.Scanner;
 
 import org.springframework.stereotype.Service;
 
-import java.util.Scanner;
-
 @Service
-public class ScannerImpl implements IScanner{
+public class ScannerImpl implements Scanner {
 
-	private Scanner scanner;
+	private java.util.Scanner scanner;
 
 	public ScannerImpl() {
-		scanner = new Scanner(System.in);
+		scanner = new java.util.Scanner(System.in);
 	}
 
 	@Override public String getInput() {

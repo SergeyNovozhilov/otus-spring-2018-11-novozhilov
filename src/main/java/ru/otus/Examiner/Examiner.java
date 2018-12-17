@@ -2,34 +2,39 @@ package ru.otus.Examiner;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.core.Local;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import ru.otus.Config.ApplicationProps;
 import ru.otus.Domain.Result;
-import ru.otus.OutService.IOutService;
-import ru.otus.ResourceService.IResourceService;
+import ru.otus.OutService.OutService;
+import ru.otus.ResourceService.ResourceService;
+import org.springframework.context.MessageSource;
 
 import java.util.*;
 
 @Component
 public class Examiner {
-	private IResourceService resourceService;
-	private IOutService outService;
-	@Autowired
+	private ResourceService resourceService;
+	private OutService outService;
+
 	private ApplicationProps properties;
 
-	public Examiner(IResourceService resourceService, IOutService outService) {
+	private MessageSource messageSource;
+
+	public Examiner(ResourceService resourceService, OutService outService) {
 		this.resourceService = resourceService;
 		this.outService = outService;
 	}
 
 	public void start() {
 		Result result = new Result();
-		Locale locale = new Locale(localeString);
+		String localeStr = "en_US";
+		if (StringUtils.isNotBlank(properties.getLocale())) {
+			localeStr = properties.getLocale();
+		}
+		Locale locale = new Locale(localeStr);
 		result.setResultString(messageSource.getMessage("result.string", null, locale));
-		resourceService.setFileName("questions_es.csv");
+
+		resourceService.setFileName("questions_" + localeStr.split("_")[0] + ".csv");
 		outService.setAskName(messageSource.getMessage("ask.name", null, locale));
 		outService.setAskQuestions(messageSource.getMessage("ask.questions", null, locale));
 		Map<String, List<String>> questions = resourceService.readQuestions();
@@ -40,6 +45,16 @@ public class Examiner {
 		result.setCorrect(getCorrectAnswers(questionsAnswers, answers));
 		result.setTotal(answers.size());
 		System.out.println(result.getResult());
+	}
+
+	@Autowired
+	public void setProperties(ApplicationProps properties) {
+		this.properties = properties;
+	}
+
+	@Autowired
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 
 	private int getCorrectAnswers(Map<String, String> questionAnswer, Map<String, String> answers) {
