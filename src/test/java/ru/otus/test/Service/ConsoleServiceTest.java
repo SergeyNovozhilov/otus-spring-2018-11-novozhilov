@@ -1,10 +1,12 @@
 package ru.otus.test.Service;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.OutService.ConsoleService;
 import ru.otus.Scanner.Scanner;
 
@@ -16,8 +18,8 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
-
-@ActiveProfiles("test")
+@RunWith(SpringRunner.class)
+@ActiveProfiles("Test")
 @SpringBootTest
 public class ConsoleServiceTest {
 	@Mock
