@@ -11,6 +11,10 @@ public class Result {
 		this.name = name;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	public void setCorrect(int correct) {
 		this.correct = correct;
 	}

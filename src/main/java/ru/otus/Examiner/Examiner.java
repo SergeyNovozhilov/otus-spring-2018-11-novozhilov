@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.otus.Config.ApplicationProps;
 import ru.otus.Domain.Result;
+import ru.otus.Domain.ResultDao;
 import ru.otus.OutService.OutService;
 import ru.otus.ResourceService.ResourceService;
 import org.springframework.context.MessageSource;
@@ -13,12 +14,17 @@ import java.util.*;
 
 @Component
 public class Examiner {
+
+    private ResultDao storage;
+
     private ResourceService resourceService;
     private OutService outService;
 
     private ApplicationProps properties;
 
     private MessageSource messageSource;
+
+    private String localeStr = "en_US";
 
     public Examiner(ResourceService resourceService, OutService outService) {
         this.resourceService = resourceService;
@@ -27,7 +33,6 @@ public class Examiner {
 
     public void start() {
         Result result = new Result();
-        String localeStr = "en_US";
         if (StringUtils.isNotBlank(properties.getLocale())) {
             localeStr = properties.getLocale();
         }
@@ -44,7 +49,7 @@ public class Examiner {
         result.setName(name);
         result.setCorrect(getCorrectAnswers(questionsAnswers, answers));
         result.setTotal(answers.size());
-        System.out.println(result.getResult());
+        storage.save(result);
     }
 
     @Autowired
@@ -55,6 +60,15 @@ public class Examiner {
     @Autowired
     public void setMessageSource(MessageSource messageSource) {
         this.messageSource = messageSource;
+    }
+
+    public void setLocaleStr(String localeStr) {
+        this.localeStr = localeStr;
+    }
+
+    @Autowired
+    public void setStorage(ResultDao storage) {
+        this.storage = storage;
     }
 
     private int getCorrectAnswers(Map<String, String> questionAnswer, Map<String, String> answers) {
