@@ -1,5 +1,5 @@
 package ru.otus.Scanner;
 
-public interface IScanner {
+public interface Scanner {
 	String getInput();
 }

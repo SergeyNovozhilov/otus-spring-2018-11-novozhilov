@@ -3,11 +3,15 @@ package ru.otus.test.Service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.ResourceService.ResourceServiceImpl;
 import ru.otus.Wrappers.ClassLoaderWrapper;
 
@@ -22,14 +26,14 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static ru.otus.ResourceService.ResourceServiceImpl.SEPARATOR;
 
-@ActiveProfiles("test")
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ServiceTestConfiguration.class)
+@RunWith(SpringRunner.class)
+@ActiveProfiles("Test")
+@SpringBootTest
 public class ResourceServiceImplTest {
 
-	@Autowired
+	@Mock
 	private ClassLoaderWrapper wrapper;
-	@Autowired
+	@InjectMocks
 	private ResourceServiceImpl underTest;
 
 	private final String QUESTION = "question";

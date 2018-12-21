@@ -2,7 +2,6 @@ package ru.otus.ResourceService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.otus.Wrappers.ClassLoaderWrapper;
 
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class ResourceServiceImpl implements IResourceService {
+public class ResourceServiceImpl implements ResourceService {
 
 	private String fileName;
 	private ClassLoaderWrapper classLoaderWrapper;
