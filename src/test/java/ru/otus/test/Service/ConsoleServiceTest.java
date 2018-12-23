@@ -2,10 +2,13 @@ package ru.otus.test.Service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.shell.jline.InteractiveShellApplicationRunner;
+import org.springframework.shell.jline.ScriptShellApplicationRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.OutService.ConsoleService;
 import ru.otus.Scanner.Scanner;
@@ -19,12 +22,26 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@ActiveProfiles("Test")
-@SpringBootTest
+@SpringBootTest(properties = {
+		InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false",
+		ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false"
+})
 public class ConsoleServiceTest {
-	@Mock
+	@MockBean
 	private Scanner scanner;
-	@InjectMocks
+
+	@Configuration
+	class ConsoleServiceTestConfiguration {
+		@Autowired
+		private Scanner scanner;
+
+		@Bean
+		public ConsoleService consoleService() {
+			return new ConsoleService(scanner);
+		}
+	}
+
+	@Autowired
 	private ConsoleService underTest;
 
 	@Test

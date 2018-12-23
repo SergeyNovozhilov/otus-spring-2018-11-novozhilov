@@ -27,7 +27,15 @@ public class Result {
 		this.resultString = resultString;
 	}
 
-	public String getResult() {
-		return this.name + ": " + this.correct + " " + resultString + " " + this.total;
+	public int getCorrect() {
+		return correct;
+	}
+
+	public int getTotal() {
+		return total;
+	}
+
+	public String getResultString() {
+		return resultString;
 	}
 }

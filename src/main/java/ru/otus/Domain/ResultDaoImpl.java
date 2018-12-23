@@ -31,4 +31,9 @@ public class ResultDaoImpl implements ResultDao {
 	public List<Result> get(String name) {
 		return storage.getOrDefault(name, new ArrayList<>());
 	}
+
+	@Override
+	public List<String> getAllNames() {
+		return new ArrayList<>(storage.keySet());
+	}
 }
