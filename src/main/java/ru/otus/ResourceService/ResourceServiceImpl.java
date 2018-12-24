@@ -3,6 +3,8 @@ package ru.otus.ResourceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.otus.Config.ApplicationProps;
+import ru.otus.Config.MessageService;
 import ru.otus.Wrappers.ClassLoaderWrapper;
 
 import java.io.BufferedReader;
@@ -19,6 +21,8 @@ public class ResourceServiceImpl implements ResourceService {
 
 	private String fileName;
 	private ClassLoaderWrapper classLoaderWrapper;
+	private MessageService messageService;
+	private ApplicationProps applicationProps;
 
 	public static final String SEPARATOR = ";";
 
@@ -32,10 +36,20 @@ public class ResourceServiceImpl implements ResourceService {
 		this.classLoaderWrapper = classLoaderWrapper;
 	}
 
+	@Autowired
+	public void setMessageService(MessageService messageService) {
+		this.messageService = messageService;
+	}
+
+	@Autowired
+	public void setApplicationProps(ApplicationProps applicationProps) {
+		this.applicationProps = applicationProps;
+	}
+
 	public Map<String, List<String>> readQuestions() {
 		Map<String, List<String>> questions = new HashMap<>();
 
-		try (InputStream is = classLoaderWrapper.getResourceAsStream(this.getClass(), fileName);
+		try (InputStream is = classLoaderWrapper.getResourceAsStream(this.getClass(), applicationProps.getFileName());
 			 InputStreamReader isr = new InputStreamReader(is);
 			 BufferedReader br = new BufferedReader(isr)){
 			String line;
@@ -58,10 +72,5 @@ public class ResourceServiceImpl implements ResourceService {
 		}
 
 		return questions;
-	}
-
-	@Override
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
 	}
 }

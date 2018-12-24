@@ -4,21 +4,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.otus.Config.ApplicationProps;
+import ru.otus.Config.MessageService;
 import ru.otus.Domain.Result;
+import ru.otus.Domain.ResultDao;
 import ru.otus.OutService.OutService;
 import ru.otus.ResourceService.ResourceService;
-import org.springframework.context.MessageSource;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class Examiner {
+
+    private ResultDao storage;
+
     private ResourceService resourceService;
     private OutService outService;
-
-    private ApplicationProps properties;
-
-    private MessageSource messageSource;
+    private MessageService messageService;
 
     public Examiner(ResourceService resourceService, OutService outService) {
         this.resourceService = resourceService;
@@ -27,16 +31,7 @@ public class Examiner {
 
     public void start() {
         Result result = new Result();
-        String localeStr = "en_US";
-        if (StringUtils.isNotBlank(properties.getLocale())) {
-            localeStr = properties.getLocale();
-        }
-        Locale locale = new Locale(localeStr);
-        result.setResultString(messageSource.getMessage("result.string", null, locale));
-
-        resourceService.setFileName("questions_" + localeStr.split("_")[0].toLowerCase() + ".csv");
-        outService.setAskName(messageSource.getMessage("ask.name", null, locale));
-        outService.setAskQuestions(messageSource.getMessage("ask.questions", null, locale));
+        result.setResultString(messageService.getResultString());
         Map<String, List<String>> questions = resourceService.readQuestions();
         Map<String, String> questionsAnswers = prepareQuestions(questions);
         String name = outService.getName();
@@ -44,17 +39,17 @@ public class Examiner {
         result.setName(name);
         result.setCorrect(getCorrectAnswers(questionsAnswers, answers));
         result.setTotal(answers.size());
-        System.out.println(result.getResult());
+        storage.save(result);
     }
 
     @Autowired
-    public void setProperties(ApplicationProps properties) {
-        this.properties = properties;
+    public void setMessageService(MessageService messageService) {
+        this.messageService = messageService;
     }
 
     @Autowired
-    public void setMessageSource(MessageSource messageSource) {
-        this.messageSource = messageSource;
+    public void setStorage(ResultDao storage) {
+        this.storage = storage;
     }
 
     private int getCorrectAnswers(Map<String, String> questionAnswer, Map<String, String> answers) {

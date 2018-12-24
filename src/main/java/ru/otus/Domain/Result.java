@@ -11,6 +11,10 @@ public class Result {
 		this.name = name;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	public void setCorrect(int correct) {
 		this.correct = correct;
 	}
@@ -23,7 +27,15 @@ public class Result {
 		this.resultString = resultString;
 	}
 
-	public String getResult() {
-		return this.name + ": " + this.correct + " " + resultString + " " + this.total;
+	public int getCorrect() {
+		return correct;
+	}
+
+	public int getTotal() {
+		return total;
+	}
+
+	public String getResultString() {
+		return resultString;
 	}
 }
