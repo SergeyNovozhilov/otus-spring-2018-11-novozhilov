@@ -8,20 +8,20 @@ import java.util.*;
 public class ApplicationProps {
     private final String FILE_NAME = "questions_%s.csv";
     private final String DEFAULT_LOCALE = "en_US";
-    private String locale = DEFAULT_LOCALE;
+    private Locale locale = new Locale(DEFAULT_LOCALE);
     private Map<String, String> languages = new HashMap<>();
 
 
     public Locale getLocale() {
-        return new Locale(locale);
+        return locale;
     }
 
     public String getFileName() {
-        return String.format(FILE_NAME, locale.split("_")[0].toLowerCase());
+        return String.format(FILE_NAME, locale.getDisplayLanguage().split("_")[0].toLowerCase());
     }
 
-    public void setLocale(String locale) {
-        this.locale = locale;
+    public void setLocale(String localeStr) {
+        this.locale = new Locale(localeStr);
     }
 
 
@@ -34,7 +34,8 @@ public class ApplicationProps {
     }
 
     public void changeLanguage(String lang) {
-        this.locale = languages.get(lang) == null ? DEFAULT_LOCALE : languages.get(lang);
+        String localeStr = languages.get(lang) == null ? DEFAULT_LOCALE : languages.get(lang);
+        this.locale = new Locale(localeStr);
     }
 
     public List<String> getLanguages() {

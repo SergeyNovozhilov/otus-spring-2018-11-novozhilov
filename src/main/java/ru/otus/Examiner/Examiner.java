@@ -22,9 +22,6 @@ public class Examiner {
 
     private ResourceService resourceService;
     private OutService outService;
-
-    private ApplicationProps properties;
-
     private MessageService messageService;
 
     public Examiner(ResourceService resourceService, OutService outService) {
@@ -34,11 +31,7 @@ public class Examiner {
 
     public void start() {
         Result result = new Result();
-
         result.setResultString(messageService.getResultString());
-        resourceService.setFileName(properties.getFileName());
-        outService.setAskName(messageService.getAskName());
-        outService.setAskQuestions(messageService.getAskQuestions());
         Map<String, List<String>> questions = resourceService.readQuestions();
         Map<String, String> questionsAnswers = prepareQuestions(questions);
         String name = outService.getName();
@@ -47,11 +40,6 @@ public class Examiner {
         result.setCorrect(getCorrectAnswers(questionsAnswers, answers));
         result.setTotal(answers.size());
         storage.save(result);
-    }
-
-    @Autowired
-    public void setProperties(ApplicationProps properties) {
-        this.properties = properties;
     }
 
     @Autowired

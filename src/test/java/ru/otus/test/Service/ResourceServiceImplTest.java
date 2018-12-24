@@ -1,10 +1,7 @@
 package ru.otus.test.Service;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,10 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.shell.jline.ScriptShellApplicationRunner;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
+import ru.otus.Config.ApplicationProps;
 import ru.otus.ResourceService.ResourceService;
 import ru.otus.ResourceService.ResourceServiceImpl;
 import ru.otus.Wrappers.ClassLoaderWrapper;
@@ -45,6 +40,8 @@ public class ResourceServiceImplTest {
 
 	@MockBean
 	private ClassLoaderWrapper wrapper;
+	@MockBean
+	private ApplicationProps applicationProps;
 	@Autowired
 	private ResourceService underTest;
 
@@ -57,13 +54,9 @@ public class ResourceServiceImplTest {
 		}
 	}
 
-	@Before
-	public void init() {
-		underTest.setFileName("");
-	}
-
 	@Test
 	public void testReadQuestions() {
+		when(applicationProps.getFileName()).thenReturn("");
 		String line = QUESTION + SEPARATOR + CORRECT + SEPARATOR + FIRST + SEPARATOR + SECOND;
 		Map<String, List<String>> expected = new HashMap<>();
 		expected.put(QUESTION, Arrays.asList(CORRECT, FIRST, SECOND));

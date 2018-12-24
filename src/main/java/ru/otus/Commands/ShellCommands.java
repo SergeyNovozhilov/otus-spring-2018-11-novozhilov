@@ -5,15 +5,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import ru.otus.Config.ApplicationProps;
 import ru.otus.Domain.Result;
 import ru.otus.Domain.ResultDao;
+import ru.otus.Examiner.Examiner;
 
 import java.util.List;
 
 @ShellComponent
-public class ShowResultCommand {
+public class ShellCommands {
 
+	private Examiner ex;
 	private ResultDao storage;
+	private ApplicationProps applicationProps;
+
+	@ShellMethod("Start the examination")
+	public void startExam() {
+		ex.start();
+	}
 
 	@ShellMethod("Show examination results")
 	public void showResults(@ShellOption(defaultValue="")String name) {
@@ -21,6 +30,18 @@ public class ShowResultCommand {
 			printResults(name);
 		} else {
 			storage.getAllNames().stream().forEach(this::printResults);
+		}
+	}
+
+	@ShellMethod("Change language")
+	public void changeLang(String lang) {
+		List<String> langs = applicationProps.getLanguages();
+		if (langs.contains(lang)) {
+			applicationProps.changeLanguage(lang);
+			System.out.println("Language has been changed to " + lang);
+		} else {
+			System.out.println("Unknown language: " + lang);
+			System.out.println("Possible languages : " + langs.toString());
 		}
 	}
 
@@ -35,7 +56,17 @@ public class ShowResultCommand {
 	}
 
 	@Autowired
+	public void setApplicationProps(ApplicationProps applicationProps) {
+		this.applicationProps = applicationProps;
+	}
+
+	@Autowired
 	public void setStorage(ResultDao storage) {
 		this.storage = storage;
+	}
+
+	@Autowired
+	public void setEx(Examiner ex) {
+		this.ex = ex;
 	}
 }
