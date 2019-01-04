@@ -16,4 +16,8 @@ public abstract class Base {
 		this.id = UUID.randomUUID();
 	}
 
+	public UUID getId () {
+		return this.id;
+	}
+
 }

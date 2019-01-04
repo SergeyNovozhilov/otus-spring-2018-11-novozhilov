@@ -1,10 +1,10 @@
 package ru.otus.Domain;
 
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.UUID;
 
-@Setter
+@Data
 public class Genre extends Base{
 	private String name;
 
