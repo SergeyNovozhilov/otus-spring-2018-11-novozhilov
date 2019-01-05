@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
+import ru.otus.Dao.AuthorDao;
 import ru.otus.Dao.BookDao;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
@@ -15,6 +16,8 @@ import ru.otus.Mapper.BookMapper;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Repository
 public class BookDaoJdbc implements BookDao {
@@ -139,34 +142,27 @@ public class BookDaoJdbc implements BookDao {
 		jdbc.update("insert into BOOKS (id, title, genre)" +
 				"values (:id, :title, :genre)", params);
 
-		List<MapSqlParameterSource> batchArgs = new ArrayList<>();
-
+		List<Map<String, Object>> batchValues = new ArrayList<>(book.getAuthors().size());
 		for (Author author : book.getAuthors()) {
-			MapSqlParameterSource parameters = new MapSqlParameterSource();
-			parameters.addValue("id", UUID.randomUUID());
-			parameters.addValue("book", book.getId());
-			parameters.addValue("author", author.getId());
-			batchArgs.add(parameters);
+			batchValues.add(
+					new MapSqlParameterSource("id", UUID.randomUUID()).addValue("book", book.getId()).addValue("author", author.getId()).getValues());
 		}
-		SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(batchArgs.toArray());
 
 		jdbc.batchUpdate("insert into BOOKS_AUTHORS (id, book, author) " +
-				"values (:id, :book, :author)", batch);
+				"values (:id, :book, :author)", batchValues.toArray(new Map[book.getAuthors().size()]));
 	}
 
 	@Override
 	public int delete(Book book) {
-		List<MapSqlParameterSource> batchArgs = new ArrayList<>();
+		List<Map<String, Object>> batchValues = new ArrayList<>(book.getAuthors().size());
 		for (Author author : book.getAuthors()) {
-			MapSqlParameterSource parameters = new MapSqlParameterSource();
-			parameters.addValue("book", book.getId());
-			parameters.addValue("author", author.getId());
-			batchArgs.add(parameters);
+			batchValues.add(
+					new MapSqlParameterSource("book", book.getId()).addValue("author", author.getId()).getValues());
 		}
-		SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(batchArgs.toArray());
+
 		jdbc.batchUpdate("delete from BOOKS_AUTHORS " +
 				"where book=:book " +
-				"and author=:author", batch);
+				"and author=:author", batchValues.toArray(new Map[book.getAuthors().size()]));
 
 		Map<String, UUID> params = Collections.singletonMap("id", book.getId());
 		return jdbc.update("delete from BOOKS " +
@@ -182,33 +178,39 @@ public class BookDaoJdbc implements BookDao {
 
 		Book old = getById(book.getId());
 
-		List<MapSqlParameterSource> batchArgs = new ArrayList<>();
+		List<Map<String, Object>> batchValues = new ArrayList<>(old.getAuthors().size());
 		for (Author author : old.getAuthors()) {
-			MapSqlParameterSource parameters = new MapSqlParameterSource();
-			parameters.addValue("book", book.getId());
-			parameters.addValue("author", author.getId());
-			batchArgs.add(parameters);
+			batchValues.add(
+					new MapSqlParameterSource("book", old.getId()).addValue("author", author.getId()).getValues());
 		}
-		SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(batchArgs.toArray());
+
 		jdbc.batchUpdate("delete from BOOKS_AUTHORS " +
 				"where book=:book " +
-				"and author=:author", batch);
+				"and author=:author", batchValues.toArray(new Map[old.getAuthors().size()]));
 
-		List<MapSqlParameterSource> authorsBatchArgs = new ArrayList<>();
-
+		List<Map<String, Object>> batch = new ArrayList<>(book.getAuthors().size());
 		for (Author author : book.getAuthors()) {
-			MapSqlParameterSource parameters = new MapSqlParameterSource();
-			parameters.addValue("id", UUID.randomUUID());
-			parameters.addValue("book", book.getId());
-			parameters.addValue("author", author.getId());
-			authorsBatchArgs.add(parameters);
+			batch.add(
+					new MapSqlParameterSource("id", UUID.randomUUID()).addValue("book", book.getId()).addValue("author", author.getId()).getValues());
 		}
-		SqlParameterSource[] authorsBatch = SqlParameterSourceUtils.createBatch(authorsBatchArgs.toArray());
 
 		jdbc.batchUpdate("insert into BOOKS_AUTHORS (id, book, author) " +
-				"values (:id, :book, :author)", authorsBatch);
+				"values (:id, :book, :author)", batch.toArray(new Map[book.getAuthors().size()]));
 
 		return jdbc.update("update BOOKS set title=:title genre:=genre where id=:id", params);
+	}
+
+	@Override
+	public int deleteAll() {
+		Collection<Book> all =  this.getAll();
+		if (all.isEmpty()) {
+			return 0;
+		}
+		List<UUID> ids = all.stream().map(Book::getId).collect(toList());
+		Map<String, String> params = Collections.singletonMap("ids", ids.toString());
+		jdbc.update("delete from GENRES_AUTHORS " +
+				"where author in (:ids) ", params);
+		return jdbc.update("delete from AUTHORS", new HashMap<>());
 	}
 
 	private void setAuthors(Book book) {
@@ -219,19 +221,29 @@ public class BookDaoJdbc implements BookDao {
         List<UUID> ids = books.stream().map(Book::getId).collect(Collectors.toList());
         List<String> stringIds = ids.stream().map(String::valueOf).collect(Collectors.toList());
         Map<String, String> params = Collections.singletonMap("ids", String.join(",", stringIds));
-        List<Map<String, Object>> rows = jdbc.queryForList("select ba.book as book_id, ba.author as author_id, a.name as author_name " +
-				"from BOOKS_AUTHORS ba, AUTHORS a " +
+        List<Map<String, Object>> rows = jdbc.queryForList("select ba.book as book_id, ba.author as author_id, a.name as author_name, g.id as genre_id, g.name as genre_name " +
+				"from BOOKS_AUTHORS ba, AUTHORS a, GENRES g, GENRES_AUTHORS ga " +
 				"where ba.book in (:ids) " +
-				"and ba.author = a.id", params);
+				"and ba.author = a.id " +
+						"and ga.author=a.id " +
+						"and g.id=ga.genre",
+				params);
         for (Map<String, Object> row : rows) {
             UUID bookId = (UUID)row.get("book_id");
             UUID authorId = (UUID)row.get("author_id");
             String authorName = (String)row.get("author_name");
+            UUID genreId = (UUID)row.get("genre_id");
+			String genreName = (String)row.get("genre_name");
 
-            Author author = new Author(authorId, authorName);
+			Genre genre = new Genre(genreId, genreName);
             Book book = books.stream().filter(x -> x.getId().equals(bookId)).findAny().orElse(null);
             if (book != null) {
-                book.addAuthor(author);
+            	Author author = book.getAuthors().stream().filter(a -> a.getId().equals(authorId)).findAny().orElse(null);
+            	if (author == null) {
+					author = new Author(authorId, authorName);
+					book.addAuthor(author);
+				}
+            	author.addGenre(genre);
             }
         }
     }

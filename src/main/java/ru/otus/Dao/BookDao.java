@@ -17,4 +17,5 @@ public interface BookDao extends BaseDao{
 	void save(Book book);
 	int delete(Book book);
 	int update(Book book);
+	int deleteAll();
 }

@@ -5,13 +5,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Author;
-import ru.otus.Domain.Book;
 import ru.otus.Domain.Genre;
-import ru.otus.Mapper.AuthorMapper;
-import ru.otus.Mapper.BookMapper;
 import ru.otus.Mapper.GenreMapper;
 
 import java.util.*;
+
+import static java.util.stream.Collectors.toList;
 
 @Repository
 public class GenreDaoJdbc implements GenreDao {
@@ -67,16 +66,16 @@ public class GenreDaoJdbc implements GenreDao {
 	}
 
 	@Override
-	public Collection<Genre> getByBook(String book) {
+	public Genre getByBook(String book) {
 		Map<String, String> params = Collections.singletonMap("book", book);
 		try {
-			return jdbc.query("select g.id, g.name " +
+			return jdbc.queryForObject("select g.id, g.name " +
 							"from GENRES g, BOOKS b " +
 							"where b.title=:book " +
 							"and g.id = b.genre",
 					params, new GenreMapper());
 		} catch (DataAccessException e) {
-			return new ArrayList<>();
+			return null;
 		}
 	}
 
@@ -110,5 +109,19 @@ public class GenreDaoJdbc implements GenreDao {
 		params.put("id", genre.getId().toString());
 		params.put("name", genre.getName());
 		return jdbc.update("update GENRES set name=:name where id=:id", params);
+	}
+
+	@Override
+	public int deleteAll() {
+		Collection<Genre> all =  this.getAll();
+		if (all.isEmpty()) {
+			return 0;
+		}
+		List<UUID> ids = all.stream().map(Genre::getId).collect(toList());
+		Map<String, String> params = Collections.singletonMap("ids", ids.toString());
+		jdbc.update("delete from GENRES_AUTHORS " +
+				"where genre in (:ids) ", params);
+
+		return jdbc.update("delete from GENRES", new HashMap<>());
 	}
 }

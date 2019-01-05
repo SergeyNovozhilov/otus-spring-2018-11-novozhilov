@@ -16,4 +16,5 @@ public interface AuthorDao extends BaseDao{
 	void save(Author author);
 	int delete(Author author);
 	int update(Author author);
+	int deleteAll();
 }

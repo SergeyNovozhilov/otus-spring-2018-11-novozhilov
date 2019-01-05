@@ -16,7 +16,7 @@ public class RepositoryManagerImpl implements RepositoryManager {
 
     @Override
     public <T extends BaseDao> T getDao(Class clazz) {
-        switch (clazz.getCanonicalName()) {
+        switch (clazz.getName()) {
             case "Author":
                 return (T) authorDao;
             case "Book":

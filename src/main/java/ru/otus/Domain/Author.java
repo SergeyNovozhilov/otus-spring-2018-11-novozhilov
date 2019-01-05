@@ -31,6 +31,12 @@ public class Author extends Base{
 		this.name = name;
 	}
 
+	public Author(UUID id ,String name, List<Genre> genres) {
+		super(id);
+		this.name = name;
+		this.genres = genres;
+	}
+
 	public void addGenre(Genre genre) {
 		if (this.genres == null) {
 			this.genres = new HashSet<>();

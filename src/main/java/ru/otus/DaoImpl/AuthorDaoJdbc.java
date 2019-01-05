@@ -112,23 +112,14 @@ public class AuthorDaoJdbc implements AuthorDao {
 		jdbc.update("insert into AUTHORS (id, name) " +
 				"values (:id, :name)", params);
 
-		List<MapSqlParameterSource> batchArgs = new ArrayList<>();
-
-		Collection<Genre> genres = author.getGenres();
-
-		if (genres != null) {
-			for (Genre genre : genres) {
-				MapSqlParameterSource parameters = new MapSqlParameterSource();
-				parameters.addValue("id", UUID.randomUUID());
-				parameters.addValue("genre", genre.getId());
-				parameters.addValue("author", author.getId());
-				batchArgs.add(parameters);
-			}
-			SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(batchArgs.toArray());
-
-			jdbc.batchUpdate("insert into GENRES_AUTHORS (id, genre, author) " +
-					"values (:id, :genre, :author)", batch);
+		List<Map<String, Object>> batchValues = new ArrayList<>(author.getGenres().size());
+		for (Genre genre : author.getGenres()) {
+			batchValues.add(
+					new MapSqlParameterSource("id", UUID.randomUUID()).addValue("genre", genre.getId()).addValue("author", author.getId()).getValues());
 		}
+
+		jdbc.batchUpdate("insert into GENRES_AUTHORS (id, genre, author) " +
+				"values (:id, :genre, :author)", batchValues.toArray(new Map[author.getGenres().size()]));
 	}
 
 	@Override
@@ -138,17 +129,16 @@ public class AuthorDaoJdbc implements AuthorDao {
 		if (res > 0) {
 			return -1;
 		}
-		List<MapSqlParameterSource> batchArgs = new ArrayList<>();
-		for (Genre genre: author.getGenres()) {
-			MapSqlParameterSource parameters = new MapSqlParameterSource();
-			parameters.addValue("genre", genre.getId());
-			parameters.addValue("author", author.getId());
-			batchArgs.add(parameters);
+
+		List<Map<String, Object>> batchValues = new ArrayList<>(author.getGenres().size());
+		for (Genre genre : author.getGenres()) {
+			batchValues.add(
+					new MapSqlParameterSource("genre", genre.getId()).addValue("author", author.getId()).getValues());
 		}
-		SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(batchArgs.toArray());
+
 		jdbc.batchUpdate("delete from GENRES_AUTHORS " +
 				"where genre=:genre " +
-				"and author=:author", batch);
+				"and author=:author", batchValues.toArray(new Map[author.getGenres().size()]));
 
 		return jdbc.update("delete from AUTHORS " +
 				"where id=:id", params);
@@ -160,6 +150,19 @@ public class AuthorDaoJdbc implements AuthorDao {
 		params.put("id", author.getId().toString());
 		params.put("name", author.getName());
 		return jdbc.update("update AUTHORS set name=:name where id=:id", params);
+	}
+
+	@Override
+	public int deleteAll() {
+		Collection<Author> all =  this.getAll();
+		if (all.isEmpty()) {
+			return 0;
+		}
+		List<UUID> ids = all.stream().map(Author::getId).collect(toList());
+		Map<String, String> params = Collections.singletonMap("ids", ids.toString());
+		jdbc.update("delete from GENRES_AUTHORS " +
+					"where author in (:ids) ", params);
+		return jdbc.update("delete from AUTHORS", new HashMap<>());
 	}
 
 	private Collection<Author> correctAuthors(Collection<Author> authorsList) {
