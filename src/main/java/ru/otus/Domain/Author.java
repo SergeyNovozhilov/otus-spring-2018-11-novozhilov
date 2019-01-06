@@ -50,4 +50,20 @@ public class Author extends Base{
 		}
 		this.genres.addAll(genres);
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Collection<Genre> getGenres() {
+		return genres;
+	}
+
+	public void setGenres(Collection<Genre> genres) {
+		this.genres = genres;
+	}
 }

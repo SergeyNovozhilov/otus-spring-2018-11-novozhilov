@@ -197,7 +197,7 @@ public class BookDaoJdbc implements BookDao {
 		jdbc.batchUpdate("insert into BOOKS_AUTHORS (id, book, author) " +
 				"values (:id, :book, :author)", batch.toArray(new Map[book.getAuthors().size()]));
 
-		return jdbc.update("update BOOKS set title=:title genre:=genre where id=:id", params);
+		return jdbc.update("update BOOKS set title=:title, genre=:genre where id=:id", params);
 	}
 
 	@Override
@@ -208,9 +208,9 @@ public class BookDaoJdbc implements BookDao {
 		}
 		List<UUID> ids = all.stream().map(Book::getId).collect(toList());
 		Map<String, String> params = Collections.singletonMap("ids", ids.toString());
-		jdbc.update("delete from GENRES_AUTHORS " +
-				"where author in (:ids) ", params);
-		return jdbc.update("delete from AUTHORS", new HashMap<>());
+		jdbc.update("delete from BOOKS_AUTHORS " +
+				"where book in (:ids) ", params);
+		return jdbc.update("delete from BOOKS", new HashMap<>());
 	}
 
 	private void setAuthors(Book book) {

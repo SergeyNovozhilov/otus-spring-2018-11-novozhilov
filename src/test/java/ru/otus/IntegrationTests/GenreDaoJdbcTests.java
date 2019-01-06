@@ -1,5 +1,6 @@
 package ru.otus.IntegrationTests;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import static junit.framework.TestCase.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DaoJdbcTests {
+public class GenreDaoJdbcTests {
     @Autowired
     private AuthorDao authorDao;
     @Autowired
@@ -29,27 +30,11 @@ public class DaoJdbcTests {
 
     @Test
     public void saveAndGetTest() {
-        String name = "Jack London";
         String genreName = "Romantic";
         Genre genreExpected = new Genre(genreName);
         genreDao.save(genreExpected);
         Genre actualGenre = genreDao.getByName(genreName);
         assertEquals(genreExpected, actualGenre);
-
-        Author expectedAuthor = new Author(name);
-        expectedAuthor.addGenres(Collections.singletonList(genreExpected));
-        authorDao.save(expectedAuthor);
-        Collection<Author> actualAuthor = authorDao.getByName(name);
-        assertFalse(actualAuthor.isEmpty());
-        assertTrue(actualAuthor.contains(expectedAuthor));
-
-        String bookTitle = "Book";
-        Book bookExpected = new Book(bookTitle, genreExpected);
-        bookExpected.addAuthor(expectedAuthor);
-        bookDao.save(bookExpected);
-        Collection<Book> actualBook = bookDao.getByTitle(bookTitle);
-        assertFalse(actualBook.isEmpty());
-        assertTrue(actualBook.contains(bookExpected));
     }
 
     @Test
@@ -85,8 +70,8 @@ public class DaoJdbcTests {
         int count = genreDao.delete(actualGenre);
         assertTrue(count == 1);
 
-        Genre actualGenreAfterUpdate = genreDao.getByName(genreName);
-        assertTrue(actualGenreAfterUpdate == null);
+        Genre actualGenreAfterDelete = genreDao.getByName(genreName);
+        assertTrue(actualGenreAfterDelete == null);
     }
 
     @Test
@@ -122,30 +107,10 @@ public class DaoJdbcTests {
         assertEquals(expected, actual);
     }
 
-
-
-
-    @Test
-    public void updateAuthorTest() {
-        String name = "Jack London";
-        String genreName = "Romantic";
-        Genre genreExpected = new Genre(genreName);
-        genreDao.save(genreExpected);
-
-
-        Author expectedAuthor = new Author(name);
-        expectedAuthor.addGenres(Collections.singletonList(genreExpected));
-        authorDao.save(expectedAuthor);
-        Collection<Author> actualAuthor = authorDao.getByName(name);
-        assertFalse(actualAuthor.isEmpty());
-        assertTrue(actualAuthor.contains(expectedAuthor));
-
-        String bookTitle = "Book";
-        Book bookExpected = new Book(bookTitle, genreExpected);
-        bookExpected.addAuthor(expectedAuthor);
-        bookDao.save(bookExpected);
-        Collection<Book> actualBook = bookDao.getByTitle(bookTitle);
-        assertFalse(actualBook.isEmpty());
-        assertTrue(actualBook.contains(bookExpected));
+    @After
+    public void cleanUp() {
+        bookDao.deleteAll();
+        authorDao.deleteAll();
+        genreDao.deleteAll();
     }
 }

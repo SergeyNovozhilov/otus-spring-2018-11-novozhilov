@@ -42,4 +42,28 @@ public class Book extends Base{
         }
 	    this.authors.add(author);
     }
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public Collection<Author> getAuthors() {
+		return authors;
+	}
+
+	public void setAuthors(Collection<Author> authors) {
+		this.authors = authors;
+	}
+
+	public Genre getGenre() {
+		return genre;
+	}
+
+	public void setGenre(Genre genre) {
+		this.genre = genre;
+	}
 }

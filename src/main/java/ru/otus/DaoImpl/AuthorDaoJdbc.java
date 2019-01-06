@@ -112,14 +112,16 @@ public class AuthorDaoJdbc implements AuthorDao {
 		jdbc.update("insert into AUTHORS (id, name) " +
 				"values (:id, :name)", params);
 
-		List<Map<String, Object>> batchValues = new ArrayList<>(author.getGenres().size());
-		for (Genre genre : author.getGenres()) {
-			batchValues.add(
-					new MapSqlParameterSource("id", UUID.randomUUID()).addValue("genre", genre.getId()).addValue("author", author.getId()).getValues());
-		}
+		if (author.getGenres() != null) {
+			List<Map<String, Object>> batchValues = new ArrayList<>(author.getGenres().size());
+			for (Genre genre : author.getGenres()) {
+				batchValues.add(new MapSqlParameterSource("id", UUID.randomUUID()).addValue("genre", genre.getId())
+						.addValue("author", author.getId()).getValues());
+			}
 
-		jdbc.batchUpdate("insert into GENRES_AUTHORS (id, genre, author) " +
-				"values (:id, :genre, :author)", batchValues.toArray(new Map[author.getGenres().size()]));
+			jdbc.batchUpdate("insert into GENRES_AUTHORS (id, genre, author) " + "values (:id, :genre, :author)",
+					batchValues.toArray(new Map[author.getGenres().size()]));
+		}
 	}
 
 	@Override
