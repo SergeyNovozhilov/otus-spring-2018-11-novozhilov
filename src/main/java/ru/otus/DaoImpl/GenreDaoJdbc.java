@@ -1,6 +1,7 @@
 package ru.otus.DaoImpl;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.Dao.GenreDao;
@@ -118,7 +119,8 @@ public class GenreDaoJdbc implements GenreDao {
 			return 0;
 		}
 		List<UUID> ids = all.stream().map(Genre::getId).collect(toList());
-		Map<String, String> params = Collections.singletonMap("ids", ids.toString());
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("ids", ids);
 		jdbc.update("delete from GENRES_AUTHORS " +
 				"where genre in (:ids) ", params);
 

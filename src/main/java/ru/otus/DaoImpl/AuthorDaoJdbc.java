@@ -3,8 +3,6 @@ package ru.otus.DaoImpl;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
 import ru.otus.Dao.AuthorDao;
 import ru.otus.Domain.Author;
@@ -161,9 +159,11 @@ public class AuthorDaoJdbc implements AuthorDao {
 			return 0;
 		}
 		List<UUID> ids = all.stream().map(Author::getId).collect(toList());
-		Map<String, String> params = Collections.singletonMap("ids", ids.toString());
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("ids", ids);
 		jdbc.update("delete from GENRES_AUTHORS " +
 					"where author in (:ids) ", params);
+
 		return jdbc.update("delete from AUTHORS", new HashMap<>());
 	}
 

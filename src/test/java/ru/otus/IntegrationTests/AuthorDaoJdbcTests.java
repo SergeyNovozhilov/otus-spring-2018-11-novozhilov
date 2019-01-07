@@ -1,10 +1,12 @@
 package ru.otus.IntegrationTests;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.Dao.AuthorDao;
 import ru.otus.Dao.BookDao;
@@ -27,27 +29,30 @@ public class AuthorDaoJdbcTests {
     @Autowired
     private GenreDao genreDao;
 
+    private String genreName = "Humor";
+    private Genre genre;
+    private String authorName = "Jerome K. Jerome";
+    private Author author;
+
+    @Before
+    public void setUp() {
+        author = new Author(authorName);
+        genre = new Genre(genreName);
+        genreDao.save(genre);
+        author.addGenre(genre);
+        authorDao.save(author);
+    }
+
     @Test
     public void saveAndGetTest() {
-        String name = "Jack London";
-        Author expected = new Author(name);
-        authorDao.save(expected);
-        Collection<Author> actual = authorDao.getByName(name);
+        Collection<Author> actual = authorDao.getByName(authorName);
         assertTrue(actual.size() == 1);
-        assertTrue(actual.contains(expected));
+        assertTrue(actual.contains(author));
     }
 
     @Test
     public void updateAuthorTest() {
-        String name = "Jerome Jerome";
-        Author author = new Author(name);
-        String genreName = "Humor";
-        Genre genre = new Genre(genreName);
-        genreDao.save(genre);
-        author.addGenre(genre);
-        authorDao.save(author);
-
-        String newName = "Jerome K. Jerome";
+        String newName = "Jerome Jerome";
         String genreNewName = "Novel";
         Genre newGenre = new Genre(genreNewName);
         genreDao.save(newGenre);
@@ -57,7 +62,7 @@ public class AuthorDaoJdbcTests {
         int count = authorDao.update(author);
         assertTrue(count == 1);
 
-        Collection<Author> actual = authorDao.getByName(name);
+        Collection<Author> actual = authorDao.getByName(authorName);
         assertTrue(actual.isEmpty());
 
         actual = authorDao.getByName(newName);
@@ -66,22 +71,16 @@ public class AuthorDaoJdbcTests {
 
     @Test
     public void deleteAuthorTest() {
-        String name = "Jerome K. Jerome";
-        Author author = new Author(name);
-        authorDao.save(author);
-        Collection<Author> actual = authorDao.getByName(name);
-        assertTrue(actual.contains(author));
-
         int count = authorDao.delete(author);
         assertTrue(count == 1);
 
-        Collection<Author> actualAfterDelete = authorDao.getByName(name);
+        Collection<Author> actualAfterDelete = authorDao.getByName(authorName);
         assertTrue(actualAfterDelete.isEmpty());
     }
 
     @Test
     public void authorGetByGenreTest() {
-        String genreName = "Romantic";
+        String genreName = "Novel";
         Genre genre = new Genre(genreName);
         genreDao.save(genre);
 
@@ -103,20 +102,14 @@ public class AuthorDaoJdbcTests {
 
     @Test
     public void authorGetByBookTest() {
-        Author expected = new Author("Jack London");
-        authorDao.save(expected);
-
-        Genre genre = new Genre("Novel");
-        genreDao.save(genre);
-
         String bookTitle = "Book";
         Book book = new Book(bookTitle, genre);
-        book.addAuthor(expected);
+        book.addAuthor(author);
         bookDao.save(book);
 
         Collection<Author> actual = authorDao.getByBook(bookTitle);
         assertTrue(actual.size() == 1);
-        assertTrue(actual.contains(expected));
+        assertTrue(actual.contains(author));
     }
 
     @After
@@ -124,6 +117,5 @@ public class AuthorDaoJdbcTests {
         bookDao.deleteAll();
         authorDao.deleteAll();
         genreDao.deleteAll();
-
     }
 }

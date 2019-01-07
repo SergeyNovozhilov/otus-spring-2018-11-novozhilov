@@ -1,6 +1,7 @@
 package ru.otus.IntegrationTests;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,26 +29,27 @@ public class GenreDaoJdbcTests {
     @Autowired
     private GenreDao genreDao;
 
+    private String genreName = "Romantic";
+    private Genre genreExpected;
+
+    @Before
+    public void setUp() {
+        genreExpected = new Genre(genreName);
+        genreDao.save(genreExpected);
+    }
+
     @Test
     public void saveAndGetTest() {
-        String genreName = "Romantic";
-        Genre genreExpected = new Genre(genreName);
-        genreDao.save(genreExpected);
         Genre actualGenre = genreDao.getByName(genreName);
         assertEquals(genreExpected, actualGenre);
     }
 
     @Test
     public void updateGenreTest() {
-        String genreName = "Romantic";
         String newName = "Not Romantic";
-        Genre genre = new Genre(genreName);
-        genreDao.save(genre);
-        Genre actualGenre = genreDao.getByName(genreName);
-        assertEquals(genre, actualGenre);
 
-        actualGenre.setName(newName);
-        int count = genreDao.update(actualGenre);
+        genreExpected.setName(newName);
+        int count = genreDao.update(genreExpected);
         assertTrue(count == 1);
 
         Genre actualGenreAfterUpdate = genreDao.getByName(genreName);
@@ -61,13 +63,7 @@ public class GenreDaoJdbcTests {
 
     @Test
     public void deleteGenreTest() {
-        String genreName = "Romantic";
-        Genre genre = new Genre(genreName);
-        genreDao.save(genre);
-        Genre actualGenre = genreDao.getByName(genreName);
-        assertEquals(genre, actualGenre);
-
-        int count = genreDao.delete(actualGenre);
+        int count = genreDao.delete(genreExpected);
         assertTrue(count == 1);
 
         Genre actualGenreAfterDelete = genreDao.getByName(genreName);
@@ -76,10 +72,10 @@ public class GenreDaoJdbcTests {
 
     @Test
     public void genreGetByAuthorTest() {
-        Genre genre1 = new Genre("Romantic");
+        Genre genre1 = new Genre("Humor");
         genreDao.save(genre1);
 
-        Genre genre2 = new Genre("Not Romantic");
+        Genre genre2 = new Genre("Not humor");
         genreDao.save(genre2);
 
         String authorName = "Famous Author";
@@ -96,15 +92,12 @@ public class GenreDaoJdbcTests {
 
     @Test
     public void genreGetByBookTest() {
-        Genre expected = new Genre("Romantic");
-        genreDao.save(expected);
-
         String bookTitle = "Book";
-        Book book = new Book(bookTitle, expected);
+        Book book = new Book(bookTitle, genreExpected);
         bookDao.save(book);
 
         Genre actual = genreDao.getByBook(bookTitle);
-        assertEquals(expected, actual);
+        assertEquals(genreExpected, actual);
     }
 
     @After

@@ -207,7 +207,8 @@ public class BookDaoJdbc implements BookDao {
 			return 0;
 		}
 		List<UUID> ids = all.stream().map(Book::getId).collect(toList());
-		Map<String, String> params = Collections.singletonMap("ids", ids.toString());
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("ids", ids);
 		jdbc.update("delete from BOOKS_AUTHORS " +
 				"where book in (:ids) ", params);
 		return jdbc.update("delete from BOOKS", new HashMap<>());
@@ -219,8 +220,8 @@ public class BookDaoJdbc implements BookDao {
 
 	private void setAuthors(Collection<Book> books) {
         List<UUID> ids = books.stream().map(Book::getId).collect(Collectors.toList());
-        List<String> stringIds = ids.stream().map(String::valueOf).collect(Collectors.toList());
-        Map<String, String> params = Collections.singletonMap("ids", String.join(",", stringIds));
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("ids", ids);
         List<Map<String, Object>> rows = jdbc.queryForList("select ba.book as book_id, ba.author as author_id, a.name as author_name, g.id as genre_id, g.name as genre_name " +
 				"from BOOKS_AUTHORS ba, AUTHORS a, GENRES g, GENRES_AUTHORS ga " +
 				"where ba.book in (:ids) " +
