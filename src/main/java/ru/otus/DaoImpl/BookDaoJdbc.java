@@ -150,6 +150,7 @@ public class BookDaoJdbc implements BookDao {
 
 		jdbc.batchUpdate("insert into BOOKS_AUTHORS (id, book, author) " +
 				"values (:id, :book, :author)", batchValues.toArray(new Map[book.getAuthors().size()]));
+
 	}
 
 	@Override

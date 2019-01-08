@@ -30,18 +30,19 @@ public class BookDaoJdbcTests {
 
     private Genre genre;
     private String genreName = "Humor";
+    private String title = "Book";
+    private Book expected;
 
     @Before
     public void setUp() {
         genre = new Genre(genreName);
         genreDao.save(genre);
+        expected = new Book(title, genre);
+        bookDao.save(expected);
     }
 
     @Test
     public void saveAndGetTest() {
-        String title = "Book";
-        Book expected = new Book(title, genre);
-        bookDao.save(expected);
         Collection<Book> actual = bookDao.getByTitle(title);
         assertTrue(actual.size() == 1);
         assertTrue(actual.contains(expected));
@@ -49,10 +50,6 @@ public class BookDaoJdbcTests {
 
     @Test
     public void updateBookTest() {
-        String title = "Book";
-        Book expected = new Book(title, genre);
-        bookDao.save(expected);
-
         String newTitle = "The best book";
         String genreNewName = "Novel";
         Genre newGenre = new Genre(genreNewName);
@@ -71,12 +68,6 @@ public class BookDaoJdbcTests {
 
     @Test
     public void deleteBookTest() {
-        String title = "Book";
-        Book expected = new Book(title, genre);
-        bookDao.save(expected);
-        Collection<Book> actual = bookDao.getByTitle(title);
-        assertTrue(actual.contains(expected));
-
         int count = bookDao.delete(expected);
         assertTrue(count == 1);
 
@@ -86,6 +77,9 @@ public class BookDaoJdbcTests {
 
     @Test
     public void bookGetByGenreTest() {
+        String genreName = "Thriller";
+        Genre genre = new Genre(genreName);
+        genreDao.save(genre);
         String bookTitle1 = "Good book";
         Book book1 = new Book(bookTitle1, genre);
         bookDao.save(book1);
@@ -104,9 +98,10 @@ public class BookDaoJdbcTests {
     public void bookGetByAuthorTest() {
         String authorName = "Jack London";
         Author author = new Author(authorName);
+        author.addGenre(genre);
         authorDao.save(author);
 
-        Book expected = new Book("Book", genre);
+        Book expected = new Book("Thriller", genre);
         expected.addAuthor(author);
         bookDao.save(expected);
 
