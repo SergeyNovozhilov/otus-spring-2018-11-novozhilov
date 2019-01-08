@@ -28,22 +28,23 @@ public class AuthorCRUD {
 		this.cache = cache;
 	}
 
-	@ShellMethod
-	public void getCache() {
+	@ShellMethod("Get Author cache")
+	public void getAuthorCache() {
 		List<Author> authors = (List<Author>)this.cache.get(Author.class);
 		printAuthor(authors);
 	}
 
-	@ShellMethod("Create author")
+	@ShellMethod("Create author with name and genre")
 	public void createAuthor(String name, @ShellOption String genre) {
 		Author author = new Author(name);
-		String[] genres = genre.split(" ");
+		String[] genres = genre.split(",");
 		if (genre != null && genres.length > 0) {
 			for (String g : genres) {
 				Genre genreObj = genreDao.getByName(g);
 				if (genreObj == null) {
 					System.out.println("There is no Genre with name " + g + ". Will be created. ");
 					genreObj = new Genre(g);
+					genreDao.save(genreObj);
 				}
 				author.addGenre(genreObj);
 			}
@@ -54,12 +55,12 @@ public class AuthorCRUD {
 		printAuthor(Collections.singletonList(author));
 	}
 
-	@ShellMethod("Get author")
-	public void getAuthor(@ShellOption String name, @ShellOption String genre, @ShellOption String book) {
+	@ShellMethod("Get author by name and/or by genre and/or by book ")
+	public void getAuthor(@ShellOption(defaultValue = "") String name, @ShellOption(defaultValue = "") String genre, @ShellOption(defaultValue = "") String book) {
 		Collection<Author> authors = new HashSet<>();
-		Collection<Author> authorsByName = new HashSet<>();
-		Collection<Author> authorsByGenre = new HashSet<>();
-		Collection<Author> authorsByBook = new HashSet<>();
+		Collection<Author> authorsByName = null;
+		Collection<Author> authorsByGenre = null;
+		Collection<Author> authorsByBook = null;
 
 		if (StringUtils.isNotBlank(name)) {
 			authorsByName = authorDao.getByName(name);
@@ -82,26 +83,57 @@ public class AuthorCRUD {
 			}
 		}
 
+		if (authorsByName != null) {
+			authors.retainAll(authorsByName);
+		}
+		if (authorsByGenre != null) {
+			authors.retainAll(authorsByGenre);
+		}
+		if (authorsByBook != null) {
+			authors.retainAll(authorsByBook);
+		}
+
 		if (authors.isEmpty()) {
 			System.out.println("No authors were found.");
 			return;
 		}
-
-		authors.retainAll(authorsByName);
-		authors.retainAll(authorsByGenre);
-		authors.retainAll(authorsByBook);
 
 		List<Author> listAuthors = new ArrayList<>(authors);
 		cache.add(Author.class, listAuthors);
 		printAuthor(listAuthors);
 	}
 
-	@ShellMethod
-	public void updateAuthor(String name, @ShellOption String genre) {
-		// TBD
+	@ShellMethod("Update Author by index")
+	public void updateAuthor(int index, @ShellOption(defaultValue = "")String name, @ShellOption(defaultValue = "") String genre) {
+		Author author = (Author)cache.get(Author.class, index);
+		if (StringUtils.isNotBlank(name)) {
+			author.setName(name);
+		}
+
+		if (StringUtils.isNotBlank(genre)) {
+			String[] genres = genre.split(",");
+			if (genre != null && genres.length > 0) {
+				author.setGenres(new HashSet<>());
+				for (String g : genres) {
+					Genre genreObj = genreDao.getByName(g);
+					if (genreObj == null) {
+						System.out.println("There is no Genre with name " + g + ". Will be created. ");
+						genreObj = new Genre(g);
+						genreDao.save(genreObj);
+					}
+					author.addGenre(genreObj);
+				}
+			}
+		}
+		int res = authorDao.update(author);
+		if (res > 0) {
+			cache.delete(Author.class, index);
+		} else {
+			System.out.println("Cannot update Author with index: " + index);
+		}
 	}
 
-	@ShellMethod
+	@ShellMethod("Delete Author by index")
 	public void deleteAuthor(int index) {
 		Author author = (Author)cache.get(Author.class, index);
 		int res = authorDao.delete(author);
