@@ -1,5 +1,7 @@
 package ru.otus.Commands;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -9,8 +11,7 @@ import ru.otus.Dao.BookDao;
 import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Genre;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @ShellComponent
 public class GenreCRUD {
@@ -43,12 +44,43 @@ public class GenreCRUD {
 
 	@ShellMethod("Get genre by name or by author or by book")
 	public void getGenre(@ShellOption(defaultValue = "") String name, @ShellOption(defaultValue = "") String author, @ShellOption(defaultValue = "") String book) {
-		Genre genreObj = new Genre(name);
-		genreDao.save(genreObj);
-		System.out.println("Create genre");
-		cache.add(Genre.class, Collections.singletonList(genreObj));
-		printGenre(Collections.singletonList(genreObj));
+
+		if (StringUtils.isNotBlank(name)) {
+			Genre genre = genreDao.getByName(name);
+			cache.add(Genre.class, Collections.singletonList(genre));
+			printGenre(Collections.singletonList(genre));
+			return;
+		}
+
+		if (StringUtils.isNotBlank(book)) {
+			Genre genre = genreDao.getByBook(book);
+			cache.add(Genre.class, Collections.singletonList(genre));
+			printGenre(Collections.singletonList(genre));
+			return;
+		}
+
+		if (StringUtils.isNotBlank(author)) {
+			Collection<Genre> genres = genreDao.getByAuthor(author);
+			List<Genre> genreList = new ArrayList<>(genres);
+			cache.add(Genre.class, genreList);
+			printGenre(genreList);
+		}
 	}
+
+	@ShellMethod("Update Genre by index")
+	public void updateGenre(int index, @ShellOption(defaultValue = "")String name) {
+		Genre genre = (Genre) cache.get(Genre.class, index);
+		if (StringUtils.isNotBlank(name)) {
+			genre.setName(name);
+			int res = genreDao.update(genre);
+			if (res > 0) {
+				cache.add(Genre.class, Collections.singletonList(genre));
+			} else {
+				System.out.println("Cannot update Genre with index: " + index);
+			}
+		}
+	}
+
 
 	@ShellMethod("Delete genre by index")
 	public void deleteGenre(int index) {
@@ -61,7 +93,7 @@ public class GenreCRUD {
 		}
 	}
 
-	private void printGenre(List<Genre> genres) {
+	private void printGenre(@NotNull List<Genre> genres) {
 		for (int i = 0; i < genres.size(); i ++) {
 			Genre genre = genres.get(i);
 			System.out.println(i + ") Name: " + genre.getName());

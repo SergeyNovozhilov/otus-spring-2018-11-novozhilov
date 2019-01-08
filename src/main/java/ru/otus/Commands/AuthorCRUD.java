@@ -1,6 +1,7 @@
 package ru.otus.Commands;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -39,6 +40,7 @@ public class AuthorCRUD {
 		Author author = new Author(name);
 		String[] genres = genre.split(",");
 		if (genre != null && genres.length > 0) {
+			// to be refactored to batch operation
 			for (String g : genres) {
 				Genre genreObj = genreDao.getByName(g);
 				if (genreObj == null) {
@@ -114,6 +116,7 @@ public class AuthorCRUD {
 			String[] genres = genre.split(",");
 			if (genre != null && genres.length > 0) {
 				author.setGenres(new HashSet<>());
+				// to be refactored to batch operation
 				for (String g : genres) {
 					Genre genreObj = genreDao.getByName(g);
 					if (genreObj == null) {
@@ -127,7 +130,7 @@ public class AuthorCRUD {
 		}
 		int res = authorDao.update(author);
 		if (res > 0) {
-			cache.delete(Author.class, index);
+			cache.add(Author.class, Collections.singletonList(author));
 		} else {
 			System.out.println("Cannot update Author with index: " + index);
 		}
@@ -144,7 +147,7 @@ public class AuthorCRUD {
 		}
 	}
 
-	private void printAuthor(List<Author> authors) {
+	private void printAuthor(@NotNull List<Author> authors) {
 		for (int i = 0; i < authors.size(); i ++) {
 			Author author = authors.get(i);
 			System.out.println(i + ") Name: " + author.getName());
