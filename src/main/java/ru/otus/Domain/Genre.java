@@ -18,6 +18,11 @@ public class Genre extends Base{
 		this.name = name;
 	}
 
+	@Override
+	public void print() {
+		System.out.println("Name: " + this.name);
+	}
+
 	public String getName() {
 		return name;
 	}

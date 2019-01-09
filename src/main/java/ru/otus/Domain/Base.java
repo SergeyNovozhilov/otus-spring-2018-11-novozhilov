@@ -20,4 +20,6 @@ public abstract class Base {
 		return this.id;
 	}
 
+	public void print() {}
+
 }

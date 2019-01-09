@@ -43,6 +43,25 @@ public class Book extends Base{
 	    this.authors.add(author);
     }
 
+	public void addAuthors(Collection<Author> authors) {
+		if (this.authors == null) {
+			this.authors = new HashSet<>();
+		}
+		this.authors.addAll(authors);
+	}
+
+	@Override
+	public void print() {
+		System.out.println(" Title: " + this.title);
+		System.out.println(" Genre: " + this.genre.getName());
+		System.out.println("Authors:");
+		if (this.authors != null) {
+			for (Author author : this.authors) {
+				System.out.println("   " + author.getName());
+			}
+		}
+	}
+
 	public String getTitle() {
 		return title;
 	}

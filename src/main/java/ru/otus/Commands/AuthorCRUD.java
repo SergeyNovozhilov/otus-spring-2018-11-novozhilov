@@ -64,42 +64,45 @@ public class AuthorCRUD {
 		Collection<Author> authorsByGenre = null;
 		Collection<Author> authorsByBook = null;
 
-		if (StringUtils.isNotBlank(name)) {
-			authorsByName = authorDao.getByName(name);
-			if (!authorsByName.isEmpty() && authors.isEmpty()) {
-				authors.addAll(authorsByName);
+		if (StringUtils.isBlank(name) && StringUtils.isBlank(genre) && StringUtils.isBlank(book)) {
+			authors.addAll(authorDao.getAll());
+		} else {
+			if (StringUtils.isNotBlank(name)) {
+				authorsByName = authorDao.getByName(name);
+				if (!authorsByName.isEmpty() && authors.isEmpty()) {
+					authors.addAll(authorsByName);
+				}
+			}
+
+			if (StringUtils.isNotBlank(genre)) {
+				authorsByGenre = authorDao.getByGenre(genre);
+				if (!authorsByGenre.isEmpty() && authors.isEmpty()) {
+					authors.addAll(authorsByGenre);
+				}
+			}
+
+			if (StringUtils.isNotBlank(book)) {
+				authorsByBook = authorDao.getByBook(book);
+				if (!authorsByBook.isEmpty() && authors.isEmpty()) {
+					authors.addAll(authorsByBook);
+				}
+			}
+
+			if (authorsByName != null) {
+				authors.retainAll(authorsByName);
+			}
+			if (authorsByGenre != null) {
+				authors.retainAll(authorsByGenre);
+			}
+			if (authorsByBook != null) {
+				authors.retainAll(authorsByBook);
+			}
+
+			if (authors.isEmpty()) {
+				System.out.println("No authors were found.");
+				return;
 			}
 		}
-
-		if (StringUtils.isNotBlank(genre)) {
-			authorsByGenre = authorDao.getByGenre(genre);
-			if (!authorsByGenre.isEmpty() && authors.isEmpty()) {
-				authors.addAll(authorsByGenre);
-			}
-		}
-
-		if (StringUtils.isNotBlank(book)) {
-			authorsByBook = authorDao.getByBook(book);
-			if (!authorsByBook.isEmpty() && authors.isEmpty()) {
-				authors.addAll(authorsByBook);
-			}
-		}
-
-		if (authorsByName != null) {
-			authors.retainAll(authorsByName);
-		}
-		if (authorsByGenre != null) {
-			authors.retainAll(authorsByGenre);
-		}
-		if (authorsByBook != null) {
-			authors.retainAll(authorsByBook);
-		}
-
-		if (authors.isEmpty()) {
-			System.out.println("No authors were found.");
-			return;
-		}
-
 		List<Author> listAuthors = new ArrayList<>(authors);
 		cache.add(Author.class, listAuthors);
 		printAuthor(listAuthors);
@@ -150,13 +153,8 @@ public class AuthorCRUD {
 	private void printAuthor(@NotNull List<Author> authors) {
 		for (int i = 0; i < authors.size(); i ++) {
 			Author author = authors.get(i);
-			System.out.println(i + ") Name: " + author.getName());
-			System.out.println("Genres:");
-			if (author.getGenres() != null) {
-				for (Genre genre : author.getGenres()) {
-					System.out.println("   " + genre.getName());
-				}
-			}
+			System.out.println(i + ")");
+			author.print();
 		}
 	}
 }

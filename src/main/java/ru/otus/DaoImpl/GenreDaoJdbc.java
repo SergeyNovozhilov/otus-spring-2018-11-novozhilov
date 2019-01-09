@@ -93,7 +93,7 @@ public class GenreDaoJdbc implements GenreDao {
 	@Override
 	public int delete(Genre genre) {
 		Map<String, UUID> params = Collections.singletonMap("id", genre.getId());
-		int res = jdbc.queryForObject("select count(*) from GENRES_AUTHORS where id=:id", params, Integer.class);
+		int res = jdbc.queryForObject("select count(*) from GENRES_AUTHORS where genre=:id", params, Integer.class);
 		res += jdbc.queryForObject("select count(*) from BOOKS where genre=:id", params, Integer.class);
 
 		if (res > 0) {

@@ -148,13 +148,6 @@ public class BookDaoJdbc implements BookDao {
 					new MapSqlParameterSource("id", UUID.randomUUID()).addValue("book", book.getId()).addValue("author", author.getId()).getValues());
 		}
 
-		Map<String, String> testparams = new HashMap<>();
-		params.put("id", book.getId().toString());
-		params.put("title", book.getTitle());
-		params.put("genre", book.getGenre().getId().toString());
-		jdbc.update("insert into BOOKS_AUTHORS (id, book, author)" +
-				"values (:id, :book, :author)", params);
-
 		jdbc.batchUpdate("insert into BOOKS_AUTHORS (id, book, author) " +
 				"values (:id, :book, :author)", batchValues.toArray(new Map[book.getAuthors().size()]));
 

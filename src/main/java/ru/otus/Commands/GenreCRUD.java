@@ -44,27 +44,42 @@ public class GenreCRUD {
 
 	@ShellMethod("Get genre by name or by author or by book")
 	public void getGenre(@ShellOption(defaultValue = "") String name, @ShellOption(defaultValue = "") String author, @ShellOption(defaultValue = "") String book) {
+		Collection<Genre> genres = new HashSet<>();
+		if (StringUtils.isBlank(name) && StringUtils.isBlank(author) && StringUtils.isBlank(book)) {
+			genres.addAll(genreDao.getAll());
+		} else {
+			if (StringUtils.isNotBlank(name)) {
+				Genre genre = genreDao.getByName(name);
+				if (genre != null) {
+					cache.add(Genre.class, Collections.singletonList(genre));
+					printGenre(Collections.singletonList(genre));
+				} else {
+					System.out.println("Genre with name " + name + " was not found");
+				}
+				return;
+			}
 
-		if (StringUtils.isNotBlank(name)) {
-			Genre genre = genreDao.getByName(name);
-			cache.add(Genre.class, Collections.singletonList(genre));
-			printGenre(Collections.singletonList(genre));
-			return;
-		}
+			if (StringUtils.isNotBlank(book)) {
+				Genre genre = genreDao.getByBook(book);
+				if (genre != null) {
+					cache.add(Genre.class, Collections.singletonList(genre));
+					printGenre(Collections.singletonList(genre));
+				} else {
+					System.out.println("Genre of the book " + book + " was not found.");
+				}
+				return;
+			}
 
-		if (StringUtils.isNotBlank(book)) {
-			Genre genre = genreDao.getByBook(book);
-			cache.add(Genre.class, Collections.singletonList(genre));
-			printGenre(Collections.singletonList(genre));
-			return;
+			if (StringUtils.isNotBlank(author)) {
+				genres.addAll(genreDao.getByAuthor(author));
+				if (genres.isEmpty()) {
+					System.out.println("Genre of author " + author + " was not found.");
+				}
+			}
 		}
-
-		if (StringUtils.isNotBlank(author)) {
-			Collection<Genre> genres = genreDao.getByAuthor(author);
-			List<Genre> genreList = new ArrayList<>(genres);
-			cache.add(Genre.class, genreList);
-			printGenre(genreList);
-		}
+		List<Genre> genreList = new ArrayList<>(genres);
+		cache.add(Genre.class, genreList);
+		printGenre(genreList);
 	}
 
 	@ShellMethod("Update Genre by index")
@@ -75,6 +90,7 @@ public class GenreCRUD {
 			int res = genreDao.update(genre);
 			if (res > 0) {
 				cache.add(Genre.class, Collections.singletonList(genre));
+				printGenre(Collections.singletonList(genre));
 			} else {
 				System.out.println("Cannot update Genre with index: " + index);
 			}
@@ -96,7 +112,8 @@ public class GenreCRUD {
 	private void printGenre(@NotNull List<Genre> genres) {
 		for (int i = 0; i < genres.size(); i ++) {
 			Genre genre = genres.get(i);
-			System.out.println(i + ") Name: " + genre.getName());
+			System.out.println(i + ")");
+			genre.print();
 		}
 	}
 }

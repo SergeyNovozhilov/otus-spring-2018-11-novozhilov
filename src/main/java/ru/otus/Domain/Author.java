@@ -51,6 +51,17 @@ public class Author extends Base{
 		this.genres.addAll(genres);
 	}
 
+	@Override
+	public void print() {
+		System.out.println(" Name: " + this.name);
+		System.out.println("Genres:");
+		if (this.genres != null) {
+			for (Genre genre : this.genres) {
+				System.out.println("   " + genre.getName());
+			}
+		}
+	}
+
 	public String getName() {
 		return name;
 	}
