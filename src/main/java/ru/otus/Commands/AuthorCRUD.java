@@ -54,7 +54,7 @@ public class AuthorCRUD {
 		authorDao.save(author);
 		System.out.println("Author has been created: ");
 		cache.add(Author.class, Collections.singletonList(author));
-		printAuthor(Collections.singletonList(author));
+		printAuthor(author);
 	}
 
 	@ShellMethod("Get author by name and/or by genre and/or by book ")
@@ -103,9 +103,9 @@ public class AuthorCRUD {
 				return;
 			}
 		}
-		List<Author> listAuthors = new ArrayList<>(authors);
-		cache.add(Author.class, listAuthors);
-		printAuthor(listAuthors);
+
+		cache.add(Author.class, new ArrayList<>(authors));
+		printAuthor(authors);
 	}
 
 	@ShellMethod("Update Author by index")
@@ -134,6 +134,7 @@ public class AuthorCRUD {
 		int res = authorDao.update(author);
 		if (res > 0) {
 			cache.add(Author.class, Collections.singletonList(author));
+			printAuthor(author);
 		} else {
 			System.out.println("Cannot update Author with index: " + index);
 		}
@@ -150,9 +151,14 @@ public class AuthorCRUD {
 		}
 	}
 
-	private void printAuthor(@NotNull List<Author> authors) {
-		for (int i = 0; i < authors.size(); i ++) {
-			Author author = authors.get(i);
+	private void printAuthor(@NotNull Author author) {
+		printAuthor(Collections.singletonList(author));
+	}
+
+	private void printAuthor(@NotNull Collection<Author> authors) {
+		List<Author> array = new ArrayList<>(authors);
+		for (int i = 0; i < array.size(); i ++) {
+			Author author = array.get(i);
 			System.out.println(i + ")");
 			author.print();
 		}

@@ -31,7 +31,7 @@ public class AuthorDaoJdbc implements AuthorDao {
 					"where a.id=ga.author " +
 					"and g.id=ga.genre",
 					new AuthorMapper());
-			return correctAuthors(authors);
+			return correctGenres(authors);
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
 		}
@@ -47,7 +47,7 @@ public class AuthorDaoJdbc implements AuthorDao {
 					"and a.id=ga.author " +
 					"and g.id=ga.genre",
 					params, new AuthorMapper());
-			return correctAuthors(authors);
+			return correctGenres(authors);
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
 		}
@@ -57,13 +57,13 @@ public class AuthorDaoJdbc implements AuthorDao {
 	public Author getById(UUID id) {
 		Map<String, UUID> params = Collections.singletonMap("id", id);
 		try {
-			Author author = jdbc.queryForObject("select a.id, a.name, g.id as genre_id, g.name as genre_name " +
+			Collection<Author> author = jdbc.query("select a.id, a.name, g.id as genre_id, g.name as genre_name " +
 							"from AUTHORS a, GENRES g, GENRES_AUTHORS ga " +
 							"where a.id=:id " +
 							"and a.id=ga.author " +
 							"and g.id=ga.genre",
 					params, new AuthorMapper());
-			return correctAuthors(Collections.singleton(author)).stream().findAny().orElse(null);
+			return correctGenres(author).stream().findAny().orElse(null);
 		} catch (DataAccessException e) {
 			return null;
 		}
@@ -81,7 +81,7 @@ public class AuthorDaoJdbc implements AuthorDao {
 					"and a.id=ga.author " +
 					"and g.id=ga.genre",
 					params, new AuthorMapper());
-			return correctAuthors(authors);
+			return correctGenres(authors);
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
 		}
@@ -89,13 +89,15 @@ public class AuthorDaoJdbc implements AuthorDao {
 
 	@Override
 	public Collection<Author> getByGenre(String genre) {
+		// TBD correct genres
 		Map<String, String> params = Collections.singletonMap("genre", genre);
 		try {
-			return jdbc.query("select a.id, a.name, g.id as genre_id, g.name as genre_name " +
+			Collection<Author> authors = jdbc.query("select a.id, a.name, g.id as genre_id, g.name as genre_name " +
 					"from AUTHORS a, GENRES_AUTHORS ga, GENRES g " +
 					"where g.name=:genre " +
 					"and g.id=ga.genre " +
 					"and a.id=ga.author", params, new AuthorMapper());
+			return authors;
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
 		}
@@ -149,6 +151,29 @@ public class AuthorDaoJdbc implements AuthorDao {
 		Map<String, String> params = new HashMap<>();
 		params.put("id", author.getId().toString());
 		params.put("name", author.getName());
+
+		Author old = getById(author.getId());
+
+		if (old.getGenres() != null) {
+			List<Map<String, Object>> batchValues = new ArrayList<>(old.getGenres().size());
+			for (Genre genre : old.getGenres()) {
+				batchValues.add(
+						new MapSqlParameterSource("genre", genre.getId()).addValue("author", old.getId()).getValues());
+			}
+			jdbc.batchUpdate("delete from GENRES_AUTHORS " +
+					"where genre=:genre " +
+					"and author=:author", batchValues.toArray(new Map[old.getGenres().size()]));
+		}
+		if (author.getGenres() != null) {
+			List<Map<String, Object>> batchValues = new ArrayList<>(author.getGenres().size());
+			for (Genre genre : author.getGenres()) {
+				batchValues.add(new MapSqlParameterSource("id", UUID.randomUUID()).addValue("genre", genre.getId())
+						.addValue("author", author.getId()).getValues());
+			}
+
+			jdbc.batchUpdate("insert into GENRES_AUTHORS (id, genre, author) " + "values (:id, :genre, :author)",
+					batchValues.toArray(new Map[author.getGenres().size()]));
+		}
 		return jdbc.update("update AUTHORS set name=:name where id=:id", params);
 	}
 
@@ -167,7 +192,7 @@ public class AuthorDaoJdbc implements AuthorDao {
 		return jdbc.update("delete from AUTHORS", new HashMap<>());
 	}
 
-	private Collection<Author> correctAuthors(Collection<Author> authorsList) {
+	private Collection<Author> correctGenres(Collection<Author> authorsList) {
 		Collection<Author> authors = new HashSet<>();
 		authorsList.stream().collect(groupingBy(Function.identity(), HashMap::new,
 				mapping(Author::getGenres, toSet()))).forEach((k, v) -> {

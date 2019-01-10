@@ -32,8 +32,8 @@ public class BookCRUD {
 
 	@ShellMethod("Get Book cache")
 	public void getBookCache() {
-		List<Book> Books = (List<Book>)this.cache.get(Book.class);
-		printBook(Books);
+		List<Book> books = (List<Book>)this.cache.get(Book.class);
+		printBook(books);
 	}
 
 	@ShellMethod("Create Book with title, genre and authors")
@@ -60,7 +60,7 @@ public class BookCRUD {
 		bookDao.save(book);
 		System.out.println("Book has been created: ");
 		cache.add(Book.class, Collections.singletonList(book));
-		printBook(Collections.singletonList(book));
+		printBook(book);
 	}
 
 	@ShellMethod("Get Book by title and/or by genre and/or by author ")
@@ -110,9 +110,8 @@ public class BookCRUD {
 			}
 		}
 
-		List<Book> listBooks = new ArrayList<>(books);
-		cache.add(Book.class, listBooks);
-		printBook(listBooks);
+		cache.add(Book.class, new ArrayList<>(books));
+		printBook(books);
 	}
 
 	@ShellMethod("Update Book by index")
@@ -148,6 +147,7 @@ public class BookCRUD {
 		int res = bookDao.update(book);
 		if (res > 0) {
 			cache.add(Book.class, Collections.singletonList(book));
+			printBook(book);
 		} else {
 			System.out.println("Cannot update Book with index: " + index);
 		}
@@ -164,9 +164,14 @@ public class BookCRUD {
 		}
 	}
 
-	private void printBook(@NotNull List<Book> books) {
-		for (int i = 0; i < books.size(); i ++) {
-			Book book = books.get(i);
+	private void printBook(@NotNull Book book) {
+		printBook(Collections.singletonList(book));
+	}
+
+	private void printBook(@NotNull Collection<Book> books) {
+		List<Book> array = new ArrayList<>(books);
+		for (int i = 0; i < array.size(); i ++) {
+			Book book = array.get(i);
 			System.out.println(i + ")");
 			book.print();
 		}
