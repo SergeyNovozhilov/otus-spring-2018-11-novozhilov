@@ -23,6 +23,13 @@ public class GenreDaoJdbc implements GenreDao {
 	}
 
 	@Override
+	public boolean exist(Genre genre) {
+		Map<String, UUID> params = Collections.singletonMap("id", genre.getId());
+		int res = jdbc.queryForObject("select count(*) from GENRES where id=:id", params, Integer.class);
+		return res > 0;
+	}
+
+	@Override
 	public Collection<Genre> getAll() {
 		try {
 			return jdbc.query("select id, name from GENRES", new GenreMapper());

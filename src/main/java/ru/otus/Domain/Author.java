@@ -20,12 +20,6 @@ public class Author extends Base{
 		this.name = name;
 	}
 
-	public Author(String name, List<Genre> genres) {
-		super();
-		this.name = name;
-		this.genres = genres;
-	}
-
 	public Author(UUID id ,String name) {
 		super(id);
 		this.name = name;

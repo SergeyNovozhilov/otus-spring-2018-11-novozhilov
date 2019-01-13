@@ -11,21 +11,18 @@ import ru.otus.Dao.BookDao;
 import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Genre;
+import ru.otus.Managers.AuthorManager;
 
 import java.util.*;
 
 @ShellComponent
 public class AuthorCRUD {
 
-	private AuthorDao authorDao;
-	private GenreDao genreDao;
-	private BookDao bookDao;
+	private AuthorManager authorManager;
 	private Cache cache;
 
-	public AuthorCRUD(AuthorDao authorDao, GenreDao genreDao, BookDao bookDao, Cache cache) {
-		this.authorDao = authorDao;
-		this.genreDao = genreDao;
-		this.bookDao = bookDao;
+	public AuthorCRUD(AuthorManager authorManager, Cache cache) {
+		this.authorManager = authorManager;
 		this.cache = cache;
 	}
 
