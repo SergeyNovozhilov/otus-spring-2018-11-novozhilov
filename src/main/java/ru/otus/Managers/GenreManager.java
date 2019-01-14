@@ -2,8 +2,6 @@ package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import ru.otus.Dao.AuthorDao;
-import ru.otus.Dao.BookDao;
 import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Genre;
 import ru.otus.Exceptions.DataBaseException;
@@ -11,28 +9,20 @@ import ru.otus.Exceptions.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 @Service
 public class GenreManager implements Manager<Genre> {
-    private AuthorDao authorDao;
     private GenreDao genreDao;
-    private BookDao bookDao;
 
-    public GenreManager(AuthorDao authorDao, GenreDao genreDao, BookDao bookDao) {
-        this.authorDao = authorDao;
+    public GenreManager(GenreDao genreDao) {
         this.genreDao = genreDao;
-        this.bookDao = bookDao;
     }
 
     @Override
     public Genre create(String name) {
-        return new Genre(name);
-    }
-
-    @Override
-    public void save(Genre genre) {
+        Genre genre = new Genre(name);
         genreDao.save(genre);
+        return genre;
     }
 
     @Override

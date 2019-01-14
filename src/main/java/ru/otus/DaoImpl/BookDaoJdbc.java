@@ -134,18 +134,21 @@ public class BookDaoJdbc implements BookDao {
 		Map<String, String> params = new HashMap<>();
 		params.put("id", book.getId().toString());
 		params.put("title", book.getTitle());
-		params.put("genre", book.getGenre().getId().toString());
+		String genreId = book.getGenre() != null ? book.getGenre().getId().toString() : "NULL";
+		params.put("genre", genreId);
 		jdbc.update("insert into BOOKS (id, title, genre)" +
 				"values (:id, :title, :genre)", params);
 
-		List<Map<String, Object>> batchValues = new ArrayList<>(book.getAuthors().size());
-		for (Author author : book.getAuthors()) {
-			batchValues.add(
-					new MapSqlParameterSource("id", UUID.randomUUID()).addValue("book", book.getId()).addValue("author", author.getId()).getValues());
-		}
+		if (book.getAuthors() != null) {
+			List<Map<String, Object>> batchValues = new ArrayList<>(book.getAuthors().size());
+			for (Author author : book.getAuthors()) {
+				batchValues.add(
+						new MapSqlParameterSource("id", UUID.randomUUID()).addValue("book", book.getId()).addValue("author", author.getId()).getValues());
+			}
 
-		jdbc.batchUpdate("insert into BOOKS_AUTHORS (id, book, author) " +
-				"values (:id, :book, :author)", batchValues.toArray(new Map[book.getAuthors().size()]));
+			jdbc.batchUpdate("insert into BOOKS_AUTHORS (id, book, author) " +
+					"values (:id, :book, :author)", batchValues.toArray(new Map[book.getAuthors().size()]));
+		}
 
 	}
 
@@ -171,28 +174,33 @@ public class BookDaoJdbc implements BookDao {
 		Map<String, String> params = new HashMap<>();
 		params.put("id", book.getId().toString());
 		params.put("title", book.getTitle());
-		params.put("genre", book.getGenre().getId().toString());
+		String genreId = book.getGenre() != null ? book.getGenre().getId().toString() : "NULL";
+		params.put("genre", genreId);
 
 		Book old = getById(book.getId());
 
-		List<Map<String, Object>> batchValues = new ArrayList<>(old.getAuthors().size());
-		for (Author author : old.getAuthors()) {
-			batchValues.add(
-					new MapSqlParameterSource("book", old.getId()).addValue("author", author.getId()).getValues());
+		if (old.getAuthors() != null) {
+			List<Map<String, Object>> batchValues = new ArrayList<>(old.getAuthors().size());
+			for (Author author : old.getAuthors()) {
+				batchValues.add(
+						new MapSqlParameterSource("book", old.getId()).addValue("author", author.getId()).getValues());
+			}
+
+			jdbc.batchUpdate("delete from BOOKS_AUTHORS " +
+					"where book=:book " +
+					"and author=:author", batchValues.toArray(new Map[old.getAuthors().size()]));
 		}
 
-		jdbc.batchUpdate("delete from BOOKS_AUTHORS " +
-				"where book=:book " +
-				"and author=:author", batchValues.toArray(new Map[old.getAuthors().size()]));
+		if (book.getAuthors() != null) {
+			List<Map<String, Object>> batch = new ArrayList<>(book.getAuthors().size());
+			for (Author author : book.getAuthors()) {
+				batch.add(
+						new MapSqlParameterSource("id", UUID.randomUUID()).addValue("book", book.getId()).addValue("author", author.getId()).getValues());
+			}
 
-		List<Map<String, Object>> batch = new ArrayList<>(book.getAuthors().size());
-		for (Author author : book.getAuthors()) {
-			batch.add(
-					new MapSqlParameterSource("id", UUID.randomUUID()).addValue("book", book.getId()).addValue("author", author.getId()).getValues());
+			jdbc.batchUpdate("insert into BOOKS_AUTHORS (id, book, author) " +
+					"values (:id, :book, :author)", batch.toArray(new Map[book.getAuthors().size()]));
 		}
-
-		jdbc.batchUpdate("insert into BOOKS_AUTHORS (id, book, author) " +
-				"values (:id, :book, :author)", batch.toArray(new Map[book.getAuthors().size()]));
 
 		return jdbc.update("update BOOKS set title=:title, genre=:genre where id=:id", params);
 	}

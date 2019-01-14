@@ -1,6 +1,6 @@
 package ru.otus.Managers;
 
-import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
 import ru.otus.Dao.AuthorDao;
 import ru.otus.Dao.BookDao;
 import ru.otus.Dao.GenreDao;
@@ -8,9 +8,11 @@ import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
 import ru.otus.Domain.Genre;
 import ru.otus.Exceptions.DataBaseException;
+import ru.otus.Exceptions.NotFoundException;
 
 import java.util.Collection;
 
+@Service
 public class BookManager implements Manager<Book> {
     private AuthorDao authorDao;
     private GenreDao genreDao;
@@ -21,16 +23,18 @@ public class BookManager implements Manager<Book> {
         this.genreDao = genreDao;
         this.bookDao = bookDao;
     }
+
     @Override
-    public Book create(String name) {
-        return null;
+    public Book create(String title) {
+        Book book = new Book(title);
+        bookDao.save(book);
+        return book;
     }
 
     public Book addGenre(Book book, String genreName) {
         Genre genre = null;
-        try {
-            genre = genreDao.getByName(genreName);
-        } catch (DataAccessException e) {
+        genre = genreDao.getByName(genreName);
+        if (genre == null) {
             genre = new Genre(genreName);
             genreDao.save(genre);
         }
@@ -40,33 +44,37 @@ public class BookManager implements Manager<Book> {
 
     public Book addAuthor(Book book, String authorName) {
         Author author = null;
-        try {
-            author = authorDao.getByName(authorName);
-        } catch (DataAccessException e) {
+        author = authorDao.getByName(authorName);
+        if (author == null) {
             author = new Author(authorName);
             authorDao.save(author);
         }
-        book.setGenre(genre);
+        book.addAuthor(author);
         return book;
     }
 
     @Override
-    public void save(Book book) {
-
-    }
-
-    @Override
-    public Collection<Book> get(String arg0, String arg1, String arg2) throws DataBaseException {
+    public Collection<Book> get(String title, String genre, String author) throws NotFoundException {
         return null;
     }
 
     @Override
-    public Book update(Book object) {
-        return null;
+    public int update(Book book) throws DataBaseException {
+        int res = bookDao.update(book);
+        if (res > 0) {
+            return  res;
+        } else {
+            throw new DataBaseException("Cannot update Book");
+        }
     }
 
     @Override
-    public int delete(Book object) throws DataBaseException {
-        return 0;
+    public int delete(Book book) throws DataBaseException {
+        int res = bookDao.update(book);
+        if (res > 0) {
+            return  res;
+        } else {
+            throw new DataBaseException("Cannot delete Book");
+        }
     }
 }
