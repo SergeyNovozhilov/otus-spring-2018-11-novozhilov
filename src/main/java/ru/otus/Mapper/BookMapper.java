@@ -15,6 +15,8 @@ public class BookMapper implements RowMapper<Book> {
 	public static final String TITLE = "title";
 	public static final String GENRE_ID = "genre_id";
 	public static final String GENRE_NAME = "genre_name";
+	public static final String AUTHOR_ID = "author_id";
+	public static final String AUTHOR_NAME = "author_name";
 
 	@Override
 	public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -22,7 +24,10 @@ public class BookMapper implements RowMapper<Book> {
 		String title = rs.getString(TITLE);
 		UUID genreId = UUID.fromString(rs.getString(GENRE_ID));
 		String genreName = rs.getString(GENRE_NAME);
-
-		return new Book(id, title, new Genre(genreId, genreName));
+		UUID authorId = UUID.fromString(rs.getString(AUTHOR_ID));
+		String authorName = rs.getString(AUTHOR_NAME);
+		Book book = new Book(id, title, new Genre(genreId, genreName));
+		book.addAuthor(new Author(authorId, authorName));
+		return book;
 	}
 }

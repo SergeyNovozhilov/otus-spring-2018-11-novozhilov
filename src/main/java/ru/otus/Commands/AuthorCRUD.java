@@ -34,8 +34,7 @@ public class AuthorCRUD {
 
 	@ShellMethod("Create author with name and genre")
 	public void createAuthor(String name, @ShellOption String genre) {
-		Author author = new Author(name);
-		authorManager.save(author);
+		Author author = authorManager.create(name);
 		System.out.println("Author has been created");
 		cache.add(Author.class, Collections.singletonList(author));
 		printAuthor(author);
@@ -67,6 +66,7 @@ public class AuthorCRUD {
 		Author author = (Author)cache.get(Author.class, index);
 		try {
 			authorManager.delete(author);
+			cache.delete(Author.class, index);
 		} catch (DataBaseException e) {
 			System.out.println(e.getMessage());
 		}

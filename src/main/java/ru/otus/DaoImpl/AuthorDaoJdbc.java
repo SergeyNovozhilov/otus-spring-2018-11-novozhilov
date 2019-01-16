@@ -139,11 +139,6 @@ public class AuthorDaoJdbc implements AuthorDao {
 		if (all.isEmpty()) {
 			return 0;
 		}
-		List<UUID> ids = all.stream().map(Author::getId).collect(toList());
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		params.addValue("ids", ids);
-		jdbc.update("delete from GENRES_AUTHORS " +
-					"where author in (:ids) ", params);
 
 		return jdbc.update("delete from AUTHORS", new HashMap<>());
 	}

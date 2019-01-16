@@ -12,21 +12,20 @@ import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
 import ru.otus.Domain.Genre;
+import ru.otus.Exceptions.DataBaseException;
+import ru.otus.Exceptions.NotFoundException;
+import ru.otus.Managers.BookManager;
 
 import java.util.*;
 
 @ShellComponent
 public class BookCRUD {
 
-	private AuthorDao authorDao;
-	private GenreDao genreDao;
-	private BookDao bookDao;
+	private BookManager bookManager;
 	private Cache cache;
 
-	public BookCRUD(AuthorDao authorDao, GenreDao genreDao, BookDao bookDao, Cache cache) {
-		this.authorDao = authorDao;
-		this.genreDao = genreDao;
-		this.bookDao = bookDao;
+	public BookCRUD(BookManager bookManager, Cache cache) {
+		this.bookManager = bookManager;
 		this.cache = cache;
 	}
 
@@ -38,80 +37,35 @@ public class BookCRUD {
 
 	@ShellMethod("Create Book with title, genre and authors")
 	public void createBook(String title, String genre, String author) {
-		Genre genreObj = genreDao.getByName(genre);
-		if (genreObj == null) {
-			System.out.println("There is no Genre with name " + genre + ". Will be created. ");
-			genreObj = new Genre(genre);
-			genreDao.save(genreObj);
-		}
-		Book book = new Book(title, genreObj);
+		Book book = bookManager.create(title);
+		bookManager.addGenre(book, genre);
+
 		String[] authors = author.split(",");
 		if (genre != null && authors.length > 0) {
 			// to be refactored to batch operation
 			for (String a : authors) {
-				Collection<Author> authorCollection = authorDao.getByName(a);
-				if (authorCollection.isEmpty()) {
-					System.out.println("There is no Author with name " + a + ". Pleases create it using create-author command.");
-				} else {
-					book.addAuthors(authorCollection);
-				}
+				bookManager.addAuthor(book, a);
 			}
 		}
-		bookDao.save(book);
-		System.out.println("Book has been created: ");
-		cache.add(Book.class, Collections.singletonList(book));
-		printBook(book);
+		try {
+			bookManager.update(book);
+			System.out.println("Book has been created.");
+			cache.add(Book.class, Collections.singletonList(book));
+			printBook(book);
+		} catch (DataBaseException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
 	@ShellMethod("Get Book by title and/or by genre and/or by author ")
 	public void getBook(@ShellOption(defaultValue = "") String title, @ShellOption(defaultValue = "") String genre, @ShellOption(defaultValue = "") String author) {
-		Collection<Book> books = new HashSet<>();
-		Collection<Book> booksByTitle = null;
-		Collection<Book> booksByGenre = null;
-		Collection<Book> booksByAuthor = null;
-
-		if (StringUtils.isBlank(title) && StringUtils.isBlank(genre) && StringUtils.isBlank(author)) {
-			books.addAll(bookDao.getAll());
-		} else {
-			if (StringUtils.isNotBlank(title)) {
-				booksByTitle = bookDao.getByTitle(title);
-				if (!booksByTitle.isEmpty() && books.isEmpty()) {
-					books.addAll(booksByTitle);
-				}
-			}
-
-			if (StringUtils.isNotBlank(genre)) {
-				booksByGenre = bookDao.getByGenre(genre);
-				if (!booksByGenre.isEmpty() && books.isEmpty()) {
-					books.addAll(booksByGenre);
-				}
-			}
-
-			if (StringUtils.isNotBlank(author)) {
-				booksByAuthor = bookDao.getByAuthor(author);
-				if (!booksByAuthor.isEmpty() && books.isEmpty()) {
-					books.addAll(booksByAuthor);
-				}
-			}
-
-			if (booksByTitle != null) {
-				books.retainAll(booksByTitle);
-			}
-			if (booksByGenre != null) {
-				books.retainAll(booksByGenre);
-			}
-			if (booksByAuthor != null) {
-				books.retainAll(booksByAuthor);
-			}
-
-			if (books.isEmpty()) {
-				System.out.println("No Books were found.");
-				return;
-			}
+		try {
+			Collection<Book> books = bookManager.get(title, genre, author);
+			cache.add(Book.class, new ArrayList<>(books));
+			printBook(books);
+		} catch (NotFoundException e) {
+			System.out.println(e.getMessage());
 		}
-
-		cache.add(Book.class, new ArrayList<>(books));
-		printBook(books);
 	}
 
 	@ShellMethod("Update Book by index")
@@ -122,45 +76,35 @@ public class BookCRUD {
 		} else {
 			return;
 		}
-		Genre genreObj = genreDao.getByName(genre);
-		if (genreObj != null) {
-			book.setGenre(genreObj);
-		} else {
-			System.out.println("There is no Genre with name " + genre);
-		}
+		bookManager.addGenre(book, genre);
 
 		if (StringUtils.isNotBlank(author)) {
 			String[] authors = author.split(",");
-			if (genre != null && authors.length > 0) {
+			if (authors != null && authors.length > 0) {
 				book.setAuthors(new HashSet<>());
 				// to be refactored to batch operation
 				for (String a : authors) {
-					Collection<Author> authorCollection = authorDao.getByName(a);
-					if (authorCollection.isEmpty()) {
-						System.out.println("There is no Author with name " + a);
-					} else {
-						book.addAuthors(authorCollection);
-					}
+					bookManager.addAuthor(book, a);
 				}
 			}
 		}
-		int res = bookDao.update(book);
-		if (res > 0) {
+		try {
+			bookManager.update(book);
 			cache.add(Book.class, Collections.singletonList(book));
 			printBook(book);
-		} else {
-			System.out.println("Cannot update Book with index: " + index);
+		} catch (DataBaseException e) {
+			System.out.println(e.getMessage());
 		}
 	}
 
 	@ShellMethod("Delete Book by index")
 	public void deleteBook(int index) {
 		Book book = (Book)cache.get(Book.class, index);
-		int res = bookDao.delete(book);
-		if (res > 0) {
+		try {
+			bookManager.delete(book);
 			cache.delete(Book.class, index);
-		} else {
-			System.out.println("Cannot delete Book with index: " + index);
+		} catch (DataBaseException e) {
+			System.out.println(e.getMessage());
 		}
 	}
 

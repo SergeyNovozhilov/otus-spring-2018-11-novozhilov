@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.Dao.GenreDao;
-import ru.otus.Domain.Author;
 import ru.otus.Domain.Genre;
 import ru.otus.Mapper.GenreMapper;
 
@@ -15,18 +14,10 @@ import static java.util.stream.Collectors.toList;
 
 @Repository
 public class GenreDaoJdbc implements GenreDao {
-
 	private NamedParameterJdbcOperations jdbc;
 
 	public GenreDaoJdbc(NamedParameterJdbcOperations jdbc) {
 		this.jdbc = jdbc;
-	}
-
-	@Override
-	public boolean exist(Genre genre) {
-		Map<String, UUID> params = Collections.singletonMap("id", genre.getId());
-		int res = jdbc.queryForObject("select count(*) from GENRES where id=:id", params, Integer.class);
-		return res > 0;
 	}
 
 	@Override
@@ -63,10 +54,11 @@ public class GenreDaoJdbc implements GenreDao {
 		Map<String, String> params = Collections.singletonMap("name", author);
 		try {
 			return jdbc.query("select g.id, g.name " +
-							"from AUTHORS a, GENRES g, GENRES_AUTHORS ga " +
+							"from AUTHORS a, GENRES g, BOOKS b, BOOKS_AUTHORS ba " +
 							"where a.name=:name " +
-							"and a.id=ga.author " +
-							"and g.id=ga.genre",
+							"and a.id=ba.author " +
+							"and b.id=ba.author " +
+							"and g.id=ba.genre",
 					params, new GenreMapper());
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
@@ -100,8 +92,7 @@ public class GenreDaoJdbc implements GenreDao {
 	@Override
 	public int delete(Genre genre) {
 		Map<String, UUID> params = Collections.singletonMap("id", genre.getId());
-		int res = jdbc.queryForObject("select count(*) from GENRES_AUTHORS where genre=:id", params, Integer.class);
-		res += jdbc.queryForObject("select count(*) from BOOKS where genre=:id", params, Integer.class);
+		int res = jdbc.queryForObject("select count(*) from BOOKS where genre=:id", params, Integer.class);
 
 		if (res > 0) {
 			return -1;
@@ -125,11 +116,6 @@ public class GenreDaoJdbc implements GenreDao {
 		if (all.isEmpty()) {
 			return 0;
 		}
-		List<UUID> ids = all.stream().map(Genre::getId).collect(toList());
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		params.addValue("ids", ids);
-		jdbc.update("delete from GENRES_AUTHORS " +
-				"where genre in (:ids) ", params);
 
 		return jdbc.update("delete from GENRES", new HashMap<>());
 	}

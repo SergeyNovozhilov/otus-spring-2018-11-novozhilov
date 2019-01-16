@@ -35,7 +35,6 @@ public class GenreCRUD {
 	@ShellMethod("Create genre")
 	public void createGenre(String name) {
 	    Genre genre = genreManager.create(name);
-	    genreManager.save(genre);
 	    cache.add(Genre.class, Collections.singletonList(genre));
 	    printGenre(genre);
 	}
@@ -67,6 +66,7 @@ public class GenreCRUD {
 		Genre genre = (Genre)cache.get(Genre.class, index);
         try {
             genreManager.delete(genre);
+            cache.delete(Genre.class, index);
         } catch (DataBaseException e) {
             System.out.println(e.getMessage());
         }

@@ -1,5 +1,6 @@
 package ru.otus.Managers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.otus.Dao.AuthorDao;
 import ru.otus.Dao.BookDao;
@@ -11,6 +12,8 @@ import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 
 @Service
 public class BookManager implements Manager<Book> {
@@ -55,7 +58,52 @@ public class BookManager implements Manager<Book> {
 
     @Override
     public Collection<Book> get(String title, String genre, String author) throws NotFoundException {
-        return null;
+        Collection<Book> books = new HashSet<>();
+        Collection<Book> booksByTitle = null;
+        Collection<Book> booksByGenre = null;
+        Collection<Book> booksByAuthor = null;
+
+        if (StringUtils.isBlank(title) && StringUtils.isBlank(genre) && StringUtils.isBlank(author)) {
+            return bookDao.getAll();
+        }
+
+        if (StringUtils.isNotBlank(title) && StringUtils.isNotBlank(author) && StringUtils.isBlank(genre)) {
+            return Collections.singleton(bookDao.getByAuthorAndTitle(author, title));
+        }
+
+        if (StringUtils.isNotBlank(title)) {
+            booksByTitle = bookDao.getByTitle(title);
+            if (!booksByTitle.isEmpty() && books.isEmpty()) {
+                books.addAll(booksByTitle);
+            }
+        }
+        if (StringUtils.isNotBlank(genre)) {
+            booksByGenre = bookDao.getByGenre(genre);
+            if (!booksByGenre.isEmpty() && books.isEmpty()) {
+                books.addAll(booksByGenre);
+            }
+        }
+        if (StringUtils.isNotBlank(author)) {
+            booksByAuthor = bookDao.getByAuthor(author);
+            if (!booksByAuthor.isEmpty() && books.isEmpty()) {
+                books.addAll(booksByAuthor);
+            }
+        }
+
+        if (booksByTitle != null) {
+            books.retainAll(booksByTitle);
+        }
+        if (booksByGenre != null) {
+            books.retainAll(booksByGenre);
+        }
+        if (booksByAuthor != null) {
+            books.retainAll(booksByAuthor);
+        }
+        if (books.isEmpty()) {
+            throw new NotFoundException("No Books were found.");
+        }
+
+        return new HashSet<>();
     }
 
     @Override

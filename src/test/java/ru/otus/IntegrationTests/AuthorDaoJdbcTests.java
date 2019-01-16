@@ -5,7 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.Dao.AuthorDao;
@@ -20,14 +22,11 @@ import java.util.Collection;
 import static junit.framework.TestCase.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@JdbcTest
+@Import(AuthorDao.class)
 public class AuthorDaoJdbcTests {
     @Autowired
     private AuthorDao authorDao;
-    @Autowired
-    private BookDao bookDao;
-    @Autowired
-    private GenreDao genreDao;
 
     private String genreName = "Humor";
     private Genre genre;
@@ -110,12 +109,5 @@ public class AuthorDaoJdbcTests {
         Collection<Author> actual = authorDao.getByBook(bookTitle);
         assertTrue(actual.size() == 1);
         assertTrue(actual.contains(author));
-    }
-
-    @After
-    public void cleanUp() {
-        bookDao.deleteAll();
-        authorDao.deleteAll();
-        genreDao.deleteAll();
     }
 }
