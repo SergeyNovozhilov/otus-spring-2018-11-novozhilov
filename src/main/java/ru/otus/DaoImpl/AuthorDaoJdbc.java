@@ -27,9 +27,9 @@ public class AuthorDaoJdbc implements AuthorDao {
 	public Collection<Author> getAll() {
 		try {
 			Collection<Author> authors = jdbc.query("select a.id as id, a.name as name, g.id as genre_id, g.name as genre_name " +
-							"from AUTHORS a, GENRES g, BOOKS_AUTHORS ba " +
+							"from AUTHORS a, GENRES g, BOOKS b, BOOKS_AUTHORS ba " +
 					"where a.id=ba.author " +
-					"and g.id=ba.genre",
+					"and g.id=b.genre",
 					new AuthorMapper());
 			return correctGenres(authors);
 		} catch (DataAccessException e) {
@@ -41,12 +41,7 @@ public class AuthorDaoJdbc implements AuthorDao {
 	public Author getByName(String name) {
 		Map<String, String> params = Collections.singletonMap("name", name);
 		try {
-			Collection<Author> authors = jdbc.query("select a.id, a.name, g.id as genre_id, g.name as genre_name " +
-					"from AUTHORS a, GENRES g, BOOKS_AUTHORS ba " +
-					"where a.name=:name " +
-					"and a.id=ba.author " +
-					"and g.id=ba.genre",
-					params, new AuthorMapper());
+			Collection<Author> authors = jdbc.query("select a.id, a.name, g.id as genre_id, g.name as genre_name from AUTHORS a LEFT JOIN BOOKS_AUTHORS ba on a.id=ba.author LEFT JOIN BOOKS b on ba.book=b.id LEFT JOIN GENRES g on g.id=b.genre where a.name=:name", params, new AuthorMapper());
 			return correctGenres(authors).stream().findAny().orElse(null);
 		} catch (DataAccessException e) {
 			return null;
@@ -58,10 +53,10 @@ public class AuthorDaoJdbc implements AuthorDao {
 		Map<String, UUID> params = Collections.singletonMap("id", id);
 		try {
 			Collection<Author> authors = jdbc.query("select a.id, a.name, g.id as genre_id, g.name as genre_name " +
-							"from AUTHORS a, GENRES g, BOOKS_AUTHORS ba " +
+							"from AUTHORS a, GENRES g, BOOKS b, BOOKS_AUTHORS ba " +
 							"where a.id=:id " +
 							"and a.id=ba.author " +
-							"and g.id=ba.genre",
+							"and g.id=b.genre",
 					params, new AuthorMapper());
 			return correctGenres(authors).stream().findAny().orElse(null);
 		} catch (DataAccessException e) {
@@ -74,11 +69,11 @@ public class AuthorDaoJdbc implements AuthorDao {
 		Map<String, String> params = Collections.singletonMap("book", book);
 		try {
 			Collection<Author> authors = jdbc.query("select a.id, a.name, g.id as genre_id, g.name as genre_name " +
-							"from AUTHORS a, BOOKS_AUTHORS ba, BOOKS b, GENRES g" +
+							"from AUTHORS a, BOOKS_AUTHORS ba, BOOKS b, GENRES g " +
 					"where b.title=:book " +
 					"and b.id=ba.book " +
 					"and a.id=ba.author " +
-					"and g.id=ba.genre",
+					"and g.id=b.genre",
 					params, new AuthorMapper());
 			return correctGenres(authors);
 		} catch (DataAccessException e) {
@@ -91,9 +86,10 @@ public class AuthorDaoJdbc implements AuthorDao {
 		Map<String, String> params = Collections.singletonMap("genre", genre);
 		try {
 			Collection<Author> authors = jdbc.query("select a.id, a.name, g.id as genre_id, g.name as genre_name " +
-					"from AUTHORS a, BOOKS_AUTHORS ba, GENRES g " +
+					"from AUTHORS a, BOOKS b, BOOKS_AUTHORS ba, GENRES g " +
 					"where g.name=:genre " +
-					"and g.id=ba.genre " +
+					"and g.id=b.genre " +
+					"and b.id=ba.book " +
 					"and a.id=ba.author", params, new AuthorMapper());
 			correctGenres(authors);
 			return authors;

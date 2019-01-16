@@ -57,8 +57,8 @@ public class GenreDaoJdbc implements GenreDao {
 							"from AUTHORS a, GENRES g, BOOKS b, BOOKS_AUTHORS ba " +
 							"where a.name=:name " +
 							"and a.id=ba.author " +
-							"and b.id=ba.author " +
-							"and g.id=ba.genre",
+							"and b.id=ba.book " +
+							"and g.id=b.genre",
 					params, new GenreMapper());
 		} catch (DataAccessException e) {
 			return new ArrayList<>();

@@ -1,29 +1,23 @@
 package ru.otus.IntegrationTests;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.Dao.AuthorDao;
-import ru.otus.Dao.BookDao;
 import ru.otus.Dao.GenreDao;
-import ru.otus.Domain.Author;
-import ru.otus.Domain.Book;
+import ru.otus.DaoImpl.GenreDaoJdbc;
 import ru.otus.Domain.Genre;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import static junit.framework.TestCase.*;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
-@Import(GenreDao.class)
+@Import(GenreDaoJdbc.class)
 public class GenreDaoJdbcTests {
     @Autowired
     private GenreDao genreDao;
@@ -71,31 +65,18 @@ public class GenreDaoJdbcTests {
 
     @Test
     public void genreGetByAuthorTest() {
-        Genre genre1 = new Genre("Humor");
-        genreDao.save(genre1);
+        Genre genre = new Genre("Humor");
 
-        Genre genre2 = new Genre("Not humor");
-        genreDao.save(genre2);
-
-        String authorName = "Famous Author";
-        Author author = new Author(authorName);
-        author.addGenre(genre1);
-        author.addGenre(genre2);
-        authorDao.save(author);
-
-        Collection<Genre> actual = genreDao.getByAuthor(authorName);
-        assertTrue(actual.size() == 2);
-        assertTrue(actual.contains(genre1));
-        assertTrue(actual.contains(genre2));
+        Collection<Genre> actual = genreDao.getByAuthor("Jerome C. Jerome");
+        assertTrue(actual.size() == 1);
+        assertTrue(actual.contains(genre));
     }
 
     @Test
     public void genreGetByBookTest() {
-        String bookTitle = "Book";
-        Book book = new Book(bookTitle, genreExpected);
-        bookDao.save(book);
+        Genre genre = new Genre("Novel");
 
-        Genre actual = genreDao.getByBook(bookTitle);
-        assertEquals(genreExpected, actual);
+        Genre actual = genreDao.getByBook("Book by Jack London");
+        assertEquals(genre, actual);
     }
 }

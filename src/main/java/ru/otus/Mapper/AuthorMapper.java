@@ -1,5 +1,6 @@
 package ru.otus.Mapper;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
@@ -18,9 +19,14 @@ public class AuthorMapper implements RowMapper<Author> {
 	public Author mapRow(ResultSet rs, int rowNum) throws SQLException {
 		UUID id = UUID.fromString(rs.getString(ID));
 		String name = rs.getString(NAME);
-		UUID genreId = UUID.fromString(rs.getString(GENRE_ID));
+		String uuid = rs.getString(GENRE_ID);
 		String genreName = rs.getString(GENRE_NAME);
-		Genre genre = new Genre(genreId, genreName);
+		Genre genre = null;
+		if (StringUtils.isNotBlank(uuid) && StringUtils.isNotBlank(genreName)) {
+			UUID genreId = UUID.fromString(uuid);
+			genre = new Genre(genreId, genreName);
+		}
+
 		Author author = new Author(id, name);
 		author.addGenre(genre);
 		return author;
