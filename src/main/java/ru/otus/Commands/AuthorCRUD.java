@@ -1,6 +1,6 @@
 package ru.otus.Commands;
 
-import org.jetbrains.annotations.NotNull;
+//import org.jetbrains.annotations.NotNull;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -8,7 +8,7 @@ import ru.otus.Cache.Cache;
 import ru.otus.Domain.Author;
 import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
-import ru.otus.Managers.AuthorManager;
+import ru.otus.ManagersTest.AuthorManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,11 +72,11 @@ public class AuthorCRUD {
 		}
 	}
 
-	private void printAuthor(@NotNull Author author) {
+	private void printAuthor(Author author) {
 		printAuthor(Collections.singletonList(author));
 	}
 
-	private void printAuthor(@NotNull Collection<Author> authors) {
+	private void printAuthor(Collection<Author> authors) {
 		List<Author> array = new ArrayList<>(authors);
 		for (int i = 0; i < array.size(); i ++) {
 			Author author = array.get(i);

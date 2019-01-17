@@ -1,18 +1,14 @@
 package ru.otus.Commands;
 
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
+//import org.jetbrains.annotations.NotNull;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
-import ru.otus.Dao.AuthorDao;
-import ru.otus.Dao.BookDao;
-import ru.otus.Dao.GenreDao;
-import ru.otus.Domain.Genre;
+		import ru.otus.Domain.Genre;
 import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
-import ru.otus.Managers.GenreManager;
+import ru.otus.ManagersTest.GenreManager;
 
 import java.util.*;
 
@@ -72,11 +68,11 @@ public class GenreCRUD {
         }
 	}
 
-	private void printGenre(@NotNull Genre genre) {
+	private void printGenre(Genre genre) {
 		printGenre(Collections.singletonList(genre));
 	}
 
-	private void printGenre(@NotNull Collection<Genre> genres) {
+	private void printGenre(Collection<Genre> genres) {
 		List<Genre> array = new ArrayList<>(genres);
 		for (int i = 0; i < array.size(); i ++) {
 			Genre genre = array.get(i);

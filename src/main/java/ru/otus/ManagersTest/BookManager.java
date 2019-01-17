@@ -1,4 +1,4 @@
-package ru.otus.Managers;
+package ru.otus.ManagersTest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -103,7 +103,7 @@ public class BookManager implements Manager<Book> {
             throw new NotFoundException("No Books were found.");
         }
 
-        return new HashSet<>();
+        return books;
     }
 
     @Override
@@ -118,7 +118,7 @@ public class BookManager implements Manager<Book> {
 
     @Override
     public int delete(Book book) throws DataBaseException {
-        int res = bookDao.update(book);
+        int res = bookDao.delete(book);
         if (res > 0) {
             return  res;
         } else {

@@ -1,20 +1,15 @@
 package ru.otus.Commands;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
+//import org.jetbrains.annotations.NotNull;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
-import ru.otus.Dao.AuthorDao;
-import ru.otus.Dao.BookDao;
-import ru.otus.Dao.GenreDao;
-import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
-import ru.otus.Domain.Genre;
 import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
-import ru.otus.Managers.BookManager;
+import ru.otus.ManagersTest.BookManager;
 
 import java.util.*;
 
@@ -108,11 +103,11 @@ public class BookCRUD {
 		}
 	}
 
-	private void printBook(@NotNull Book book) {
+	private void printBook(Book book) {
 		printBook(Collections.singletonList(book));
 	}
 
-	private void printBook(@NotNull Collection<Book> books) {
+	private void printBook(Collection<Book> books) {
 		List<Book> array = new ArrayList<>(books);
 		for (int i = 0; i < array.size(); i ++) {
 			Book book = array.get(i);

@@ -12,6 +12,7 @@ import ru.otus.DaoImpl.BookDaoJdbc;
 import ru.otus.Domain.Book;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
@@ -40,6 +41,7 @@ public class BookDaoJdbcTests {
 
     @Test
     public void updateBookTest() {
+    	new HashSet<>();
         String newTitle = "The best book";
         expected.setTitle(newTitle);
         int count = bookDao.update(expected);
