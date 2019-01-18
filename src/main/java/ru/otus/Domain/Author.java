@@ -4,16 +4,26 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
+@Table(name = "AUTHORS")
+@Entity
 @Getter
-@EqualsAndHashCode(exclude = "genres")
+@EqualsAndHashCode
 public class Author extends Base{
 	private String name;
+	@OneToMany
 	private Collection<Genre> genres;
+
+	public Author() {
+		super();
+	}
 
 	public Author(String name) {
 		super();

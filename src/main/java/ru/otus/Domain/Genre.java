@@ -2,11 +2,19 @@ package ru.otus.Domain;
 
 import lombok.Data;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.UUID;
 
+@Table(name = "GENRES")
+@Entity
 @Data
 public class Genre extends Base{
 	private String name;
+
+	public Genre() {
+		super();
+	}
 
 	public Genre(String name) {
 		super();
