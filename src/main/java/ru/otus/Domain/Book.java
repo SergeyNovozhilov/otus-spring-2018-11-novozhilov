@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "authors")
 public class Book extends Base{
 	private String title;
 	private Collection<Author> authors;

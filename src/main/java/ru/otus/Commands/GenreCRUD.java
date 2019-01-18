@@ -8,7 +8,7 @@ import ru.otus.Cache.Cache;
 		import ru.otus.Domain.Genre;
 import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
-import ru.otus.ManagersTest.GenreManager;
+import ru.otus.Managers.GenreManager;
 
 import java.util.*;
 

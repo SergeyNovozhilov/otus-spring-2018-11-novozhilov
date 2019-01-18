@@ -1,4 +1,4 @@
-package ru.otus.ManagersTest;
+package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class GenreManager implements Manager<Genre> {
             if (StringUtils.isNotBlank(name)) {
                 Genre genre = genreDao.getByName(name);
                 if (genre == null) {
-                    throw new NotFoundException("Genre with name: " + name);
+                    throw new NotFoundException("Genre with name: " + name + " not found.");
                 }
                 genres.add(genre);
             } else if (StringUtils.isNotBlank(book)) {

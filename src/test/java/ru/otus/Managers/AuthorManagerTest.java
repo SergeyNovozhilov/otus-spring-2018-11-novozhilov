@@ -1,4 +1,4 @@
-package ru.otus.ManagersTest;
+package ru.otus.Managers;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -36,8 +36,7 @@ public class BookDaoJdbc implements BookDao {
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
 		}
-		correctAuthors(books);
-		return books;
+		return correctAuthors(books);
 	}
 
 	@Override
@@ -50,8 +49,7 @@ public class BookDaoJdbc implements BookDao {
         } catch (DataAccessException e) {
 		    return new ArrayList<>();
         }
-		correctAuthors(books);
-		return books;
+		return correctAuthors(books);
 	}
 
 	@Override
@@ -90,8 +88,7 @@ public class BookDaoJdbc implements BookDao {
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
 		}
-		correctAuthors(books);
-		return books;
+		return correctAuthors(books);
 	}
 
 	@Override
@@ -104,8 +101,7 @@ public class BookDaoJdbc implements BookDao {
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
 		}
-		correctAuthors(books);
-		return books;
+		return correctAuthors(books);
 	}
 
 	@Override
@@ -205,41 +201,6 @@ public class BookDaoJdbc implements BookDao {
 				"where book in (:ids) ", params);
 		return jdbc.update("delete from BOOKS", new HashMap<>());
 	}
-
-	private void setAuthors(Book book) {
-		setAuthors(Collections.singletonList(book));
-	}
-
-	private void setAuthors(Collection<Book> books) {
-        List<UUID> ids = books.stream().map(Book::getId).collect(Collectors.toList());
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		params.addValue("ids", ids);
-        List<Map<String, Object>> rows = jdbc.queryForList("select ba.book as book_id, ba.author as author_id, a.name as author_name, g.id as genre_id, g.name as genre_name " +
-				"from BOOKS_AUTHORS ba, AUTHORS a, GENRES g, GENRES_AUTHORS ga " +
-				"where ba.book in (:ids) " +
-				"and ba.author = a.id " +
-						"and ga.author=a.id " +
-						"and g.id=ga.genre",
-				params);
-        for (Map<String, Object> row : rows) {
-            UUID bookId = (UUID)row.get("book_id");
-            UUID authorId = (UUID)row.get("author_id");
-            String authorName = (String)row.get("author_name");
-            UUID genreId = (UUID)row.get("genre_id");
-			String genreName = (String)row.get("genre_name");
-
-			Genre genre = new Genre(genreId, genreName);
-            Book book = books.stream().filter(x -> x.getId().equals(bookId)).findAny().orElse(null);
-            if (book != null) {
-            	Author author = book.getAuthors().stream().filter(a -> a.getId().equals(authorId)).findAny().orElse(null);
-            	if (author == null) {
-					author = new Author(authorId, authorName);
-					book.addAuthor(author);
-				}
-            	author.addGenre(genre);
-            }
-        }
-    }
 
 	private Collection<Book> correctAuthors(Collection<Book> booksList) {
 		Collection<Book> books = new HashSet<>();

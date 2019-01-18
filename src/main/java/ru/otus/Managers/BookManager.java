@@ -1,4 +1,4 @@
-package ru.otus.ManagersTest;
+package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;

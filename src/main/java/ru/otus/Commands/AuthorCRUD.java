@@ -8,7 +8,7 @@ import ru.otus.Cache.Cache;
 import ru.otus.Domain.Author;
 import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
-import ru.otus.ManagersTest.AuthorManager;
+import ru.otus.Managers.AuthorManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
