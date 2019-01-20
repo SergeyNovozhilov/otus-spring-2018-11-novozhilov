@@ -1,4 +1,4 @@
-package ru.otus.ManagersTest;
+package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -55,9 +55,9 @@ public class GenreManager implements Manager<Genre> {
 
     @Override
     public int update(Genre genre) throws DataBaseException {
-        int res = genreDao.update(genre);
-        if (res > 0) {
-            return  res;
+        Genre newGenre = genreDao.update(genre);
+        if (newGenre != null) {
+            return 1;
         } else {
             throw new DataBaseException("Cannot update Genre");
         }
@@ -65,11 +65,7 @@ public class GenreManager implements Manager<Genre> {
 
     @Override
     public int delete(Genre genre) throws DataBaseException {
-        int res = genreDao.delete(genre);
-        if (res > 0) {
-            return res;
-        } else {
-            throw new DataBaseException("Cannot delete Genre");
-        }
+        genreDao.delete(genre);
+        return 1;
     }
 }

@@ -1,4 +1,4 @@
-package ru.otus.ManagersTest;
+package ru.otus.Managers;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,8 +8,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
+import ru.otus.Dao.AuthorDao;
+import ru.otus.Dao.BookDao;
 import ru.otus.Dao.GenreDao;
-import ru.otus.Domain.Genre;
+import ru.otus.Domain.Book;
 import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
 
@@ -20,57 +22,53 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-public class GenreManagerTest {
+public class BookManagerTest {
+	@MockBean
+	private BookDao bookDao;
+	@MockBean
+	private AuthorDao authorDao;
 	@MockBean
 	private GenreDao genreDao;
 
 	@Configuration
-	static class GenreManagerConfiguration {
+	static class BookManagerConfiguration {
+		@Autowired
+		private BookDao bookDao;
+		@Autowired
+		private AuthorDao authorDao;
 		@Autowired
 		private GenreDao genreDao;
 
 		@Bean
-		public GenreManager getGenreManager() {
-			return new GenreManager(genreDao);
+		public BookManager getBookManager() {
+			return new BookManager(authorDao, genreDao, bookDao);
 		}
 	}
 
 
 	@Autowired
-	private GenreManager underTest;
+	private BookManager underTest;
 
-	private String genreName = "Genre";
-	private Genre expected;
+	private String book = "Book";
+	private Book expected;
 
 
 	@Before
 	public void setUp() {
-		expected = new Genre(genreName);
+		expected = new Book(book);
 	}
 
 	@Test
 	public void createTest() {
-		Genre actual = underTest.create(genreName);
+		Book actual = underTest.create(book);
 		assertEquals(actual, expected);
 	}
 
 	@Test
-	public void getByNameTest() {
+	public void getByTitleTest() {
 		try {
-			when(genreDao.getByName(genreName)).thenReturn(expected);
-			Collection<Genre> actual = underTest.get(genreName, "", "");
-			assertTrue(actual.contains(expected));
-		} catch (NotFoundException e) {
-			fail();
-		}
-	}
-
-	@Test
-	public void getByBookTest() {
-		String title = "Book";
-		try {
-			when(genreDao.getByBook(title)).thenReturn(expected);
-			Collection<Genre> actual = underTest.get("", "", title);
+			when(bookDao.getByTitle(book)).thenReturn(Collections.singleton(expected));
+			Collection<Book> actual = underTest.get(book, "", "");
 			assertTrue(actual.contains(expected));
 		} catch (NotFoundException e) {
 			fail();
@@ -79,10 +77,22 @@ public class GenreManagerTest {
 
 	@Test
 	public void getByAuthorTest() {
-		String author = "Author";
+		String name = "Author";
 		try {
-			when(genreDao.getByAuthor(author)).thenReturn(Collections.singleton(expected));
-			Collection<Genre> actual = underTest.get("", author, "");
+			when(bookDao.getByAuthor(name)).thenReturn(Collections.singleton(expected));
+			Collection<Book> actual = underTest.get("", "", name);
+			assertTrue(actual.contains(expected));
+		} catch (NotFoundException e) {
+			fail();
+		}
+	}
+
+	@Test
+	public void getByGenreTest() {
+		String genre = "Genre";
+		try {
+			when(bookDao.getByGenre(genre)).thenReturn(Collections.singleton(expected));
+			Collection<Book> actual = underTest.get("", genre, "");
 			assertTrue(actual.contains(expected));
 		} catch (NotFoundException e) {
 			fail();
@@ -91,19 +101,19 @@ public class GenreManagerTest {
 
 	@Test
 	public void updateTest() {
-		try {
-			when(genreDao.update(expected)).thenReturn(1);
-			assertTrue(underTest.update(expected) == 1);
-		} catch (DataBaseException e) {
-			fail();
-		}
+//		try {
+//			when(bookDao.update(expected)).thenReturn(1);
+//			assertTrue(underTest.update(expected) == 1);
+//		} catch (DataBaseException e) {
+//			fail();
+//		}
 	}
 
 
 	@Test
 	public void deleteTest() {
 		try {
-			when(genreDao.delete(expected)).thenReturn(1);
+			when(bookDao.delete(expected)).thenReturn(1);
 			assertTrue(underTest.delete(expected) == 1);
 		} catch (DataBaseException e) {
 			fail();

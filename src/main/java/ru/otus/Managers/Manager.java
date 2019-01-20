@@ -1,4 +1,4 @@
-package ru.otus.ManagersTest;
+package ru.otus.Managers;
 
 import ru.otus.Domain.Base;
 import ru.otus.Exceptions.DataBaseException;

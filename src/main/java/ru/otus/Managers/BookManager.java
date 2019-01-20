@@ -1,4 +1,4 @@
-package ru.otus.ManagersTest;
+package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -108,9 +108,9 @@ public class BookManager implements Manager<Book> {
 
     @Override
     public int update(Book book) throws DataBaseException {
-        int res = bookDao.update(book);
-        if (res > 0) {
-            return  res;
+        Book newBook = bookDao.update(book);
+        if (newBook != null) {
+            return 1;
         } else {
             throw new DataBaseException("Cannot update Book");
         }

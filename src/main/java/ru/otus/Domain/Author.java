@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Collection;
@@ -17,28 +18,38 @@ import java.util.UUID;
 @Getter
 @EqualsAndHashCode
 public class Author extends Base{
+	@Id
+	private UUID id;
 	private String name;
 	@OneToMany
 	private Collection<Genre> genres;
 
 	public Author() {
-		super();
+		this.id = UUID.randomUUID();
+	}
+
+	public Author(UUID id) {
+		this.id = id;
 	}
 
 	public Author(String name) {
-		super();
+		this();
 		this.name = name;
 	}
 
 	public Author(UUID id ,String name) {
-		super(id);
+		this(id);
 		this.name = name;
 	}
 
 	public Author(UUID id ,String name, List<Genre> genres) {
-		super(id);
+		this(id);
 		this.name = name;
 		this.genres = genres;
+	}
+
+	public UUID getId() {
+		return id;
 	}
 
 	public void addGenre(Genre genre) {

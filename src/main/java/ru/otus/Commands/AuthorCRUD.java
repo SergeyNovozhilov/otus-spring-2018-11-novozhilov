@@ -8,7 +8,7 @@ import ru.otus.Cache.Cache;
 import ru.otus.Domain.Author;
 import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
-import ru.otus.ManagersTest.AuthorManager;
+import ru.otus.Managers.AuthorManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,12 +64,8 @@ public class AuthorCRUD {
 	@ShellMethod("Delete Author by index")
 	public void deleteAuthor(int index) {
 		Author author = (Author)cache.get(Author.class, index);
-		try {
-			authorManager.delete(author);
-			cache.delete(Author.class, index);
-		} catch (DataBaseException e) {
-			System.out.println(e.getMessage());
-		}
+		authorManager.delete(author);
+		cache.delete(Author.class, index);
 	}
 
 	private void printAuthor(Author author) {

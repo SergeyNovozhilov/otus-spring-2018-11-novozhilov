@@ -1,4 +1,4 @@
-package ru.otus.ManagersTest;
+package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -54,21 +54,17 @@ public class AuthorManager implements Manager<Author> {
 
     @Override
     public int update(Author author) throws DataBaseException {
-        int res = authorDao.update(author);
-        if (res > 0) {
-            return  res;
+        Author newAuthor = authorDao.update(author);
+        if (newAuthor != null) {
+            return 1;
         } else {
             throw new DataBaseException("Cannot update Author");
         }
     }
 
     @Override
-    public int delete(Author author) throws DataBaseException {
-        int res = authorDao.delete(author);
-        if (res > 0) {
-            return res;
-        } else {
-            throw new DataBaseException("Cannot delete Author");
-        }
+    public int delete(Author author){
+        authorDao.delete(author);
+        return 1;
     }
 }

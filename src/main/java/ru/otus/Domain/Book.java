@@ -3,10 +3,7 @@ package ru.otus.Domain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -17,24 +14,31 @@ import java.util.UUID;
 @Data
 @EqualsAndHashCode
 public class Book extends Base{
+	@Id
+	private UUID id;
+
 	private String title;
 	@OneToMany
 	private Collection<Author> authors;
 	@OneToOne
 	private Genre genre;
 
+	public Book(UUID id) {
+		this.id = id;
+	}
+
 	public Book() {
-		super();
+		this.id = UUID.randomUUID();
 	}
 
 	public Book(String title) {
-		super();
+		this();
 		this.title = title;
 		this.authors = new HashSet<>();
 	}
 
 	public Book(UUID id, String title, Genre genre) {
-		super(id);
+		this(id);
 		this.title = title;
 		this.genre = genre;
 		this.authors = new HashSet<>();
