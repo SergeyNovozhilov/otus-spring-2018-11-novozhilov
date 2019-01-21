@@ -4,10 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -19,52 +16,25 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class Author extends Base{
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	private String name;
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL)
 	private Collection<Genre> genres;
+	@ManyToMany(cascade = CascadeType.ALL)
+	private Collection<Book> books;
 
 	public Author() {
-		this.id = UUID.randomUUID();
-	}
-
-	public Author(UUID id) {
-		this.id = id;
 	}
 
 	public Author(String name) {
-		this();
 		this.name = name;
-	}
-
-	public Author(UUID id ,String name) {
-		this(id);
-		this.name = name;
-	}
-
-	public Author(UUID id ,String name, List<Genre> genres) {
-		this(id);
-		this.name = name;
-		this.genres = genres;
 	}
 
 	public UUID getId() {
 		return id;
 	}
 
-	public void addGenre(Genre genre) {
-		if (this.genres == null) {
-			this.genres = new HashSet<>();
-		}
-		this.genres.add(genre);
-	}
-
-	public void addGenres(Collection<Genre> genres) {
-		if (this.genres == null) {
-			this.genres = new HashSet<>();
-		}
-		this.genres.addAll(genres);
-	}
 
 	@Override
 	public void print() {
@@ -91,5 +61,9 @@ public class Author extends Base{
 
 	public void setGenres(Collection<Genre> genres) {
 		this.genres = genres;
+	}
+
+	public Collection<Book> getBooks() {
+		return books;
 	}
 }

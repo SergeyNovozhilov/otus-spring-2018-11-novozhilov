@@ -1,21 +1,15 @@
 package ru.otus.DaoImpl;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.Dao.BookDao;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
-import ru.otus.Domain.Genre;
-import ru.otus.Mapper.BookMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -248,19 +242,19 @@ public class BookDaoJpa implements BookDao {
 //        }
     }
 
-	private Collection<Book> correctAuthors(Collection<Book> booksList) {
-		Collection<Book> books = new HashSet<>();
-		booksList.stream().collect(groupingBy(Function.identity(), HashMap::new,
-				mapping(Book::getAuthors, toSet()))).forEach((k, v) -> {
-			Collection<Author> authors = new HashSet<>();
-			v.forEach(x -> {
-				if (x != null) {
-					authors.addAll(x);
-				}
-			});
-			k.addAuthors(authors);
-			books.add(k);
-		});
-		return books;
-	}
+//	private Collection<Book> correctAuthors(Collection<Book> booksList) {
+//		Collection<Book> books = new HashSet<>();
+//		booksList.stream().collect(groupingBy(Function.identity(), HashMap::new,
+//				mapping(Book::getAuthors, toSet()))).forEach((k, v) -> {
+//			Collection<Author> authors = new HashSet<>();
+//			v.forEach(x -> {
+//				if (x != null) {
+//					authors.addAll(x);
+//				}
+//			});
+//			k.addAuthors(authors);
+//			books.add(k);
+//		});
+//		return books;
+//	}
 }

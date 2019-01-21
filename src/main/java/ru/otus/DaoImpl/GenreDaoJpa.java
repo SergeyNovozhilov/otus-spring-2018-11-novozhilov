@@ -1,18 +1,15 @@
 package ru.otus.DaoImpl;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.Dao.GenreDao;
-import ru.otus.Domain.Author;
 import ru.otus.Domain.Genre;
-import ru.otus.Mapper.GenreMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.util.*;
+import java.util.Collection;
+import java.util.UUID;
 
 @Repository
 public class GenreDaoJpa implements GenreDao {
@@ -39,23 +36,14 @@ public class GenreDaoJpa implements GenreDao {
 
 	@Override
 	public Collection<Genre> getByAuthor(String author) {
-//		Map<String, String> params = Collections.singletonMap("name", author);
-//		try {
-//			return jdbc.query("select g.id, g.name " +
-//							"from AUTHORS a, GENRES g, BOOKS b, BOOKS_AUTHORS ba " +
-//							"where a.name=:name " +
-//							"and a.id=ba.author " +
-//							"and b.id=ba.book " +
-//							"and g.id=b.genre",
-//					params, new GenreMapper());
-//		} catch (DataAccessException e) {
-			return new ArrayList<>();
-//		}
+		TypedQuery<Genre> query = em.createQuery("SELECT b.genre FROM Book b JOIN b.authors a where a.name = :name", Genre.class);
+		query.setParameter("name", author);
+		return query.getResultList();
 	}
 
 	@Override
 	public Genre getByBook(String book) {
-		TypedQuery<Genre> query = em.createQuery("select g from Genre g LEFT JOIN Book b on b.genre=g.id where b.title = :title", Genre.class);
+		TypedQuery<Genre> query = em.createQuery("select g from Genre g JOIN Book b on b.genre=g.id where b.title = :title", Genre.class);
 		query.setParameter("title", book);
 		return query.getSingleResult();
 	}

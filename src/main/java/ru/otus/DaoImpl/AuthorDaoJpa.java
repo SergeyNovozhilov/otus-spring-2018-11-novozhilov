@@ -88,15 +88,15 @@ public class AuthorDaoJpa implements AuthorDao {
 		return query.executeUpdate();
 	}
 
-	private Collection<Author> correctGenres(Collection<Author> authorsList) {
-		Collection<Author> authors = new HashSet<>();
-		authorsList.stream().collect(groupingBy(Function.identity(), HashMap::new,
-				mapping(Author::getGenres, toSet()))).forEach((k, v) -> {
-			Collection<Genre> genres = new HashSet<>();
-			v.forEach(x -> genres.addAll(x));
-			k.addGenres(genres);
-			authors.add(k);
-		});
-		return authors;
-	}
+//	private Collection<Author> correctGenres(Collection<Author> authorsList) {
+//		Collection<Author> authors = new HashSet<>();
+//		authorsList.stream().collect(groupingBy(Function.identity(), HashMap::new,
+//				mapping(Author::getGenres, toSet()))).forEach((k, v) -> {
+//			Collection<Genre> genres = new HashSet<>();
+//			v.forEach(x -> genres.addAll(x));
+//			k.addGenres(genres);
+//			authors.add(k);
+//		});
+//		return authors;
+//	}
 }

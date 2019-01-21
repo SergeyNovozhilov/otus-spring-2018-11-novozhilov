@@ -15,33 +15,24 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class Book extends Base{
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
-
 	private String title;
-	@OneToMany
+	@ManyToMany(cascade = CascadeType.ALL)
 	private Collection<Author> authors;
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	private Genre genre;
 
-	public Book(UUID id) {
-		this.id = id;
-	}
-
 	public Book() {
-		this.id = UUID.randomUUID();
 	}
 
 	public Book(String title) {
-		this();
 		this.title = title;
 		this.authors = new HashSet<>();
 	}
 
-	public Book(UUID id, String title, Genre genre) {
-		this(id);
-		this.title = title;
-		this.genre = genre;
-		this.authors = new HashSet<>();
+	public UUID getId() {
+		return id;
 	}
 
 	public void addAuthor(Author author) {
