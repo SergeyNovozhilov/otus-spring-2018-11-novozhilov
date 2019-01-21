@@ -15,10 +15,8 @@ import ru.otus.Domain.Book;
 import java.util.Collection;
 import java.util.HashSet;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.*;
 
-@Ignore
 @RunWith(SpringRunner.class)
 @JdbcTest
 @Import(BookDaoJdbc.class)
@@ -69,20 +67,24 @@ public class BookDaoJdbcTests {
     public void bookGetByGenreTest() {
         String genreName = "Thriller";
         String bookTitle = "Book by Steven King and Ambrose Bierce";
+        String bookTitle1 = "Book by Jerome C. Jerome Ch";
 
         Collection<Book> actual = bookDao.getByGenre(genreName);
-        assertTrue(actual.size() == 1);
-        assertEquals(actual.iterator().next().getTitle(), bookTitle);
+        assertTrue(actual.size() == 2);
+        assertNotNull(actual.stream().filter(a -> a.getTitle().equals(bookTitle)).findAny().orElse(null));
+        assertNotNull(actual.stream().filter(a -> a.getTitle().equals(bookTitle1)).findAny().orElse(null));
     }
 
     @Test
     public void bookGetByAuthorTest() {
         String authorName = "Jack London";
         String bookTitle = "Book by Jack London";
+        String bookTitle1 = "Book by Jack London 2";
 
         Collection<Book> actual = bookDao.getByAuthor(authorName);
-        assertTrue(actual.size() == 1);
-        assertEquals(actual.iterator().next().getTitle(), bookTitle);
+        assertTrue(actual.size() == 2);
+        assertNotNull(actual.stream().filter(a -> a.getTitle().equals(bookTitle)).findAny().orElse(null));
+        assertNotNull(actual.stream().filter(a -> a.getTitle().equals(bookTitle1)).findAny().orElse(null));
     }
     
 }

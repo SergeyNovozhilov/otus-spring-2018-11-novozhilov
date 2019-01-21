@@ -16,7 +16,6 @@ import java.util.Collection;
 
 import static junit.framework.TestCase.*;
 
-@Ignore
 @RunWith(SpringRunner.class)
 @JdbcTest
 @Import(GenreDaoJdbc.class)
@@ -67,7 +66,7 @@ public class GenreDaoJdbcTests {
 
     @Test
     public void genreGetByAuthorTest() {
-        Genre genre = new Genre("Humor");
+        Genre genre = new Genre("Thriller");
 
         Collection<Genre> actual = genreDao.getByAuthor("Jerome C. Jerome");
         assertTrue(actual.size() == 1);

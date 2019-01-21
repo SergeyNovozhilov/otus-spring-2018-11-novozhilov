@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import java.util.UUID;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 public class Genre extends Base{
 	private String name;
 
@@ -24,12 +24,12 @@ public class Genre extends Base{
 	public void print() {
 		System.out.println("Name: " + this.name);
 	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
+//
+//	public String getName() {
+//		return name;
+//	}
+//
+//	public void setName(String name) {
+//		this.name = name;
+//	}
 }

@@ -18,7 +18,6 @@ import java.util.Collection;
 
 import static junit.framework.TestCase.*;
 
-@Ignore
 @RunWith(SpringRunner.class)
 @JdbcTest
 @Import(AuthorDaoJdbc.class)
@@ -70,11 +69,13 @@ public class AuthorDaoJdbcTests {
 
         String authorName1 = "Steven King";
         String authorName2 = "Ambrose Bierce";
+        String authorName3 = "Jerome C. Jerome";
 
         Collection<Author> actual = authorDao.getByGenre(genreName);
-        assertTrue(actual.size() == 2);
+        assertTrue(actual.size() == 3);
         assertNotNull(actual.stream().map(Author::getName).filter(name -> name.equals(authorName1)).findAny().orElse(null));
         assertNotNull(actual.stream().map(Author::getName).filter(name -> name.equals(authorName2)).findAny().orElse(null));
+        assertNotNull(actual.stream().map(Author::getName).filter(name -> name.equals(authorName3)).findAny().orElse(null));
     }
 
     @Test

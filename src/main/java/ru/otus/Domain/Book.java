@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import java.util.*;
 
 @Data
-@EqualsAndHashCode(exclude = "authors")
+@EqualsAndHashCode(exclude = {"authors", "genre"})
 public class Book extends Base{
 	private String title;
 	private Collection<Author> authors;
@@ -50,42 +50,42 @@ public class Book extends Base{
 			}
 		}
 	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public Collection<Author> getAuthors() {
-		return authors;
-	}
-
-	public void setAuthors(Collection<Author> authors) {
-		this.authors = authors;
-	}
-
-	public Genre getGenre() {
-		return genre;
-	}
-
-	public void setGenre(Genre genre) {
-		this.genre = genre;
-	}
-
-	@Override public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		Book book = (Book) o;
-		return Objects.equals(title, book.title)/* && Objects.equals(genre, book.genre)*/;
-	}
-
-	@Override public int hashCode() {
-
-		return Objects.hash(title/*, genre*/);
-	}
+//
+//	public String getTitle() {
+//		return title;
+//	}
+//
+//	public void setTitle(String title) {
+//		this.title = title;
+//	}
+//
+//	public Collection<Author> getAuthors() {
+//		return authors;
+//	}
+//
+//	public void setAuthors(Collection<Author> authors) {
+//		this.authors = authors;
+//	}
+//
+//	public Genre getGenre() {
+//		return genre;
+//	}
+//
+//	public void setGenre(Genre genre) {
+//		this.genre = genre;
+//	}
+//
+//	@Override public boolean equals(Object o) {
+//		if (this == o)
+//			return true;
+//		if (o == null || getClass() != o.getClass())
+//			return false;
+//		Book book = (Book) o;
+//		return Objects.equals(title, book.title)/* && Objects.equals(genre, book.genre)*/;
+//	}
+//
+//	@Override public int hashCode() {
+//
+//		return Objects.hash(title/*, genre*/);
+//	}
 }
