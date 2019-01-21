@@ -3,10 +3,7 @@ package ru.otus.Domain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @EqualsAndHashCode(exclude = "authors")
@@ -76,5 +73,19 @@ public class Book extends Base{
 
 	public void setGenre(Genre genre) {
 		this.genre = genre;
+	}
+
+	@Override public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Book book = (Book) o;
+		return Objects.equals(title, book.title)/* && Objects.equals(genre, book.genre)*/;
+	}
+
+	@Override public int hashCode() {
+
+		return Objects.hash(title/*, genre*/);
 	}
 }

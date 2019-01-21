@@ -1,10 +1,12 @@
 package ru.otus.Domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class Genre extends Base{
 	private String name;
 

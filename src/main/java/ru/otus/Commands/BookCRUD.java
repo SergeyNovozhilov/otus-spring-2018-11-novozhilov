@@ -2,7 +2,6 @@ package ru.otus.Commands;
 
 import org.apache.commons.lang3.StringUtils;
 //import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -37,12 +36,13 @@ public class BookCRUD {
 		bookManager.addGenre(book, genre);
 
 		String[] authors = author.split(",");
-		if (genre != null && authors.length > 0) {
+		if (authors != null && authors.length > 0) {
 			// to be refactored to batch operation
 			for (String a : authors) {
 				bookManager.addAuthor(book, a);
 			}
 		}
+
 		try {
 			bookManager.update(book);
 			System.out.println("Book has been created.");
@@ -104,11 +104,11 @@ public class BookCRUD {
 		}
 	}
 
-	private void printBook(@NotNull  Book book) {
+	private void printBook(/*@NotNull */ Book book) {
 		printBook(Collections.singletonList(book));
 	}
 
-	private void printBook(@NotNull Collection<Book> books) {
+	private void printBook(/*@NotNull*/ Collection<Book> books) {
 		List<Book> array = new ArrayList<>(books);
 		for (int i = 0; i < array.size(); i ++) {
 			Book book = array.get(i);

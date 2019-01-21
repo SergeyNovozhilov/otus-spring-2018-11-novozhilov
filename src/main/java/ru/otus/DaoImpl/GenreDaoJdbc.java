@@ -112,11 +112,6 @@ public class GenreDaoJdbc implements GenreDao {
 
 	@Override
 	public int deleteAll() {
-		Collection<Genre> all =  this.getAll();
-		if (all.isEmpty()) {
-			return 0;
-		}
-
 		return jdbc.update("delete from GENRES", new HashMap<>());
 	}
 }

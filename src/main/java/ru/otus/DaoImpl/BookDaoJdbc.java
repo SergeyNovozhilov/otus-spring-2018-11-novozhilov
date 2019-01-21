@@ -190,15 +190,6 @@ public class BookDaoJdbc implements BookDao {
 
 	@Override
 	public int deleteAll() {
-		Collection<Book> all =  this.getAll();
-		if (all.isEmpty()) {
-			return 0;
-		}
-		List<UUID> ids = all.stream().map(Book::getId).collect(toList());
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		params.addValue("ids", ids);
-		jdbc.update("delete from BOOKS_AUTHORS " +
-				"where book in (:ids) ", params);
 		return jdbc.update("delete from BOOKS", new HashMap<>());
 	}
 

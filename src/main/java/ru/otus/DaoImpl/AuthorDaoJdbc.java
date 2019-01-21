@@ -117,11 +117,6 @@ public class AuthorDaoJdbc implements AuthorDao {
 
 	@Override
 	public int deleteAll() {
-		Collection<Author> all =  this.getAll();
-		if (all.isEmpty()) {
-			return 0;
-		}
-
 		return jdbc.update("delete from AUTHORS", new HashMap<>());
 	}
 

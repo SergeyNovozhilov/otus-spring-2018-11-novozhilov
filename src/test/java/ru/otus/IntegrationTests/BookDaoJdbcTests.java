@@ -1,6 +1,7 @@
 package ru.otus.IntegrationTests;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.util.HashSet;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
+@Ignore
 @RunWith(SpringRunner.class)
 @JdbcTest
 @Import(BookDaoJdbc.class)
