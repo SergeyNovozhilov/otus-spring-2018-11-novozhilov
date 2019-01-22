@@ -1,18 +1,16 @@
 package ru.otus.DaoImpl;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.Dao.AuthorDao;
 import ru.otus.Domain.Author;
-import ru.otus.Domain.Genre;
 import ru.otus.Mapper.AuthorMapper;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
-import java.util.function.Function;
-
-import static java.util.stream.Collectors.*;
 
 @Repository
 public class AuthorDaoJdbc implements AuthorDao {
@@ -28,9 +26,7 @@ public class AuthorDaoJdbc implements AuthorDao {
 	@Override
 	public Collection<Author> getAll() {
 		try {
-			Collection<Author> authors = jdbc.query(QUERY,
-					new AuthorMapper());
-			return correctGenres(authors);
+			return jdbc.query(QUERY, new Extractor());
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
 		}
@@ -40,8 +36,8 @@ public class AuthorDaoJdbc implements AuthorDao {
 	public Author getByName(String name) {
 		Map<String, String> params = Collections.singletonMap("name", name);
 		try {
-			Collection<Author> authors = jdbc.query(QUERY + "where a.name=:name", params, new AuthorMapper());
-			return correctGenres(authors).stream().findAny().orElse(null);
+			Collection<Author> authors = jdbc.query(QUERY + "where a.name=:name", params, new Extractor());
+			return authors.stream().findAny().orElse(null);
 		} catch (DataAccessException e) {
 			return null;
 		}
@@ -52,8 +48,8 @@ public class AuthorDaoJdbc implements AuthorDao {
 		Map<String, UUID> params = Collections.singletonMap("id", id);
 		try {
 			Collection<Author> authors = jdbc.query(QUERY + "where a.id=:id",
-					params, new AuthorMapper());
-			return correctGenres(authors).stream().findAny().orElse(null);
+					params, new Extractor());
+			return authors.stream().findAny().orElse(null);
 		} catch (DataAccessException e) {
 			return null;
 		}
@@ -63,9 +59,8 @@ public class AuthorDaoJdbc implements AuthorDao {
 	public Collection<Author> getByBook(String book) {
 		Map<String, String> params = Collections.singletonMap("book", book);
 		try {
-			Collection<Author> authors = jdbc.query(QUERY + "where b.title=:book",
-					params, new AuthorMapper());
-			return correctGenres(authors);
+			return jdbc.query(QUERY + "where b.title=:book",
+					params, new Extractor());
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
 		}
@@ -75,10 +70,8 @@ public class AuthorDaoJdbc implements AuthorDao {
 	public Collection<Author> getByGenre(String genre) {
 		Map<String, String> params = Collections.singletonMap("genre", genre);
 		try {
-			Collection<Author> authors = jdbc.query(QUERY + "where g.name=:genre",
-					params, new AuthorMapper());
-			correctGenres(authors);
-			return authors;
+			return jdbc.query("select a.id, a.name, g.id as genre_id, g.name as genre_name from AUTHORS a LEFT JOIN BOOKS_AUTHORS ba on a.id=ba.author LEFT JOIN BOOKS b on ba.book=b.id LEFT JOIN GENRES g on g.id=b.genre where a.id in (select a.id from AUTHORS a, BOOKS_AUTHORS ba, BOOKS b, GENRES g where g.name=:genre and b.genre = g.id and ba.book = b.id and a.id = ba.author)",
+					params, new Extractor());
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
 		}
@@ -120,15 +113,21 @@ public class AuthorDaoJdbc implements AuthorDao {
 		return jdbc.update("delete from AUTHORS", new HashMap<>());
 	}
 
-	private Collection<Author> correctGenres(Collection<Author> authorsList) {
-		Collection<Author> authors = new HashSet<>();
-		authorsList.stream().collect(groupingBy(Function.identity(), HashMap::new,
-				mapping(Author::getGenres, toSet()))).forEach((k, v) -> {
-			Collection<Genre> genres = new HashSet<>();
-			v.forEach(x -> genres.addAll(x));
-			k.addGenres(genres);
-			authors.add(k);
-		});
-		return authors;
+	class Extractor implements ResultSetExtractor<Collection<Author>> {
+		@Override
+		public Collection<Author> extractData(ResultSet rs) throws SQLException, DataAccessException {
+			AuthorMapper authorMapper = new AuthorMapper();
+			Map<UUID, Author> idAuthorMap = new HashMap<>();
+			while(rs.next()){
+				Author author = authorMapper.mapRow(rs,rs.getRow());
+				Author a = idAuthorMap.get(author.getId());
+				if (a != null && a.getGenres() != null) {
+					a.addGenres(author.getGenres());
+				} else {
+					idAuthorMap.put(author.getId(), author);
+				}
+			}
+			return idAuthorMap.values();
+		}
 	}
 }

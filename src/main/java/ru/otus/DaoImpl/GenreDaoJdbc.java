@@ -1,7 +1,6 @@
 package ru.otus.DaoImpl;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.Dao.GenreDao;
@@ -9,8 +8,6 @@ import ru.otus.Domain.Genre;
 import ru.otus.Mapper.GenreMapper;
 
 import java.util.*;
-
-import static java.util.stream.Collectors.toList;
 
 @Repository
 public class GenreDaoJdbc implements GenreDao {

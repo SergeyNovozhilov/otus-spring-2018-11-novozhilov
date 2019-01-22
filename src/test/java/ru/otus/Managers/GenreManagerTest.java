@@ -70,7 +70,7 @@ public class GenreManagerTest {
 		String title = "Book";
 		try {
 			when(genreDao.getByBook(title)).thenReturn(expected);
-			Collection<Genre> actual = underTest.get("", "", title);
+			Collection<Genre> actual = underTest.get("", title, "");
 			assertTrue(actual.contains(expected));
 		} catch (NotFoundException e) {
 			fail();
@@ -82,7 +82,7 @@ public class GenreManagerTest {
 		String author = "Author";
 		try {
 			when(genreDao.getByAuthor(author)).thenReturn(Collections.singleton(expected));
-			Collection<Genre> actual = underTest.get("", author, "");
+			Collection<Genre> actual = underTest.get("", "", author);
 			assertTrue(actual.contains(expected));
 		} catch (NotFoundException e) {
 			fail();

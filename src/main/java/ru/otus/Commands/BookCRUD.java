@@ -45,7 +45,6 @@ public class BookCRUD {
 
 		try {
 			bookManager.update(book);
-			System.out.println("Book has been created.");
 			cache.add(Book.class, Collections.singletonList(book));
 			printBook(book);
 		} catch (DataBaseException e) {
@@ -86,8 +85,7 @@ public class BookCRUD {
 		}
 		try {
 			bookManager.update(book);
-			cache.add(Book.class, Collections.singletonList(book));
-			printBook(book);
+			cache.deleteAll(Book.class);
 		} catch (DataBaseException e) {
 			System.out.println(e.getMessage());
 		}

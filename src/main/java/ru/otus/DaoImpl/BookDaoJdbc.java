@@ -1,20 +1,18 @@
 package ru.otus.DaoImpl;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.Dao.BookDao;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
-import ru.otus.Domain.Genre;
 import ru.otus.Mapper.BookMapper;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.*;
 
 @Repository
 public class BookDaoJdbc implements BookDao {
@@ -29,50 +27,31 @@ public class BookDaoJdbc implements BookDao {
 
 	@Override
 	public Collection<Book> getAll() {
-		Collection<Book> books = null;
 		try {
-			books = jdbc.query(QUERY,
-							new BookMapper());
+			return jdbc.query(QUERY, new Extractor());
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
 		}
-		return correctAuthors(books);
 	}
 
 	@Override
 	public Collection<Book> getByTitle(String title) {
 		Map<String, String> params = Collections.singletonMap("title", title);
-        Collection<Book> books = null;
 		try {
-            books = jdbc.query(QUERY + "where b.title=:title",
-					params, new BookMapper());
+            return jdbc.query(QUERY + "where b.title=:title",
+					params, new Extractor());
         } catch (DataAccessException e) {
 		    return new ArrayList<>();
         }
-		return correctAuthors(books);
-	}
-
-	@Override
-	public Book getByAuthorAndTitle(String author, String title) {
-        Map<String, String> params = new HashMap<>();
-        params.put("author_name", author);
-        params.put("title", title);
-		try {
-			Book book = jdbc.queryForObject(QUERY + "where b.title=:title and a.name=:author_name",
-					params, new BookMapper());
-			return correctAuthors(Collections.singleton(book)).stream().findFirst().orElse(null);
-		} catch (DataAccessException e) {
-			return null;
-		}
 	}
 
 	@Override
 	public Book getById(UUID id) {
 		Map<String, UUID> params = Collections.singletonMap("id", id);
 		try {
-			Book book = jdbc.queryForObject(QUERY + "where b.id=:id",
-					params, new BookMapper());
-			return correctAuthors(Collections.singleton(book)).stream().findFirst().orElse(null);
+			Collection<Book> books = jdbc.query(QUERY + "where b.id=:id",
+					params, new Extractor());
+			return books.stream().findFirst().orElse(null);
 		} catch (DataAccessException e) {
 			return null;
 		}
@@ -81,27 +60,22 @@ public class BookDaoJdbc implements BookDao {
 	@Override
 	public Collection<Book> getByAuthor(String author) {
 		Map<String, String> params = Collections.singletonMap("author", author);
-		Collection<Book> books = null;
 		try {
-			books = jdbc.query(QUERY + "where a.name=:author",
-					params, new BookMapper());
+			return jdbc.query("select b.id as id, b.title as title, g.id as genre_id, g.name as genre_name, a.id as author_id, a.name as author_name from BOOKS b left join GENRES g on g.id = b.genre left join BOOKS_AUTHORS ba on ba.book=b.id left join AUTHORS a on a.id=ba.author where b.id in (select b.id from BOOKS b, BOOKS_AUTHORS ba, AUTHORS a where a.name=:author and a.id=ba.author and ba.book=b.id) ", params, new Extractor());
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
 		}
-		return correctAuthors(books);
 	}
 
 	@Override
 	public Collection<Book> getByGenre(String genre) {
 		Map<String, String> params = Collections.singletonMap("genre", genre);
-		Collection<Book> books = null;
 		try {
-			books = jdbc.query(QUERY + "where g.name=:genre",
-					params, new BookMapper());
+			return jdbc.query(QUERY + "where g.name=:genre",
+					params, new Extractor());
 		} catch (DataAccessException e) {
 			return new ArrayList<>();
 		}
-		return correctAuthors(books);
 	}
 
 	@Override
@@ -157,7 +131,7 @@ public class BookDaoJdbc implements BookDao {
 
 		Book old = getById(book.getId());
 
-		if (old.getAuthors() != null && !old.getAuthors().isEmpty()) {
+		if (old != null && old.getAuthors() != null && !old.getAuthors().isEmpty()) {
 			List<Map<String, Object>> batchValues = new ArrayList<>(old.getAuthors().size());
 			for (Author author : old.getAuthors()) {
 				batchValues.add(
@@ -193,19 +167,21 @@ public class BookDaoJdbc implements BookDao {
 		return jdbc.update("delete from BOOKS", new HashMap<>());
 	}
 
-	private Collection<Book> correctAuthors(Collection<Book> booksList) {
-		Collection<Book> books = new HashSet<>();
-		booksList.stream().collect(groupingBy(Function.identity(), HashMap::new,
-				mapping(Book::getAuthors, toSet()))).forEach((k, v) -> {
-			Collection<Author> authors = new HashSet<>();
-			v.forEach(x -> {
-				if (x != null) {
-					authors.addAll(x);
+	class Extractor implements ResultSetExtractor<Collection<Book>> {
+		@Override
+		public Collection<Book> extractData(ResultSet rs) throws SQLException, DataAccessException {
+			BookMapper bookMapper = new BookMapper();
+			Map<UUID, Book> idBookMap = new HashMap<>();
+			while(rs.next()){
+				Book book = bookMapper.mapRow(rs,rs.getRow());
+				Book b = idBookMap.get(book.getId());
+				if (b != null) {
+					b.addAuthors(book.getAuthors());
+				} else {
+					idBookMap.put(book.getId(), book);
 				}
-			});
-			k.addAuthors(authors);
-			books.add(k);
-		});
-		return books;
+			}
+			return idBookMap.values();
+		}
 	}
 }

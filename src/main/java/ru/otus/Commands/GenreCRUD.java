@@ -50,7 +50,9 @@ public class GenreCRUD {
 	public void updateGenre(int index, @ShellOption(defaultValue = "")String name) {
 		Genre genre = (Genre) cache.get(Genre.class, index);
         try {
+        	genre.setName(name);
             genreManager.update(genre);
+			cache.deleteAll(Genre.class);
         } catch (DataBaseException e) {
             System.out.println(e.getMessage());
         }

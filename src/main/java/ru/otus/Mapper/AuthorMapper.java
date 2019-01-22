@@ -21,14 +21,14 @@ public class AuthorMapper implements RowMapper<Author> {
 		String name = rs.getString(NAME);
 		String uuid = rs.getString(GENRE_ID);
 		String genreName = rs.getString(GENRE_NAME);
+		Author author = new Author(id, name);
 		Genre genre = null;
 		if (StringUtils.isNotBlank(uuid) && StringUtils.isNotBlank(genreName)) {
 			UUID genreId = UUID.fromString(uuid);
 			genre = new Genre(genreId, genreName);
+			author.addGenre(genre);
 		}
 
-		Author author = new Author(id, name);
-		author.addGenre(genre);
 		return author;
 	}
 }

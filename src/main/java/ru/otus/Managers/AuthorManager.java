@@ -29,7 +29,11 @@ public class AuthorManager implements Manager<Author> {
     public Collection<Author> get(String name, String genre, String book) throws NotFoundException {
         Collection<Author> authors = new ArrayList<>();
         if (StringUtils.isBlank(name) && StringUtils.isBlank(genre) && StringUtils.isBlank(book)) {
-            return authorDao.getAll();
+            authors.addAll(authorDao.getAll());
+            if (authors == null || authors.isEmpty()) {
+                throw new NotFoundException("No Authors not found");
+            }
+            return authors;
         } else {
             if (StringUtils.isNotBlank(name)) {
                 Author author = authorDao.getByName(name);

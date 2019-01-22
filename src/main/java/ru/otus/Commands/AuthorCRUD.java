@@ -32,10 +32,9 @@ public class AuthorCRUD {
 		printAuthor(authors);
 	}
 
-	@ShellMethod("Create author with name and genre")
-	public void createAuthor(String name, @ShellOption String genre) {
+	@ShellMethod("Create author with name")
+	public void createAuthor(String name) {
 		Author author = authorManager.create(name);
-		System.out.println("Author has been created");
 		cache.add(Author.class, Collections.singletonList(author));
 		printAuthor(author);
 	}
@@ -52,10 +51,12 @@ public class AuthorCRUD {
 	}
 
 	@ShellMethod("Update Author by index")
-	public void updateAuthor(int index, @ShellOption(defaultValue = "")String name, @ShellOption(defaultValue = "") String genre) {
+	public void updateAuthor(int index, @ShellOption(defaultValue = "")String name) {
 		Author author = (Author)cache.get(Author.class, index);
 		try {
+			author.setName(name);
 			authorManager.update(author);
+			cache.deleteAll(Author.class);
 		} catch (DataBaseException e) {
 			System.out.println(e.getMessage());
 		}

@@ -11,9 +11,8 @@ import ru.otus.Domain.Genre;
 import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 
 @Service
 public class BookManager implements Manager<Book> {
@@ -58,17 +57,23 @@ public class BookManager implements Manager<Book> {
 
     @Override
     public Collection<Book> get(String title, String genre, String author) throws NotFoundException {
-        Collection<Book> books = new HashSet<>();
+        Collection<Book> books = new ArrayList<>();
         Collection<Book> booksByTitle = null;
         Collection<Book> booksByGenre = null;
         Collection<Book> booksByAuthor = null;
 
         if (StringUtils.isBlank(title) && StringUtils.isBlank(genre) && StringUtils.isBlank(author)) {
-            return bookDao.getAll();
+            return returnBooks(bookDao.getAll());
         }
 
         if (StringUtils.isNotBlank(title) && StringUtils.isNotBlank(author) && StringUtils.isBlank(genre)) {
-            return Collections.singleton(bookDao.getByAuthorAndTitle(author, title));
+            booksByTitle = bookDao.getByTitle(title);
+            booksByTitle.forEach(b -> {
+                if (b.getAuthors().stream().filter(a -> a.getName().equals(author)).findAny().orElse(null) != null) {
+                    books.add(b);
+                }
+            });
+            return returnBooks(books);
         }
 
         if (StringUtils.isNotBlank(title)) {
@@ -99,11 +104,8 @@ public class BookManager implements Manager<Book> {
         if (booksByAuthor != null) {
             books.retainAll(booksByAuthor);
         }
-        if (books.isEmpty()) {
-            throw new NotFoundException("No Books were found.");
-        }
 
-        return books;
+        return returnBooks(books);
     }
 
     @Override
@@ -124,5 +126,12 @@ public class BookManager implements Manager<Book> {
         } else {
             throw new DataBaseException("Cannot delete Book");
         }
+    }
+
+    private Collection<Book> returnBooks(Collection<Book> books) throws NotFoundException{
+        if (books == null || books.isEmpty()) {
+            throw new NotFoundException("No Books were found.");
+        }
+        return books;
     }
 }

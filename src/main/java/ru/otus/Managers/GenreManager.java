@@ -26,10 +26,10 @@ public class GenreManager implements Manager<Genre> {
     }
 
     @Override
-    public Collection<Genre> get(String name, String author, String book) throws NotFoundException {
+    public Collection<Genre> get(String name, String book, String author) throws NotFoundException {
         Collection<Genre> genres = new ArrayList<>();
         if (StringUtils.isBlank(name) && StringUtils.isBlank(author) && StringUtils.isBlank(book)) {
-            genreDao.getAll();
+            return genreDao.getAll();
         } else {
             if (StringUtils.isNotBlank(name)) {
                 Genre genre = genreDao.getByName(name);

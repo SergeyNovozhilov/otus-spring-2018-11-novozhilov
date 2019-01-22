@@ -1,8 +1,6 @@
 package ru.otus.Dao;
 
 import ru.otus.Domain.Author;
-import ru.otus.Domain.Book;
-import ru.otus.Domain.Genre;
 
 import java.util.Collection;
 import java.util.UUID;

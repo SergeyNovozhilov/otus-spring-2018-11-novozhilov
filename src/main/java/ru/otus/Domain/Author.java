@@ -2,8 +2,6 @@ package ru.otus.Domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.*;
 
@@ -47,40 +45,40 @@ public class Author extends Base{
 	public void print() {
 		System.out.println(" Name: " + this.name);
 		System.out.println("Genres:");
-		if (this.genres != null) {
+		if (this.genres != null && !this.genres.isEmpty()) {
 			for (Genre genre : this.genres) {
 				System.out.println("   " + genre.getName());
 			}
 		}
 	}
-//
-//	public String getName() {
-//		return name;
-//	}
-//
-//	public void setName(String name) {
-//		this.name = name;
-//	}
-//
-//	public Collection<Genre> getGenres() {
-//		return genres;
-//	}
-//
-//	public void setGenres(Collection<Genre> genres) {
-//		this.genres = genres;
-//	}
-//
-//	@Override public boolean equals(Object o) {
-//		if (this == o)
-//			return true;
-//		if (o == null || getClass() != o.getClass())
-//			return false;
-//		Author author = (Author) o;
-//		return Objects.equals(name, author.name);
-//	}
-//
-//	@Override public int hashCode() {
-//
-//		return Objects.hash(name);
-//	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Collection<Genre> getGenres() {
+		return genres;
+	}
+
+	public void setGenres(Collection<Genre> genres) {
+		this.genres = genres;
+	}
+
+	@Override public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Author author = (Author) o;
+		return Objects.equals(name, author.name);
+	}
+
+	@Override public int hashCode() {
+
+		return Objects.hash(name);
+	}
 }

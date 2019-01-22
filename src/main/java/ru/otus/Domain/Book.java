@@ -44,48 +44,48 @@ public class Book extends Base{
 		System.out.println(" Title: " + this.title);
 		System.out.println(" Genre: " + this.genre.getName());
 		System.out.println("Authors:");
-		if (this.authors != null) {
+		if (this.authors != null && !this.authors.isEmpty()) {
 			for (Author author : this.authors) {
 				System.out.println("   " + author.getName());
 			}
 		}
 	}
-//
-//	public String getTitle() {
-//		return title;
-//	}
-//
-//	public void setTitle(String title) {
-//		this.title = title;
-//	}
-//
-//	public Collection<Author> getAuthors() {
-//		return authors;
-//	}
-//
-//	public void setAuthors(Collection<Author> authors) {
-//		this.authors = authors;
-//	}
-//
-//	public Genre getGenre() {
-//		return genre;
-//	}
-//
-//	public void setGenre(Genre genre) {
-//		this.genre = genre;
-//	}
-//
-//	@Override public boolean equals(Object o) {
-//		if (this == o)
-//			return true;
-//		if (o == null || getClass() != o.getClass())
-//			return false;
-//		Book book = (Book) o;
-//		return Objects.equals(title, book.title)/* && Objects.equals(genre, book.genre)*/;
-//	}
-//
-//	@Override public int hashCode() {
-//
-//		return Objects.hash(title/*, genre*/);
-//	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public Collection<Author> getAuthors() {
+		return authors;
+	}
+
+	public void setAuthors(Collection<Author> authors) {
+		this.authors = authors;
+	}
+
+	public Genre getGenre() {
+		return genre;
+	}
+
+	public void setGenre(Genre genre) {
+		this.genre = genre;
+	}
+
+	@Override public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Book book = (Book) o;
+		return Objects.equals(title, book.title)/* && Objects.equals(genre, book.genre)*/;
+	}
+
+	@Override public int hashCode() {
+
+		return Objects.hash(title/*, genre*/);
+	}
 }
