@@ -1,36 +1,40 @@
 package ru.otus.Domain;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.UUID;
 
-import java.util.*;
-
-@Data
-@EqualsAndHashCode(exclude = {"authors", "genre"})
+@Table(name = "BOOKS")
+@Entity
 public class Book extends Base{
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private UUID id;
 	private String title;
+	@ManyToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
 	private Collection<Author> authors;
+	@OneToOne(cascade = CascadeType.ALL)
 	private Genre genre;
 
+	public Book() {
+	}
+
 	public Book(String title) {
-		super();
 		this.title = title;
 		this.authors = new HashSet<>();
 	}
 
-	public Book(UUID id, String title, Genre genre) {
-		super(id);
-		this.title = title;
-		this.genre = genre;
-		this.authors = new HashSet<>();
+	public UUID getId() {
+		return id;
 	}
 
 	public void addAuthor(Author author) {
-	    if (this.authors == null) {
-	        this.authors = new HashSet<>();
-        }
-	    this.authors.add(author);
-    }
+		if (this.authors == null) {
+			this.authors = new HashSet<>();
+		}
+		this.authors.add(author);
+	}
 
 	public void addAuthors(Collection<Author> authors) {
 		if (this.authors == null) {
@@ -44,7 +48,7 @@ public class Book extends Base{
 		System.out.println(" Title: " + this.title);
 		System.out.println(" Genre: " + this.genre.getName());
 		System.out.println("Authors:");
-		if (this.authors != null && !this.authors.isEmpty()) {
+		if (this.authors != null) {
 			for (Author author : this.authors) {
 				System.out.println("   " + author.getName());
 			}
@@ -73,19 +77,5 @@ public class Book extends Base{
 
 	public void setGenre(Genre genre) {
 		this.genre = genre;
-	}
-
-	@Override public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		Book book = (Book) o;
-		return Objects.equals(title, book.title)/* && Objects.equals(genre, book.genre)*/;
-	}
-
-	@Override public int hashCode() {
-
-		return Objects.hash(title/*, genre*/);
 	}
 }

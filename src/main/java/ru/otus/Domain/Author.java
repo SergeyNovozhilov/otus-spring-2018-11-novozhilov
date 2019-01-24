@@ -1,51 +1,38 @@
 package ru.otus.Domain;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import javax.persistence.*;
+import java.util.Collection;
+import java.util.UUID;
 
-import java.util.*;
-
-@Data
-@EqualsAndHashCode(exclude = "genres")
+@Table(name = "AUTHORS")
+@Entity
 public class Author extends Base{
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private UUID id;
 	private String name;
+	@Transient
 	private Collection<Genre> genres;
+	@ManyToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "authors")
+	private Collection<Book> books;
+
+	public Author() {
+	}
 
 	public Author(String name) {
-		super();
 		this.name = name;
 	}
 
-	public Author(UUID id ,String name) {
-		super(id);
-		this.name = name;
+	public UUID getId() {
+		return id;
 	}
 
-	public Author(UUID id ,String name, List<Genre> genres) {
-		super(id);
-		this.name = name;
-		this.genres = genres;
-	}
-
-	public void addGenre(Genre genre) {
-		if (this.genres == null) {
-			this.genres = new HashSet<>();
-		}
-		this.genres.add(genre);
-	}
-
-	public void addGenres(Collection<Genre> genres) {
-		if (this.genres == null) {
-			this.genres = new HashSet<>();
-		}
-		this.genres.addAll(genres);
-	}
 
 	@Override
 	public void print() {
 		System.out.println(" Name: " + this.name);
 		System.out.println("Genres:");
-		if (this.genres != null && !this.genres.isEmpty()) {
+		if (this.genres != null) {
 			for (Genre genre : this.genres) {
 				System.out.println("   " + genre.getName());
 			}
@@ -68,17 +55,11 @@ public class Author extends Base{
 		this.genres = genres;
 	}
 
-	@Override public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		Author author = (Author) o;
-		return Objects.equals(name, author.name);
+	public Collection<Book> getBooks() {
+		return books;
 	}
 
-	@Override public int hashCode() {
-
-		return Objects.hash(name);
+	public void setBooks(Collection<Book> books) {
+		this.books = books;
 	}
 }
