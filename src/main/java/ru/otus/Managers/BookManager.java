@@ -110,22 +110,17 @@ public class BookManager implements Manager<Book> {
 
     @Override
     public int update(Book book) throws DataBaseException {
-        int res = bookDao.update(book);
-        if (res > 0) {
-            return  res;
-        } else {
-            throw new DataBaseException("Cannot update Book");
+        Book b = bookDao.update(book);
+        if (b != null) {
+            return  1;
         }
+        return 0;
     }
 
     @Override
     public int delete(Book book) throws DataBaseException {
-        int res = bookDao.delete(book);
-        if (res > 0) {
-            return  res;
-        } else {
-            throw new DataBaseException("Cannot delete Book");
-        }
+        bookDao.delete(book);
+        return 1;
     }
 
     private Collection<Book> returnBooks(Collection<Book> books) throws NotFoundException{

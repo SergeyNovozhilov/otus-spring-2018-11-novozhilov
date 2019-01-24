@@ -58,21 +58,16 @@ public class AuthorManager implements Manager<Author> {
 
     @Override
     public int update(Author author) throws DataBaseException {
-        int res = authorDao.update(author);
-        if (res > 0) {
-            return  res;
-        } else {
-            throw new DataBaseException("Cannot update Author");
+        Author a = authorDao.update(author);
+        if (a != null) {
+            return  1;
         }
+        return 0;
     }
 
     @Override
     public int delete(Author author) throws DataBaseException {
-        int res = authorDao.delete(author);
-        if (res > 0) {
-            return res;
-        } else {
-            throw new DataBaseException("Cannot delete Author");
-        }
+        authorDao.delete(author);
+        return 1;
     }
 }

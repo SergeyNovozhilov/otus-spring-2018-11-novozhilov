@@ -55,21 +55,16 @@ public class GenreManager implements Manager<Genre> {
 
     @Override
     public int update(Genre genre) throws DataBaseException {
-        int res = genreDao.update(genre);
-        if (res > 0) {
-            return  res;
-        } else {
-            throw new DataBaseException("Cannot update Genre");
+        Genre g = genreDao.update(genre);
+        if (g != null) {
+            return 1;
         }
+        return 0;
     }
 
     @Override
     public int delete(Genre genre) throws DataBaseException {
-        int res = genreDao.delete(genre);
-        if (res > 0) {
-            return res;
-        } else {
-            throw new DataBaseException("Cannot delete Genre");
-        }
+        genreDao.delete(genre);
+        return 1;
     }
 }

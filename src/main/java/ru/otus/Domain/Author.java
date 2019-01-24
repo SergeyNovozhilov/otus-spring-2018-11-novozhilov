@@ -2,6 +2,7 @@ package ru.otus.Domain;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 
 @Table(name = "AUTHORS")
@@ -48,6 +49,9 @@ public class Author extends Base{
 	}
 
 	public Collection<Genre> getGenres() {
+		if (this.genres == null) {
+			this.genres = new HashSet<>();
+		}
 		return genres;
 	}
 

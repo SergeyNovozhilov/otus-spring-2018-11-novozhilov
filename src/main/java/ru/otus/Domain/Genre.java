@@ -18,6 +18,11 @@ public class Genre extends Base{
 	public Genre() {
 	}
 
+	public Genre(UUID id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
 	public Genre(String name) {
 		this.name = name;
 	}

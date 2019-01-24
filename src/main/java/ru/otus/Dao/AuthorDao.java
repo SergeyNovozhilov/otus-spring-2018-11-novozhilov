@@ -12,7 +12,7 @@ public interface AuthorDao extends BaseDao{
 	Collection<Author> getByBook(String book);
 	Collection<Author> getByGenre(String genre);
 	void save(Author author);
-	int delete(Author author);
-	int update(Author author);
+	void delete(Author author);
+	Author update(Author author);
 	int deleteAll();
 }
