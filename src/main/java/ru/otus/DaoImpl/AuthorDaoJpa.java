@@ -36,37 +36,51 @@ public class AuthorDaoJpa implements AuthorDao {
 
 	@Override
 	public Author getById(UUID id) {
-		return em.find(Author.class, id);
+		try {
+			return em.find(Author.class, id);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	@Override
 	public Collection<Author> getByBook(String book) {
-		TypedQuery<Author> query = em.createQuery("SELECT a FROM Author a JOIN a.books b where b.title = :title", Author.class);
-		query.setParameter("title", book);
-		return query.getResultList();
+		try {
+			TypedQuery<Author> query = em
+					.createQuery("SELECT a FROM Author a JOIN a.books b where b.title = :title", Author.class);
+			query.setParameter("title", book);
+			return query.getResultList();
+		} catch (Exception e) {
+			return Collections.EMPTY_SET;
+		}
 	}
 
 	@Override
 	public Collection<Author> getByGenre(String genre) {
-		Map<UUID, Author> authorMap = new HashMap<>();
-		Query query = em.createQuery("select a, g.id as genre_id, g.name as genre_name from Author a JOIN a.books b JOIN Genre g on b.genre = g.id where g.name = :genre");
-		query.setParameter("genre", genre);
+		try {
+			Map<UUID, Author> authorMap = new HashMap<>();
+			Query query = em.createQuery(
+					"select a, g.id as genre_id, g.name as genre_name from Author a JOIN a.books b JOIN Genre g on b.genre = g.id where g.name = :genre");
+			query.setParameter("genre", genre);
 
-		List<Object[]> results =query.getResultList();
+			List<Object[]> results = query.getResultList();
 
-		for (Object[] result : results) {
-			Genre g = new Genre((UUID)result[1], (String)result[2]);
-			Author a = (Author) result[0];
-			Author author = authorMap.get(a.getId());
-			if (author != null) {
-				author.getGenres().add(g);
-			} else {
-				a.getGenres().add(g);
-				authorMap.put(a.getId(), a);
+			for (Object[] result : results) {
+				Genre g = new Genre((UUID) result[1], (String) result[2]);
+				Author a = (Author) result[0];
+				Author author = authorMap.get(a.getId());
+				if (author != null) {
+					author.getGenres().add(g);
+				} else {
+					a.getGenres().add(g);
+					authorMap.put(a.getId(), a);
+				}
 			}
-		}
 
-		return authorMap.values();
+			return authorMap.values();
+		} catch (Exception e) {
+			return Collections.EMPTY_SET;
+		}
 	}
 
 	@Override

@@ -16,8 +16,11 @@ public class Book extends Base{
 	private Collection<Author> authors;
 	@OneToOne(cascade = CascadeType.ALL)
 	private Genre genre;
+	@OneToMany
+	private Collection<Comment> comments;
 
 	public Book() {
+		this.authors = new HashSet<>();
 	}
 
 	public Book(String title) {
@@ -36,13 +39,6 @@ public class Book extends Base{
 		this.authors.add(author);
 	}
 
-	public void addAuthors(Collection<Author> authors) {
-		if (this.authors == null) {
-			this.authors = new HashSet<>();
-		}
-		this.authors.addAll(authors);
-	}
-
 	@Override
 	public void print() {
 		System.out.println(" Title: " + this.title);
@@ -53,6 +49,32 @@ public class Book extends Base{
 				System.out.println("   " + author.getName());
 			}
 		}
+		System.out.println("Comments:");
+		if (this.comments != null && !this.comments.isEmpty()) {
+			for (Comment comment : this.comments) {
+				System.out.println("   " + comment.getComment());
+			}
+		}
+	}
+
+	public void addComment(Comment comment) {
+		if (this.comments == null) {
+			this.comments = new HashSet<>();
+		}
+		this.comments.add(comment);
+	}
+
+	public void removeComment(Comment comment) {
+		if (this.comments != null) {
+			Comment com = this.comments.stream().filter(c -> c.getComment().equals(comment)).findAny().orElse(null);
+			if (com != null) {
+				this.comments.remove(com);
+			}
+		}
+	}
+
+	public Collection<Comment> getComments() {
+		return comments;
 	}
 
 	public String getTitle() {

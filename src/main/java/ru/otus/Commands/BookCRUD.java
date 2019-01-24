@@ -7,6 +7,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
 import ru.otus.Domain.Book;
+import ru.otus.Domain.Comment;
 import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.BookManager;
@@ -86,6 +87,20 @@ public class BookCRUD {
 		try {
 			bookManager.update(book);
 			cache.deleteAll(Book.class);
+		} catch (DataBaseException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+	@ShellMethod("Add comment by book's index")
+	public void addComment(int index, String comment) {
+		Book book = (Book)cache.get(Book.class, index);
+		try {
+			book.addComment(new Comment(comment));
+			bookManager.update(book);
+			cache.delete(Book.class, index);
+			cache.add(Book.class, Collections.singletonList(book));
+			printBook(book);
 		} catch (DataBaseException e) {
 			System.out.println(e.getMessage());
 		}

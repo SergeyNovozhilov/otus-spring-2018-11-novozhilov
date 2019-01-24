@@ -34,8 +34,7 @@ public class BookManager implements Manager<Book> {
     }
 
     public Book addGenre(Book book, String genreName) {
-        Genre genre = null;
-        genre = genreDao.getByName(genreName);
+        Genre genre = genreDao.getByName(genreName);
         if (genre == null) {
             genre = new Genre(genreName);
             genreDao.save(genre);
@@ -45,8 +44,7 @@ public class BookManager implements Manager<Book> {
     }
 
     public Book addAuthor(Book book, String authorName) {
-        Author author = null;
-        author = authorDao.getByName(authorName);
+        Author author = authorDao.getByName(authorName);
         if (author == null) {
             author = new Author(authorName);
             authorDao.save(author);

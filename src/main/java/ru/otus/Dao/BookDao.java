@@ -1,6 +1,7 @@
 package ru.otus.Dao;
 
 import ru.otus.Domain.Book;
+import ru.otus.Domain.Comment;
 
 import java.util.Collection;
 import java.util.UUID;
