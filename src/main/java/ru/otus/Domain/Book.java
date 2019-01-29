@@ -16,7 +16,7 @@ public class Book extends Base{
 	private Collection<Author> authors;
 	@OneToOne(cascade = CascadeType.ALL)
 	private Genre genre;
-	@OneToMany
+	@OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
 	private Collection<Comment> comments;
 
 	public Book() {

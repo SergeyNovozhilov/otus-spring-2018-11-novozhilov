@@ -90,13 +90,25 @@ public class BookDaoJpaTests {
 
 	@Test
 	public void delete() {
-		Book expected = new Book("Book by Steven King");
-		testEntityManager.persistAndFlush(expected);
+		Book expected = createAndPersistBook("Book", "Thriller", "Steven King");
 		Book actual = bookDaoJpa.getById(expected.getId());
 		assertEquals(actual, expected);
 		bookDaoJpa.delete(expected);
 		actual = testEntityManager.find(Book.class, expected.getId());
 		assertNull(actual);
+	}
+
+	@Test
+	public void deleteTest() {
+		Book expected = createAndPersistBook("Book", "Thriller", "Steven King");
+		Book actual = bookDaoJpa.getById(expected.getId());
+		assertEquals(actual, expected);
+		bookDaoJpa.delete(expected);
+//		actual = testEntityManager.find(Book.class, expected.getId());
+//		assertNull(actual);
+
+		Collection<Book> all = bookDaoJpa.getAll();
+		assertTrue(all.isEmpty());
 	}
 
 	@Test

@@ -73,24 +73,32 @@ public class BookDaoJpa implements BookDao {
 	@Transactional
 	public void save(Book book) {
 		em.persist(book);
+		em.flush();
 	}
 
 	@Override
 	@Transactional
 	public void delete(Book book) {
-		em.remove(book);
+		Query query = em.createQuery("delete from Book b where b.id = : id");
+		query.setParameter("id", book.getId());
+		int res = query.executeUpdate();
+		em.flush();
 	}
 
 	@Override
 	@Transactional
 	public Book update(Book book) {
-		return em.merge(book);
+		if (em.contains(book)) {
+			em.merge(book);
+			em.flush();
+		}
+		return null;
 	}
 
 	@Override
 	@Transactional
 	public int deleteAll() {
-		Query query = em.createQuery("delete from Author a");
+		Query query = em.createQuery("delete from Book b");
 		return query.executeUpdate();
 	}
 }

@@ -1,5 +1,8 @@
 package ru.otus.Domain;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,6 +18,7 @@ public class Author extends Base{
 	@Transient
 	private Collection<Genre> genres;
 	@ManyToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "authors")
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Collection<Book> books;
 
 	public Author() {
