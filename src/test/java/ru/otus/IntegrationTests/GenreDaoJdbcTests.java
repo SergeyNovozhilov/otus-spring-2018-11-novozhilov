@@ -1,7 +1,6 @@
 package ru.otus.IntegrationTests;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.Dao.GenreDao;
-import ru.otus.DaoImpl.GenreDaoJdbc;
 import ru.otus.Domain.Genre;
 
 import java.util.Collection;

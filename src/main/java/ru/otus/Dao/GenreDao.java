@@ -12,7 +12,6 @@ public interface GenreDao extends BaseDao{
 	Collection<Genre> getByAuthor(String author);
 	Genre getByBook(String book);
 	void save(Genre genre);
-	int delete(Genre genre);
-	int update(Genre genre);
-	int deleteAll();
+	void delete(Genre genre);
+	Genre update(Genre genre);
 }

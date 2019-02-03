@@ -12,17 +12,7 @@ public class Book extends Base{
 	private Collection<Author> authors;
 	private Genre genre;
 
-	public Book(String title) {
-		super();
-		this.title = title;
-		this.authors = new HashSet<>();
-	}
-
-	public Book(UUID id, String title, Genre genre) {
-		super(id);
-		this.title = title;
-		this.genre = genre;
-		this.authors = new HashSet<>();
+	public Book() {
 	}
 
 	public void addAuthor(Author author) {

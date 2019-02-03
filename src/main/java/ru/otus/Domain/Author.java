@@ -11,20 +11,7 @@ public class Author extends Base{
 	private String name;
 	private Collection<Genre> genres;
 
-	public Author(String name) {
-		super();
-		this.name = name;
-	}
-
-	public Author(UUID id ,String name) {
-		super(id);
-		this.name = name;
-	}
-
-	public Author(UUID id ,String name, List<Genre> genres) {
-		super(id);
-		this.name = name;
-		this.genres = genres;
+	public Author() {
 	}
 
 	public void addGenre(Genre genre) {
