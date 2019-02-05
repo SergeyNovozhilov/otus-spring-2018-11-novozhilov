@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -92,8 +93,8 @@ public class GenreManagerTest {
 	@Test
 	public void updateTest() {
 		try {
-			when(genreDao.update(expected)).thenReturn(1);
-			assertTrue(underTest.update(expected) == 1);
+			underTest.update(expected);
+			verify(genreDao).update(expected);
 		} catch (DataBaseException e) {
 			fail();
 		}
@@ -103,8 +104,8 @@ public class GenreManagerTest {
 	@Test
 	public void deleteTest() {
 		try {
-			when(genreDao.delete(expected)).thenReturn(1);
-			assertTrue(underTest.delete(expected) == 1);
+			underTest.delete(expected);
+			verify(genreDao).delete(expected);
 		} catch (DataBaseException e) {
 			fail();
 		}

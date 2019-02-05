@@ -1,13 +1,11 @@
 package ru.otus.Domain;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.UUID;
 
 @Data
-@EqualsAndHashCode
 @Table(name = "GENRES")
 @Entity
 public class Genre extends Base{
@@ -20,6 +18,11 @@ public class Genre extends Base{
 	}
 
 	public Genre(String name) {
+		this.name = name;
+	}
+
+	public Genre(UUID id, String name) {
+		this.id = id;
 		this.name = name;
 	}
 

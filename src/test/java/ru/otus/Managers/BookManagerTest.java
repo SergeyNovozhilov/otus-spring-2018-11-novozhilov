@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -60,8 +61,9 @@ public class BookManagerTest {
 
 	@Test
 	public void createTest() {
+		when(bookDao.save(expected)).thenReturn(expected);
 		Book actual = underTest.create(book);
-		assertEquals(actual, expected);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -102,8 +104,8 @@ public class BookManagerTest {
 	@Test
 	public void updateTest() {
 		try {
-			when(bookDao.update(expected)).thenReturn(1);
-			assertTrue(underTest.update(expected) == 1);
+			underTest.update(expected);
+			verify(bookDao).update(expected);
 		} catch (DataBaseException e) {
 			fail();
 		}
@@ -113,8 +115,8 @@ public class BookManagerTest {
 	@Test
 	public void deleteTest() {
 		try {
-			when(bookDao.delete(expected)).thenReturn(1);
-			assertTrue(underTest.delete(expected) == 1);
+			underTest.delete(expected);
+			verify(bookDao).delete(expected);
 		} catch (DataBaseException e) {
 			fail();
 		}
