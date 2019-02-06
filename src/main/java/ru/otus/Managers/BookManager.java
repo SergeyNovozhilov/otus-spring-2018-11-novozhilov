@@ -7,12 +7,13 @@ import ru.otus.Dao.BookDao;
 import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
+import ru.otus.Domain.Comment;
 import ru.otus.Domain.Genre;
-import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class BookManager implements Manager<Book> {
@@ -39,17 +40,34 @@ public class BookManager implements Manager<Book> {
             genreDao.save(genre);
         }
         book.setGenre(genre);
-        return book;
+
+        return bookDao.update(book);
     }
 
-    public Book addAuthor(Book book, String authorName) {
-        Author author = authorDao.getByName(authorName);
-        if (author == null) {
-            author = new Author(authorName);
-            authorDao.save(author);
-        }
-        book.addAuthor(author);
-        return book;
+    public Book addAuthors(Book book, List<String> authors) {
+        authors.forEach(a -> {
+            Author author = authorDao.getByName(a);
+            if (author == null) {
+                author = new Author(a);
+                authorDao.save(author);
+            }
+            book.addAuthor(author);
+        });
+
+        return bookDao.update(book);
+    }
+
+    public Book addComment(Book book, String comment) {
+        book.addComment(new Comment(comment));
+
+        return bookDao.update(book);
+    }
+
+    public Book removeComment(Book book, String comment) {
+        Comment commentObj = book.getComments().stream().filter(c -> StringUtils.equalsIgnoreCase(c.getComment(), comment)).findAny().orElse(null);
+        book.getComments().remove(commentObj);
+
+        return bookDao.update(book);
     }
 
     @Override
@@ -106,14 +124,13 @@ public class BookManager implements Manager<Book> {
     }
 
     @Override
-    public void update(Book book) throws DataBaseException {
-        bookDao.update(book);
+    public Book update(Book book) {
+        return bookDao.update(book);
     }
 
     @Override
-    public int delete(Book book) throws DataBaseException {
+    public void delete(Book book) {
         bookDao.delete(book);
-        return 1;
     }
 
     private Collection<Book> returnBooks(Collection<Book> books) throws NotFoundException{

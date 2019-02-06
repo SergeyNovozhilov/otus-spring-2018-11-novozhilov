@@ -56,4 +56,36 @@ public class Author extends Base{
 			}
 		}
 	}
+
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Collection<Genre> getGenres() {
+		return genres;
+	}
+
+	public void setGenres(Collection<Genre> genres) {
+		this.genres = genres;
+	}
+
+	public Collection<Book> getBooks() {
+		return books;
+	}
+
+	public void setBooks(Collection<Book> books) {
+		this.books = books;
+	}
 }

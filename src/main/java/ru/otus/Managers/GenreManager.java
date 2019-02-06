@@ -54,13 +54,12 @@ public class GenreManager implements Manager<Genre> {
     }
 
     @Override
-    public void update(Genre genre) throws DataBaseException {
-        genreDao.update(genre);
+    public Genre update(Genre genre) {
+        return genreDao.update(genre);
     }
 
     @Override
-    public int delete(Genre genre) throws DataBaseException {
+    public void delete(Genre genre) {
         genreDao.delete(genre);
-        return 1;
     }
 }

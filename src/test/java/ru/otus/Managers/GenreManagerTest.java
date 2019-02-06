@@ -92,22 +92,14 @@ public class GenreManagerTest {
 
 	@Test
 	public void updateTest() {
-		try {
-			underTest.update(expected);
-			verify(genreDao).update(expected);
-		} catch (DataBaseException e) {
-			fail();
-		}
+		underTest.update(expected);
+		verify(genreDao).update(expected);
 	}
 
 
 	@Test
 	public void deleteTest() {
-		try {
-			underTest.delete(expected);
-			verify(genreDao).delete(expected);
-		} catch (DataBaseException e) {
-			fail();
-		}
+		underTest.delete(expected);
+		verify(genreDao).delete(expected);
 	}
 }

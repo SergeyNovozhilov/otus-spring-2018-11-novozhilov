@@ -57,13 +57,12 @@ public class AuthorManager implements Manager<Author> {
     }
 
     @Override
-    public void update(Author author) throws DataBaseException {
-        authorDao.update(author);
+    public Author update(Author author) {
+        return authorDao.update(author);
     }
 
     @Override
-    public int delete(Author author) throws DataBaseException {
+    public void delete(Author author) {
         authorDao.delete(author);
-        return 1;
     }
 }

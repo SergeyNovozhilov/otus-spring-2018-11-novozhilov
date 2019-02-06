@@ -49,25 +49,23 @@ public class GenreCRUD {
 	@ShellMethod("Update Genre by index")
 	public void updateGenre(int index, @ShellOption(defaultValue = "")String name) {
 		Genre genre = (Genre) cache.get(Genre.class, index);
-        try {
-        	genre.setName(name);
-            genreManager.update(genre);
+		if (genre != null) {
+			genre.setName(name);
+			genreManager.update(genre);
 			cache.deleteAll(Genre.class);
-        } catch (DataBaseException e) {
-            System.out.println(e.getMessage());
-        }
+			cache.add(Genre.class, Collections.singletonList(genre));
+			printGenre(genre);
+		}
     }
 
 
 	@ShellMethod("Delete genre by index")
 	public void deleteGenre(int index) {
 		Genre genre = (Genre)cache.get(Genre.class, index);
-        try {
-            genreManager.delete(genre);
-            cache.delete(Genre.class, index);
-        } catch (DataBaseException e) {
-            System.out.println(e.getMessage());
-        }
+        if (genre != null) {
+			genreManager.delete(genre);
+			cache.delete(Genre.class, index);
+		}
 	}
 
 	private void printGenre(Genre genre) {

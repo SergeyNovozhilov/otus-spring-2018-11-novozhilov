@@ -53,23 +53,21 @@ public class AuthorCRUD {
 	@ShellMethod("Update Author by index")
 	public void updateAuthor(int index, @ShellOption(defaultValue = "")String name) {
 		Author author = (Author)cache.get(Author.class, index);
-		try {
+		if (author != null) {
 			author.setName(name);
-			authorManager.update(author);
+			author = authorManager.update(author);
 			cache.deleteAll(Author.class);
-		} catch (DataBaseException e) {
-			System.out.println(e.getMessage());
+			cache.add(Author.class, Collections.singletonList(author));
+			printAuthor(author);
 		}
 	}
 
 	@ShellMethod("Delete Author by index")
 	public void deleteAuthor(int index) {
 		Author author = (Author)cache.get(Author.class, index);
-		try {
+		if (author != null) {
 			authorManager.delete(author);
 			cache.delete(Author.class, index);
-		} catch (DataBaseException e) {
-			System.out.println(e.getMessage());
 		}
 	}
 

@@ -20,8 +20,6 @@ public class AuthorDaoImpl implements AuthorDao {
 
     @Override
     public Collection<Author> getAll() {
-//        TypedQuery<Author> query = em.createQuery("select a from Author a", Author.class);
-//        return query.getResultList();
         try {
             Query query = em.createQuery(
                     "select a, g.id as genre_id, g.name as genre_name from Author a left join a.books b left join Genre g on b.genre = g.id");
@@ -62,7 +60,7 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     public Collection<Author> getByGenre(String genre) {
         try {
-            Query query = em.createQuery("select a, g.id as genre_id, g.name as genre_name from Author a join a.books b join Genre g on b.genre = g.id where g.name = :genre");
+            Query query = em.createQuery("select a, g.id as genre_id, g.name as genre_name from Author a join a.books b join Genre g on g.id=b.genre where a in (select a from Author a join a.books b join Genre g on g.id=b.genre where g.name=:genre)");
             query.setParameter("genre", genre);
             return getAuthors(query.getResultList());
         } catch (NoResultException e) {

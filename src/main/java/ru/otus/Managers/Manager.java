@@ -11,7 +11,7 @@ public interface Manager <T extends Base>{
 
     Collection<T> get(String arg0, String arg1, String arg2) throws NotFoundException;
 
-    void update(T object) throws DataBaseException;
+    T update(T object) throws DataBaseException;
 
-    int delete(T object) throws DataBaseException;
+    void delete(T object) throws DataBaseException;
 }

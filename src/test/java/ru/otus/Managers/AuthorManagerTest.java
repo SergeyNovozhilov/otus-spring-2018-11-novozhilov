@@ -92,22 +92,14 @@ public class AuthorManagerTest {
 
 	@Test
 	public void updateTest() {
-		try {
-			underTest.update(expected);
-			verify(authorDao).update(expected);
-		} catch (DataBaseException e) {
-			fail();
-		}
+		underTest.update(expected);
+		verify(authorDao).update(expected);
 	}
 
 
 	@Test
 	public void deleteTest() {
-		try {
-			underTest.delete(expected);
-			verify(authorDao).delete(expected);
-		} catch (DataBaseException e) {
-			fail();
-		}
+		underTest.delete(expected);
+		verify(authorDao).delete(expected);
 	}
 }

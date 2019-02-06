@@ -103,22 +103,14 @@ public class BookManagerTest {
 
 	@Test
 	public void updateTest() {
-		try {
-			underTest.update(expected);
-			verify(bookDao).update(expected);
-		} catch (DataBaseException e) {
-			fail();
-		}
+		underTest.update(expected);
+		verify(bookDao).update(expected);
 	}
 
 
 	@Test
 	public void deleteTest() {
-		try {
-			underTest.delete(expected);
-			verify(bookDao).delete(expected);
-		} catch (DataBaseException e) {
-			fail();
-		}
+		underTest.delete(expected);
+		verify(bookDao).delete(expected);
 	}
 }
