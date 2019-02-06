@@ -1,16 +1,19 @@
 package ru.otus.Commands;
 
 //import org.jetbrains.annotations.NotNull;
+
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
 import ru.otus.Domain.Genre;
-import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.GenreManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @ShellComponent
 public class GenreCRUD {

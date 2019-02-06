@@ -33,14 +33,20 @@ public class BookDaoTests {
 	@Autowired
 	private BookDaoImpl BookDaoImpl;
 
-	@Ignore
 	@Test
 	public void getAll() {
 		List<Book> expected = Arrays.asList(new Book("Book"), new Book("Book1"));
 		expected.forEach(e -> testEntityManager.persist(e));
 		testEntityManager.flush();
 		Collection<Book> actual = BookDaoImpl.getAll();
-		assertEquals(actual, expected);
+		expected.forEach( e -> {
+			Book b = actual.stream().filter(x -> x.getId().equals(e.getId())).findFirst().orElse(null);
+			if (b == null) {
+				fail();
+			}
+			assertEquals(e.getTitle(), b.getTitle());
+			assertEquals(e.getGenre(), b.getGenre());
+		});
 	}
 
 	@Test

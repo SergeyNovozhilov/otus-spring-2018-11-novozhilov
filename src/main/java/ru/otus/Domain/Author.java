@@ -1,10 +1,11 @@
 package ru.otus.Domain;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.UUID;
 
 @Data
 @Table(name = "AUTHORS")
@@ -57,35 +58,22 @@ public class Author extends Base{
 		}
 	}
 
-	public UUID getId() {
-		return id;
+	public Collection<Genre> getGenres() {
+		if (this.genres == null) {
+			this.genres = new HashSet<>();
+		}
+		return genres;
 	}
 
-	public void setId(UUID id) {
-		this.id = id;
+	public UUID getId() {
+		return id;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Collection<Genre> getGenres() {
-		return genres;
-	}
-
-	public void setGenres(Collection<Genre> genres) {
-		this.genres = genres;
-	}
-
 	public Collection<Book> getBooks() {
 		return books;
-	}
-
-	public void setBooks(Collection<Book> books) {
-		this.books = books;
 	}
 }

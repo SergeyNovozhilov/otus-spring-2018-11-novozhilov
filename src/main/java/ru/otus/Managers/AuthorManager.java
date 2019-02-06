@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.otus.Dao.AuthorDao;
 import ru.otus.Domain.Author;
-import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.ArrayList;

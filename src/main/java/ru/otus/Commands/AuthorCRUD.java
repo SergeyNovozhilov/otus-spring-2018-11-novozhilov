@@ -1,12 +1,12 @@
 package ru.otus.Commands;
 
 //import org.jetbrains.annotations.NotNull;
+
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
 import ru.otus.Domain.Author;
-import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.AuthorManager;
 

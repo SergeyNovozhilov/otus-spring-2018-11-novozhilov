@@ -12,7 +12,6 @@ import ru.otus.Dao.AuthorDao;
 import ru.otus.Dao.BookDao;
 import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Book;
-import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.Collection;

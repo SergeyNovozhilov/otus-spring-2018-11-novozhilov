@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.Dao.AuthorDao;
 import ru.otus.Domain.Author;
-import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.Collection;
