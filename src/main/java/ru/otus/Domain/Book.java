@@ -2,6 +2,7 @@ package ru.otus.Domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -78,15 +79,66 @@ public class Book extends Base{
 		return title;
 	}
 
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	public Collection<Author> getAuthors() {
 		return authors;
+	}
+
+	public void setAuthors(Collection<Author> authors) {
+		this.authors = authors;
 	}
 
 	public Genre getGenre() {
 		return genre;
 	}
 
+	public void setGenre(Genre genre) {
+		this.genre = genre;
+	}
+
 	public Collection<Comment> getComments() {
 		return comments;
+	}
+
+	public void setComments(Collection<Comment> comments) {
+		this.comments = comments;
+	}
+
+	@Override public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Book book = (Book) o;
+		if (!Objects.equals(id, book.id)) {
+			return false;
+		}
+		if (!Objects.equals(title, book.title)) {
+			return false;
+		}
+		if (!Objects.equals(genre, book.genre)) {
+			return false;
+		}
+		authors.equals(book.authors);
+		if(authors.size() != book.authors.size()) {
+			return false;
+		}
+		boolean res = true;
+		for (Author e : authors) {
+			Author a = book.authors.stream().filter(x -> x.getId().equals(e.getId())).findFirst().orElse(null);
+			if (a == null) {
+				res = false;
+			}
+			StringUtils.equalsIgnoreCase(e.getName(), a.getName());
+		}
+		return res;
+	}
+
+	@Override public int hashCode() {
+
+		return Objects.hash(id, title, authors, genre);
 	}
 }

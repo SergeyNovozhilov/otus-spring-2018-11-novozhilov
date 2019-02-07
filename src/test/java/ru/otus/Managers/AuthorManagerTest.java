@@ -3,6 +3,7 @@ package ru.otus.Managers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
@@ -50,6 +51,7 @@ public class AuthorManagerTest {
 
 	@Test
 	public void createTest() {
+		when(authorDao.save(Mockito.any(Author.class))).thenReturn(expected);
 		Author actual = underTest.create(authorName);
 		assertEquals(actual, expected);
 	}

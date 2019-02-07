@@ -73,7 +73,19 @@ public class Author extends Base{
 		return name;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setGenres(Collection<Genre> genres) {
+		this.genres = genres;
+	}
+
 	public Collection<Book> getBooks() {
 		return books;
+	}
+
+	public void setBooks(Collection<Book> books) {
+		this.books = books;
 	}
 }

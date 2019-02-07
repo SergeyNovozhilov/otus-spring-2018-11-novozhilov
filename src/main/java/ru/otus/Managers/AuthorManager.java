@@ -20,8 +20,7 @@ public class AuthorManager implements Manager<Author> {
     @Override
     public Author create(String name) {
         Author author = new Author(name);
-        authorDao.save(author);
-        return author;
+        return authorDao.save(author);
     }
 
     @Override
