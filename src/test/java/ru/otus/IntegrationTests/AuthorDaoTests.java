@@ -51,7 +51,7 @@ public class AuthorDaoTests {
 	public void getByName() {
 		Author expected = new Author("Steven King");
 		testEntityManager.persistAndFlush(expected);
-		Author actual = authorRepository.findByName(expected.getName());
+		Author actual = getAuthors(authorRepository.findByName(expected.getName())).stream().findAny().orElse(new Author());
 		assertEquals(expected, actual);
 	}
 

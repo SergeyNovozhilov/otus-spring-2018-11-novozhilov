@@ -39,7 +39,7 @@ public class AuthorManager implements Manager<Author> {
             return authors;
         } else {
             if (StringUtils.isNotBlank(name)) {
-                Author author = authorRepository.findByName(name);
+                Author author = getAuthors(authorRepository.findByName(name)).stream().findAny().orElse(null);
                 if (author == null) {
                     throw new NotFoundException("Author with name: " + name + " not found");
                 }
@@ -69,7 +69,7 @@ public class AuthorManager implements Manager<Author> {
         authorRepository.delete(author);
     }
 
-    private Collection<Author> getAuthors(List<Object[]> results) {
+    public Collection<Author> getAuthors(List<Object[]> results) {
         Map<UUID, Author> authorMap = new HashMap<>();
 
         for (Object[] result : results) {
