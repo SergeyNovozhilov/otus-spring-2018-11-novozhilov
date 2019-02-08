@@ -10,7 +10,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.Dao.AuthorDao;
+import ru.otus.Dao.BookDao;
 import ru.otus.Domain.Author;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.Collection;
@@ -24,15 +26,20 @@ import static org.mockito.Mockito.when;
 public class AuthorManagerTest {
 	@MockBean
 	private AuthorDao authorDao;
+	@MockBean
+	private BookDao bookDao;
 
 	@Configuration
 	static class AuthorManagerConfiguration {
 		@Autowired
 		private AuthorDao authorDao;
+		@Autowired
+		private BookDao bookDao;
+
 
 		@Bean
 		public AuthorManager getAuthorManager() {
-			return new AuthorManager(authorDao);
+			return new AuthorManager(authorDao, bookDao);
 		}
 	}
 
@@ -100,7 +107,11 @@ public class AuthorManagerTest {
 
 	@Test
 	public void deleteTest() {
-		underTest.delete(expected);
+		try {
+			underTest.delete(expected);
+		} catch (DBException e) {
+			fail();
+		}
 		verify(authorDao).delete(expected);
 	}
 }
