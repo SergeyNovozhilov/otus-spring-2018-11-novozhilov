@@ -8,10 +8,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Genre;
-import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
+import ru.otus.Repositories.GenreRepository;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -23,16 +22,16 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 public class GenreManagerTest {
 	@MockBean
-	private GenreDao genreDao;
+	private GenreRepository genreRepository;
 
 	@Configuration
 	static class GenreManagerConfiguration {
 		@Autowired
-		private GenreDao genreDao;
+		private GenreRepository genreRepository;
 
 		@Bean
 		public GenreManager getGenreManager() {
-			return new GenreManager(genreDao);
+			return new GenreManager(genreRepository);
 		}
 	}
 
@@ -58,7 +57,7 @@ public class GenreManagerTest {
 	@Test
 	public void getByNameTest() {
 		try {
-			when(genreDao.getByName(genreName)).thenReturn(expected);
+			when(genreRepository.findByName(genreName)).thenReturn(expected);
 			Collection<Genre> actual = underTest.get(genreName, "", "");
 			assertTrue(actual.contains(expected));
 		} catch (NotFoundException e) {
@@ -70,7 +69,7 @@ public class GenreManagerTest {
 	public void getByBookTest() {
 		String title = "Book";
 		try {
-			when(genreDao.getByBook(title)).thenReturn(expected);
+			when(genreRepository.findByBook(title)).thenReturn(expected);
 			Collection<Genre> actual = underTest.get("", title, "");
 			assertTrue(actual.contains(expected));
 		} catch (NotFoundException e) {
@@ -82,7 +81,7 @@ public class GenreManagerTest {
 	public void getByAuthorTest() {
 		String author = "Author";
 		try {
-			when(genreDao.getByAuthor(author)).thenReturn(Collections.singleton(expected));
+			when(genreRepository.findByAuthor(author)).thenReturn(Collections.singleton(expected));
 			Collection<Genre> actual = underTest.get("", "", author);
 			assertTrue(actual.contains(expected));
 		} catch (NotFoundException e) {
@@ -93,13 +92,13 @@ public class GenreManagerTest {
 	@Test
 	public void updateTest() {
 		underTest.update(expected);
-		verify(genreDao).update(expected);
+		verify(genreRepository).save(expected);
 	}
 
 
 	@Test
 	public void deleteTest() {
 		underTest.delete(expected);
-		verify(genreDao).delete(expected);
+		verify(genreRepository).delete(expected);
 	}
 }

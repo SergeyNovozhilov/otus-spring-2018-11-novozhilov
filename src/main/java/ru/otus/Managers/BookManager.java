@@ -2,14 +2,14 @@ package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import ru.otus.Dao.AuthorDao;
-import ru.otus.Dao.BookDao;
-import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
 import ru.otus.Domain.Comment;
 import ru.otus.Domain.Genre;
 import ru.otus.Exceptions.NotFoundException;
+import ru.otus.Repositories.AuthorRepository;
+import ru.otus.Repositories.BookRepository;
+import ru.otus.Repositories.GenreRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,57 +17,57 @@ import java.util.List;
 
 @Service
 public class BookManager implements Manager<Book> {
-    private AuthorDao authorDao;
-    private GenreDao genreDao;
-    private BookDao bookDao;
+    private AuthorRepository authorRepository;
+    private GenreRepository genreRepository;
+    private BookRepository bookRepository;
 
-    public BookManager(AuthorDao authorDao, GenreDao genreDao, BookDao bookDao) {
-        this.authorDao = authorDao;
-        this.genreDao = genreDao;
-        this.bookDao = bookDao;
+    public BookManager(AuthorRepository authorRepository, GenreRepository genreRepository, BookRepository bookRepository) {
+        this.authorRepository = authorRepository;
+        this.genreRepository = genreRepository;
+        this.bookRepository = bookRepository;
     }
 
     @Override
     public Book create(String title) {
         Book book = new Book(title);
-        return bookDao.save(book);
+        return bookRepository.save(book);
     }
 
     public Book addGenre(Book book, String genreName) {
-        Genre genre = genreDao.getByName(genreName);
+        Genre genre = genreRepository.findByName(genreName);
         if (genre == null) {
             genre = new Genre(genreName);
-            genreDao.save(genre);
+            genreRepository.save(genre);
         }
         book.setGenre(genre);
 
-        return bookDao.update(book);
+        return bookRepository.save(book);
     }
 
     public Book addAuthors(Book book, List<String> authors) {
         authors.forEach(a -> {
-            Author author = authorDao.getByName(a);
+            Author author = authorRepository.findByName(a);
             if (author == null) {
                 author = new Author(a);
-                authorDao.save(author);
+                authorRepository.save(author);
             }
             book.addAuthor(author);
         });
 
-        return bookDao.update(book);
+        return bookRepository.save(book);
     }
 
     public Book addComment(Book book, String comment) {
         book.addComment(new Comment(comment));
 
-        return bookDao.update(book);
+        return bookRepository.save(book);
     }
 
     public Book removeComment(Book book, String comment) {
         Comment commentObj = book.getComments().stream().filter(c -> StringUtils.equalsIgnoreCase(c.getComment(), comment)).findAny().orElse(null);
         book.getComments().remove(commentObj);
 
-        return bookDao.update(book);
+        return bookRepository.save(book);
     }
 
     @Override
@@ -78,11 +78,11 @@ public class BookManager implements Manager<Book> {
         Collection<Book> booksByAuthor = null;
 
         if (StringUtils.isBlank(title) && StringUtils.isBlank(genre) && StringUtils.isBlank(author)) {
-            return returnBooks(bookDao.getAll());
+            return returnBooks(bookRepository.findAll());
         }
 
         if (StringUtils.isNotBlank(title) && StringUtils.isNotBlank(author) && StringUtils.isBlank(genre)) {
-            booksByTitle = bookDao.getByTitle(title);
+            booksByTitle = bookRepository.findByTitle(title);
             booksByTitle.forEach(b -> {
                 if (b.getAuthors().stream().filter(a -> a.getName().equals(author)).findAny().orElse(null) != null) {
                     books.add(b);
@@ -92,19 +92,19 @@ public class BookManager implements Manager<Book> {
         }
 
         if (StringUtils.isNotBlank(title)) {
-            booksByTitle = bookDao.getByTitle(title);
+            booksByTitle = bookRepository.findByTitle(title);
             if (!booksByTitle.isEmpty() && books.isEmpty()) {
                 books.addAll(booksByTitle);
             }
         }
         if (StringUtils.isNotBlank(genre)) {
-            booksByGenre = bookDao.getByGenre(genre);
+            booksByGenre = bookRepository.findByGenre(genre);
             if (!booksByGenre.isEmpty() && books.isEmpty()) {
                 books.addAll(booksByGenre);
             }
         }
         if (StringUtils.isNotBlank(author)) {
-            booksByAuthor = bookDao.getByAuthor(author);
+            booksByAuthor = bookRepository.findByAuthor(author);
             if (!booksByAuthor.isEmpty() && books.isEmpty()) {
                 books.addAll(booksByAuthor);
             }
@@ -125,12 +125,12 @@ public class BookManager implements Manager<Book> {
 
     @Override
     public Book update(Book book) {
-        return bookDao.update(book);
+        return bookRepository.save(book);
     }
 
     @Override
     public void delete(Book book) {
-        bookDao.delete(book);
+        bookRepository.delete(book);
     }
 
     private Collection<Book> returnBooks(Collection<Book> books) throws NotFoundException{

@@ -7,40 +7,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.DaoImpl.AuthorDaoImpl;
-import ru.otus.DaoImpl.BookDaoImpl;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
 import ru.otus.Domain.Genre;
+import ru.otus.Repositories.AuthorRepository;
 
-import java.sql.SQLException;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static ru.otus.Managers.AuthorManager.AUTHOR;
+import static ru.otus.Managers.AuthorManager.GENRE_ID;
+import static ru.otus.Managers.AuthorManager.GENRE_NAME;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import({AuthorDaoImpl.class, BookDaoImpl.class})
 public class AuthorDaoTests {
 
 	@Autowired
 	private TestEntityManager testEntityManager;
 
 	@Autowired
-	private AuthorDaoImpl AuthorDaoImpl;
-
-	@Autowired
-	private BookDaoImpl BookDaoImpl;
+	private AuthorRepository authorRepository;
 
 	@Test
 	public void getAll() {
 		List<Author> expected = Arrays.asList(new Author("Jack London"), new Author("Mark Twain"));
 		expected.forEach(e -> testEntityManager.persist(e));
 		testEntityManager.flush();
-		List<Author> actual = new ArrayList(AuthorDaoImpl.getAll());
+		List<Author> actual = new ArrayList(authorRepository.findAll());
 		assertTrue(expected.size() == actual.size());
 		expected.forEach( e -> {
 			Author a = actual.stream().filter(x -> x.getId().equals(e.getId())).findFirst().orElse(null);
@@ -55,7 +51,7 @@ public class AuthorDaoTests {
 	public void getByName() {
 		Author expected = new Author("Steven King");
 		testEntityManager.persistAndFlush(expected);
-		Author actual = AuthorDaoImpl.getByName(expected.getName());
+		Author actual = authorRepository.findByName(expected.getName());
 		assertEquals(expected, actual);
 	}
 
@@ -63,27 +59,28 @@ public class AuthorDaoTests {
 	public void getById() {
 		Author expected = new Author("Steven King");
 		testEntityManager.persistAndFlush(expected);
-		Author actual = AuthorDaoImpl.getById(expected.getId());
+		Author actual = authorRepository.findById(expected.getId()).orElse(new Author());
 		assertEquals(actual, expected);
 	}
 
 	@Test
-	public void getByBook() throws SQLException {
+	public void getByBook() {
 		String bookTitle = "Book by Jack London";
 		String authorName = "Jack London";
 		createAndPersistBook(bookTitle, "Genre", authorName);
-		Collection<Author> actual = AuthorDaoImpl.getByBook(bookTitle);
+		Collection<Author> actual = getAuthors(authorRepository.findByBook(bookTitle));
 		assertTrue(actual.size() == 1);
-		assertEquals(actual.iterator().next().getName(), "Jack London");
+		Author a = actual.stream().findAny().orElse(new Author());
+		assertEquals(a.getName(), authorName);
 		assertTrue(true);
 	}
 
 	@Test
-	public void getByGenre() throws SQLException {
+	public void getByGenre() {
 		String genreName = "Thriller";
 		String authorName = "Steven King";
 		createAndPersistBook("Book", genreName, authorName);
-		Collection<Author> actual = AuthorDaoImpl.getByGenre(genreName);
+		Collection<Author> actual = getAuthors(authorRepository.findByGenre(genreName));
 		assertTrue(actual.size() == 1);
 		assertNotNull(actual.stream().map(Author::getName).filter(name -> name.equals(authorName)).findAny().orElse(null));
 	}
@@ -91,7 +88,7 @@ public class AuthorDaoTests {
 	@Test
 	public void save() {
 		Author expected = new Author("Steven King");
-		AuthorDaoImpl.save(expected);
+		authorRepository.save(expected);
 		Author actual = testEntityManager.find(Author.class, expected.getId());
 		assertEquals(actual, expected);
 	}
@@ -100,9 +97,9 @@ public class AuthorDaoTests {
 	public void delete() {
 		Author expected = new Author("Steven King");
 		testEntityManager.persistAndFlush(expected);
-		Author actual = AuthorDaoImpl.getById(expected.getId());
+		Author actual = authorRepository.findById(expected.getId()).orElse(new Author());
 		assertEquals(actual, expected);
-		AuthorDaoImpl.delete(expected);
+		authorRepository.delete(expected);
 		actual = testEntityManager.find(Author.class, expected.getId());
 		assertNull(actual);
 	}
@@ -111,11 +108,11 @@ public class AuthorDaoTests {
 	public void update() {
 		String newName = "Steven Not King";
 		Author expected = new Author("Steven King");
-		AuthorDaoImpl.save(expected);
+		authorRepository.save(expected);
 		Author actual = testEntityManager.find(Author.class, expected.getId());
 		assertEquals(actual, expected);
 		expected.setName(newName);
-		AuthorDaoImpl.update(expected);
+		authorRepository.save(expected);
 		actual = testEntityManager.find(Author.class, expected.getId());
 		assertEquals(actual.getName(), expected.getName());
 	}
@@ -136,5 +133,24 @@ public class AuthorDaoTests {
 		testEntityManager.persist(book);
 		testEntityManager.flush();
 		return book;
+	}
+
+	private Collection<Author> getAuthors(List<Object[]> results) {
+		Map<UUID, Author> authorMap = new HashMap<>();
+
+		for (Object[] result : results) {
+			Genre g = new Genre((UUID) result[GENRE_ID], (String) result[GENRE_NAME]);
+			Author a = (Author) result[AUTHOR];
+			Author author = authorMap.get(a.getId());
+			if (author == null) {
+				authorMap.put(a.getId(), a);
+				author = a;
+			}
+			if (g.getName() != null && g.getId() != null) {
+				author.getGenres().add(g);
+			}
+		}
+
+		return new HashSet<>(authorMap.values());
 	}
 }

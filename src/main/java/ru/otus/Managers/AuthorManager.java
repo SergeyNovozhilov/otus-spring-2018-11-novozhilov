@@ -2,26 +2,29 @@ package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import ru.otus.Dao.AuthorDao;
 import ru.otus.Domain.Author;
-import ru.otus.Exceptions.DataBaseException;
+import ru.otus.Domain.Genre;
 import ru.otus.Exceptions.NotFoundException;
+import ru.otus.Repositories.AuthorRepository;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 
 @Service
 public class AuthorManager implements Manager<Author> {
-    private AuthorDao authorDao;
+    public static final int AUTHOR = 0;
+    public static final int GENRE_ID = 1;
+    public static final int GENRE_NAME = 2;
 
-    public AuthorManager(AuthorDao authorDao) {
-        this.authorDao = authorDao;
+    private AuthorRepository authorRepository;
+
+    public AuthorManager(AuthorRepository authorRepository) {
+        this.authorRepository = authorRepository;
     }
 
     @Override
     public Author create(String name) {
         Author author = new Author(name);
-        authorDao.save(author);
+        authorRepository.save(author);
         return author;
     }
 
@@ -29,25 +32,25 @@ public class AuthorManager implements Manager<Author> {
     public Collection<Author> get(String name, String genre, String book) throws NotFoundException {
         Collection<Author> authors = new ArrayList<>();
         if (StringUtils.isBlank(name) && StringUtils.isBlank(genre) && StringUtils.isBlank(book)) {
-            authors.addAll(authorDao.getAll());
+            authors.addAll(authorRepository.findAll());
             if (authors == null || authors.isEmpty()) {
                 throw new NotFoundException("No Authors not found");
             }
             return authors;
         } else {
             if (StringUtils.isNotBlank(name)) {
-                Author author = authorDao.getByName(name);
+                Author author = authorRepository.findByName(name);
                 if (author == null) {
                     throw new NotFoundException("Author with name: " + name + " not found");
                 }
                 authors.add(author);
             } else if (StringUtils.isNotBlank(book)) {
-                authors.addAll(authorDao.getByBook(book));
+                authors.addAll(getAuthors(authorRepository.findByBook(book)));
                 if (authors.isEmpty()) {
                     throw new NotFoundException("Authors of book: " + book + " not found");
                 }
             } else if (StringUtils.isNotBlank(genre)) {
-                authors.addAll(authorDao.getByGenre(genre));
+                authors.addAll(getAuthors(authorRepository.findByGenre(genre)));
                 if (authors.isEmpty()) {
                     throw new NotFoundException("No authors with genre: " + genre);
                 }
@@ -58,11 +61,30 @@ public class AuthorManager implements Manager<Author> {
 
     @Override
     public Author update(Author author) {
-        return authorDao.update(author);
+        return authorRepository.save(author);
     }
 
     @Override
     public void delete(Author author) {
-        authorDao.delete(author);
+        authorRepository.delete(author);
+    }
+
+    private Collection<Author> getAuthors(List<Object[]> results) {
+        Map<UUID, Author> authorMap = new HashMap<>();
+
+        for (Object[] result : results) {
+            Genre g = new Genre((UUID) result[GENRE_ID], (String) result[GENRE_NAME]);
+            Author a = (Author) result[AUTHOR];
+            Author author = authorMap.get(a.getId());
+            if (author == null) {
+                authorMap.put(a.getId(), a);
+                author = a;
+            }
+            if (g.getName() != null && g.getId() != null) {
+                author.getGenres().add(g);
+            }
+        }
+
+        return new HashSet<>(authorMap.values());
     }
 }

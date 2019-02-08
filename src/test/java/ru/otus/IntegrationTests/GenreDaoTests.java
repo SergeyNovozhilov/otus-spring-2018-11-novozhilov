@@ -7,12 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.DaoImpl.GenreDaoImpl;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
 import ru.otus.Domain.Genre;
+import ru.otus.Repositories.GenreRepository;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,21 +22,20 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(GenreDaoImpl.class)
 public class GenreDaoTests {
 
     @Autowired
     private TestEntityManager testEntityManager;
 
     @Autowired
-    private GenreDaoImpl GenreDaoImpl;
+    private GenreRepository genreRepository;
 
     @Test
     public void getAll() {
         List<Genre> expected = Arrays.asList(new Genre("Novel"), new Genre("Humor"));
         expected.forEach(e -> testEntityManager.persist(e));
         testEntityManager.flush();
-        Collection<Genre> actual = GenreDaoImpl.getAll();
+        Collection<Genre> actual = genreRepository.findAll();
         assertEquals(actual, expected);
     }
 
@@ -45,7 +43,7 @@ public class GenreDaoTests {
     public void getByName() {
         Genre expected = new Genre("Novel");
         testEntityManager.persistAndFlush(expected);
-        Genre actual = GenreDaoImpl.getByName(expected.getName());
+        Genre actual = genreRepository.findByName(expected.getName());
         assertEquals(actual, expected);
     }
 
@@ -53,7 +51,7 @@ public class GenreDaoTests {
     public void getById() {
         Genre expected = new Genre("Novel");
         testEntityManager.persistAndFlush(expected);
-        Genre actual = GenreDaoImpl.getById(expected.getId());
+        Genre actual = genreRepository.findById(expected.getId()).orElse(new Genre());
         assertEquals(actual, expected);
     }
 
@@ -65,7 +63,7 @@ public class GenreDaoTests {
         Book book = createBook(bookTitle, expectedGenreName, author);
         book = testEntityManager.persistAndFlush(book);
         Book b = testEntityManager.find(Book.class, book.getId());
-        Collection<Genre> actual = GenreDaoImpl.getByAuthor(author);
+        Collection<Genre> actual = genreRepository.findByAuthor(author);
         assertTrue(actual.size() == 1);
         assertEquals(actual.iterator().next().getName(), expectedGenreName);
     }
@@ -75,14 +73,14 @@ public class GenreDaoTests {
         String expectedGenreName = "Novel";
         String book = "Book by Jack London";
         testEntityManager.persistAndFlush(createBook(book, expectedGenreName, ""));
-        Genre actual = GenreDaoImpl.getByBook(book);
+        Genre actual = genreRepository.findByBook(book);
         assertEquals(actual.getName(), expectedGenreName);
     }
 
     @Test
     public void save() {
         Genre expected = new Genre("Humor");
-        GenreDaoImpl.save(expected);
+        genreRepository.save(expected);
         Genre actual = testEntityManager.find(Genre.class, expected.getId());
         assertEquals(actual, expected);
     }
@@ -91,9 +89,9 @@ public class GenreDaoTests {
     public void delete() {
         Genre expected = new Genre("Novel");
         testEntityManager.persistAndFlush(expected);
-        Genre actual = GenreDaoImpl.getById(expected.getId());
+        Genre actual = genreRepository.findById(expected.getId()).orElse(new Genre());
         assertEquals(actual, expected);
-        GenreDaoImpl.delete(expected);
+        genreRepository.delete(expected);
         actual = testEntityManager.find(Genre.class, expected.getId());
         assertNull(actual);
     }
@@ -102,11 +100,11 @@ public class GenreDaoTests {
     public void update() {
         String newName = "Romantic";
         Genre expected = new Genre("Novel");
-        GenreDaoImpl.save(expected);
+        genreRepository.save(expected);
         Genre actual = testEntityManager.find(Genre.class, expected.getId());
         assertEquals(actual, expected);
         expected.setName(newName);
-        GenreDaoImpl.update(expected);
+        genreRepository.save(expected);
         actual = testEntityManager.find(Genre.class, expected.getId());
         assertEquals(actual.getName(), expected.getName());
     }
@@ -121,9 +119,6 @@ public class GenreDaoTests {
         }
         if (StringUtils.isNotBlank(authorStr)) {
             Author author = new Author(authorStr);
-            //			if (genre != null) {
-            //				author.addGenre(genre);
-            //			}
             testEntityManager.persistAndFlush(author);
             book.addAuthor(author);
         }

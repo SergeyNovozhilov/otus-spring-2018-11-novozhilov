@@ -8,12 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.DaoImpl.BookDaoImpl;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
 import ru.otus.Domain.Genre;
+import ru.otus.Repositories.BookRepository;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,14 +23,13 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(BookDaoImpl.class)
 public class BookDaoTests {
 
 	@Autowired
 	private TestEntityManager testEntityManager;
 
 	@Autowired
-	private BookDaoImpl BookDaoImpl;
+	private BookRepository bookRepository;
 
 	@Ignore
 	@Test
@@ -39,7 +37,7 @@ public class BookDaoTests {
 		List<Book> expected = Arrays.asList(new Book("Book"), new Book("Book1"));
 		expected.forEach(e -> testEntityManager.persist(e));
 		testEntityManager.flush();
-		Collection<Book> actual = BookDaoImpl.getAll();
+		Collection<Book> actual = bookRepository.findAll();
 		assertEquals(actual, expected);
 	}
 
@@ -47,7 +45,7 @@ public class BookDaoTests {
 	public void getByTitle() {
 		Book expected = new Book("Book by Steven King");
 		testEntityManager.persistAndFlush(expected);
-		Collection<Book> actual = BookDaoImpl.getByTitle(expected.getTitle());
+		Collection<Book> actual = bookRepository.findByTitle(expected.getTitle());
 		assertTrue(actual.size() == 1);
 		assertTrue(actual.contains(expected));
 	}
@@ -56,7 +54,7 @@ public class BookDaoTests {
 	public void getById() {
 		Book expected = new Book("Book by Steven King");
 		testEntityManager.persistAndFlush(expected);
-		Book actual = BookDaoImpl.getById(expected.getId());
+		Book actual = bookRepository.findById(expected.getId()).orElse(new Book());
 		assertEquals(actual, expected);
 	}
 
@@ -65,7 +63,7 @@ public class BookDaoTests {
 		String bookTitle = "Book by Jack London";
 		String authorName = "Jack London";
 		createAndPersistBook(bookTitle, "Genre", authorName);
-		Collection<Book> actual = BookDaoImpl.getByAuthor(authorName);
+		Collection<Book> actual = bookRepository.findByAuthor(authorName);
 		assertTrue(actual.size() == 1);
 		assertEquals(actual.iterator().next().getTitle(), "Book by Jack London");
 		assertTrue(true);
@@ -77,7 +75,7 @@ public class BookDaoTests {
 		String authorName = "Steven King";
 		String bookTitle = "Book";
 		createAndPersistBook(bookTitle, genreName, authorName);
-		Collection<Book> actual = BookDaoImpl.getByGenre(genreName);
+		Collection<Book> actual = bookRepository.findByGenre(genreName);
 		assertTrue(actual.size() == 1);
 		assertNotNull(actual.stream().map(Book::getTitle).filter(name -> name.equals(bookTitle)).findAny().orElse(null));
 	}
@@ -85,7 +83,7 @@ public class BookDaoTests {
 	@Test
 	public void save() {
 		Book expected = new Book("Book by Steven King");
-		BookDaoImpl.save(expected);
+		bookRepository.save(expected);
 		Book actual = testEntityManager.find(Book.class, expected.getId());
 		assertEquals(actual, expected);
 	}
@@ -93,35 +91,23 @@ public class BookDaoTests {
 	@Test
 	public void delete() {
 		Book expected = createAndPersistBook("Book", "Thriller", "Steven King");
-		Book actual = BookDaoImpl.getById(expected.getId());
+		Book actual = bookRepository.findById(expected.getId()).orElse(new Book());
 		assertEquals(actual, expected);
-		BookDaoImpl.delete(expected);
+		bookRepository.delete(expected);
 		actual = testEntityManager.find(Book.class, expected.getId());
 		assertNull(actual);
 	}
 
-	@Test
-	public void deleteTest() {
-		Book expected = createAndPersistBook("Book", "Thriller", "Steven King");
-		Book actual = BookDaoImpl.getById(expected.getId());
-		assertEquals(actual, expected);
-		BookDaoImpl.delete(expected);
-//		actual = testEntityManager.find(Book.class, expected.getId());
-//		assertNull(actual);
-
-		Collection<Book> all = BookDaoImpl.getAll();
-		assertTrue(all.isEmpty());
-	}
 
 	@Test
 	public void update() {
 		String newTitle = "Book by Steven Not King";
 		Book expected = new Book("Book by Steven King");
-		BookDaoImpl.save(expected);
+		bookRepository.save(expected);
 		Book actual = testEntityManager.find(Book.class, expected.getId());
 		assertEquals(actual, expected);
 		expected.setTitle(newTitle);
-		BookDaoImpl.update(expected);
+		bookRepository.save(expected);
 		actual = testEntityManager.find(Book.class, expected.getId());
 		assertEquals(actual.getTitle(), expected.getTitle());
 	}
