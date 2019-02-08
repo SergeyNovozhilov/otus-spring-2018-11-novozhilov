@@ -80,12 +80,15 @@ public class AuthorDaoImpl implements AuthorDao {
     @Transactional
     public void delete(Author author) {
         em.remove(em.contains(author) ? author : em.merge(author));
+        em.flush();
     }
 
     @Override
     @Transactional
     public Author update(Author author) {
-        return em.merge(author);
+        author = em.merge(author);
+        em.flush();
+        return author;
     }
 
     private Collection<Author> getAuthors (List<Object[]> results) {

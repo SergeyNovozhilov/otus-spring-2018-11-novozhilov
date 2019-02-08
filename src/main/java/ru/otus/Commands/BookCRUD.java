@@ -6,6 +6,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
 import ru.otus.Domain.Book;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.BookManager;
 
@@ -107,9 +108,13 @@ public class BookCRUD {
 
 	@ShellMethod("Delete Book by index")
 	public void deleteBook(int index) {
-		Book book = (Book)cache.get(Book.class, index);
+		try {
+			Book book = (Book) cache.get(Book.class, index);
 			bookManager.delete(book);
 			cache.delete(Book.class, index);
+		} catch (DBException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
 	private void printBook(/*@NotNull */ Book book) {

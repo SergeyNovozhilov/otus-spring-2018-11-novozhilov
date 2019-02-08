@@ -3,7 +3,10 @@ package ru.otus.Managers;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.otus.Dao.AuthorDao;
+import ru.otus.Dao.BookDao;
 import ru.otus.Domain.Author;
+import ru.otus.Domain.Book;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.ArrayList;
@@ -12,8 +15,10 @@ import java.util.Collection;
 @Service
 public class AuthorManager implements Manager<Author> {
     private AuthorDao authorDao;
+    private BookDao bookDao;
 
-    public AuthorManager(AuthorDao authorDao) {
+    public AuthorManager(AuthorDao authorDao, BookDao bookDao) {
+        this.bookDao = bookDao;
         this.authorDao = authorDao;
     }
 
@@ -60,7 +65,11 @@ public class AuthorManager implements Manager<Author> {
     }
 
     @Override
-    public void delete(Author author) {
+    public void delete(Author author) throws DBException {
+        Collection<Book> book = bookDao.getByAuthor(author.getName());
+        if (!book.isEmpty()) {
+            throw new DBException("Cannot delete Author. Delete Books first");
+        }
         authorDao.delete(author);
     }
 }

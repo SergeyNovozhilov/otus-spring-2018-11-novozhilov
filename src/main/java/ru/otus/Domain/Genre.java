@@ -3,6 +3,7 @@ package ru.otus.Domain;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -14,7 +15,8 @@ public class Genre extends Base{
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	private String name;
-
+	@OneToMany(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
+	private Collection<Book> book;
 	public Genre() {
 	}
 

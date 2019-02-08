@@ -7,6 +7,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
 import ru.otus.Domain.Genre;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.GenreManager;
 
@@ -64,10 +65,14 @@ public class GenreCRUD {
 
 	@ShellMethod("Delete genre by index")
 	public void deleteGenre(int index) {
-		Genre genre = (Genre)cache.get(Genre.class, index);
-        if (genre != null) {
-			genreManager.delete(genre);
-			cache.delete(Genre.class, index);
+		try {
+			Genre genre = (Genre) cache.get(Genre.class, index);
+			if (genre != null) {
+				genreManager.delete(genre);
+				cache.delete(Genre.class, index);
+			}
+		} catch (DBException e) {
+			System.out.println(e.getMessage());
 		}
 	}
 

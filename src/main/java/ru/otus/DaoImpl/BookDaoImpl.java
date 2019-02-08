@@ -3,10 +3,13 @@ package ru.otus.DaoImpl;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.Dao.BookDao;
+import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
+import ru.otus.Exceptions.DBException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.*;
 
@@ -17,18 +20,26 @@ public class BookDaoImpl implements BookDao {
     private EntityManager em;
 
     @Override
-    @Transactional
     public Collection<Book> getAll() {
-        TypedQuery<Book> query = em.createQuery("select distinct b from Book b left join fetch b.comments c", Book.class);
-        Collection<Book> books = query.getResultList();
-        return books;
+        try {
+            TypedQuery<Book> query = em.createQuery("select distinct b from Book b left join fetch b.comments c", Book.class);
+            Collection<Book> books = query.getResultList();
+            return books;
+        } catch (Exception e) {
+            return Collections.EMPTY_SET;
+        }
     }
 
     @Override
     public Collection<Book> getByTitle(String title) {
-        TypedQuery<Book> query = em.createQuery("select distinct b from Book b left join fetch b.comments c where b.title = : title", Book.class);
-        query.setParameter("title", title);
-        return query.getResultList();
+        try {
+            TypedQuery<Book> query = em.createQuery("select distinct b from Book b left join fetch b.comments c where b.title = : title",
+                    Book.class);
+            query.setParameter("title", title);
+            return query.getResultList();
+        }  catch (Exception e) {
+            return Collections.EMPTY_SET;
+        }
     }
 
     @Override
@@ -72,13 +83,20 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     @Transactional
-    public void delete(Book book) {
-        em.remove(em.contains(book) ? book : em.merge(book));
+    public void delete(Book book) throws DBException {
+        try {
+            em.remove(em.contains(book) ? book : em.merge(book));
+            em.flush();
+        } catch (Exception e) {
+            throw new DBException("Cannot delete book");
+        }
     }
 
     @Override
     @Transactional
-    public Book  update(Book book) {
-        return em.merge(book);
+    public Book update(Book book) {
+        book = em.merge(book);
+        em.flush();
+        return book;
     }
 }

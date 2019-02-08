@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Genre;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class GenreManager implements Manager<Genre> {
     public Collection<Genre> get(String name, String book, String author) throws NotFoundException {
         Collection<Genre> genres = new ArrayList<>();
         if (StringUtils.isBlank(name) && StringUtils.isBlank(author) && StringUtils.isBlank(book)) {
-            return genreDao.getAll();
+            genres = genreDao.getAll();
         } else {
             if (StringUtils.isNotBlank(name)) {
                 Genre genre = genreDao.getByName(name);
@@ -49,6 +50,9 @@ public class GenreManager implements Manager<Genre> {
                 }
             }
         }
+        if (genres.isEmpty()) {
+            throw new NotFoundException("Genres not found");
+        }
         return genres;
     }
 
@@ -58,7 +62,7 @@ public class GenreManager implements Manager<Genre> {
     }
 
     @Override
-    public void delete(Genre genre) {
+    public void delete(Genre genre) throws DBException {
         genreDao.delete(genre);
     }
 }

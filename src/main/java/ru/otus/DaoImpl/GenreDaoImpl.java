@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Genre;
+import ru.otus.Exceptions.DBException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -79,12 +80,21 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
-    public void delete(Genre genre) {
-        em.remove(em.contains(genre) ? genre : em.merge(genre));
+    @Transactional
+    public void delete(Genre genre) throws DBException {
+        try {
+            em.remove(em.contains(genre) ? genre : em.merge(genre));
+            em.flush();
+        } catch (Exception e) {
+            throw new DBException("Cannot delete genre");
+        }
     }
 
     @Override
+    @Transactional
     public Genre update(Genre genre) {
-        return em.merge(genre);
+        genre  = em.merge(genre);
+        em.flush();
+        return genre;
     }
 }

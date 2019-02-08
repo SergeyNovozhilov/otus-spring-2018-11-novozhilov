@@ -13,6 +13,7 @@ import ru.otus.DaoImpl.GenreDaoImpl;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
 import ru.otus.Domain.Genre;
+import ru.otus.Exceptions.DBException;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -93,7 +94,11 @@ public class GenreDaoTests {
         testEntityManager.persistAndFlush(expected);
         Genre actual = GenreDaoImpl.getById(expected.getId());
         assertEquals(actual, expected);
-        GenreDaoImpl.delete(expected);
+        try {
+            GenreDaoImpl.delete(expected);
+        } catch (DBException e) {
+            fail();
+        }
         actual = testEntityManager.find(Genre.class, expected.getId());
         assertNull(actual);
     }
@@ -121,9 +126,6 @@ public class GenreDaoTests {
         }
         if (StringUtils.isNotBlank(authorStr)) {
             Author author = new Author(authorStr);
-            //			if (genre != null) {
-            //				author.addGenre(genre);
-            //			}
             testEntityManager.persistAndFlush(author);
             book.addAuthor(author);
         }

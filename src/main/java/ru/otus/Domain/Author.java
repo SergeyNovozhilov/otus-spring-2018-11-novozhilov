@@ -1,6 +1,8 @@
 package ru.otus.Domain;
 
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -17,7 +19,7 @@ public class Author extends Base{
 	private String name;
 	@Transient
 	private Collection<Genre> genres = new HashSet<>();
-	@ManyToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "authors")
+	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy = "authors")
 	private Collection<Book> books;
 
 	public Author() {

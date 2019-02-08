@@ -3,6 +3,8 @@ package ru.otus.Domain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -19,9 +21,10 @@ public class Book extends Base{
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	private String title;
-	@ManyToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
 	private Collection<Author> authors;
-	@OneToOne
+	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
+//	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Genre genre;
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Collection<Comment> comments;
@@ -122,19 +125,27 @@ public class Book extends Base{
 		if (!Objects.equals(genre, book.genre)) {
 			return false;
 		}
-		authors.equals(book.authors);
-		if(authors.size() != book.authors.size()) {
-			return false;
-		}
-		boolean res = true;
-		for (Author e : authors) {
-			Author a = book.authors.stream().filter(x -> x.getId().equals(e.getId())).findFirst().orElse(null);
-			if (a == null) {
-				res = false;
+
+		if (authors != null && book.getAuthors() != null) {
+			if(authors.size() != book.authors.size()) {
+				return false;
 			}
-			StringUtils.equalsIgnoreCase(e.getName(), a.getName());
+
+			for (Author e : authors) {
+				Author a = book.authors.stream().filter(x -> x.getId().equals(e.getId())).findFirst().orElse(null);
+				if (a == null) {
+					return false;
+				}
+				if (!StringUtils.equalsIgnoreCase(e.getName(), a.getName())) {
+					return false;
+				}
+			}
+			return true;
+		} else if (authors == null && book.getAuthors() == null){
+			return true;
 		}
-		return res;
+
+		return false;
 	}
 
 	@Override public int hashCode() {

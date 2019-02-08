@@ -7,6 +7,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
 import ru.otus.Domain.Author;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.AuthorManager;
 
@@ -64,10 +65,14 @@ public class AuthorCRUD {
 
 	@ShellMethod("Delete Author by index")
 	public void deleteAuthor(int index) {
-		Author author = (Author)cache.get(Author.class, index);
-		if (author != null) {
-			authorManager.delete(author);
-			cache.delete(Author.class, index);
+		try {
+			Author author = (Author) cache.get(Author.class, index);
+			if (author != null) {
+				authorManager.delete(author);
+				cache.delete(Author.class, index);
+			}
+		} catch (DBException e) {
+			System.out.println(e.getMessage());
 		}
 	}
 

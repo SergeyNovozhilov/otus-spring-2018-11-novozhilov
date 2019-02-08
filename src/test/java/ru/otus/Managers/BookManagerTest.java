@@ -12,6 +12,7 @@ import ru.otus.Dao.AuthorDao;
 import ru.otus.Dao.BookDao;
 import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Book;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.Collection;
@@ -109,7 +110,11 @@ public class BookManagerTest {
 
 	@Test
 	public void deleteTest() {
-		underTest.delete(expected);
-		verify(bookDao).delete(expected);
+		try {
+			underTest.delete(expected);
+			verify(bookDao).delete(expected);
+		} catch (DBException e) {
+			fail();
+		}
 	}
 }

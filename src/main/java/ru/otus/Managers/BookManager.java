@@ -2,6 +2,7 @@ package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.Dao.AuthorDao;
 import ru.otus.Dao.BookDao;
 import ru.otus.Dao.GenreDao;
@@ -9,6 +10,7 @@ import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
 import ru.otus.Domain.Comment;
 import ru.otus.Domain.Genre;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.ArrayList;
@@ -129,7 +131,13 @@ public class BookManager implements Manager<Book> {
     }
 
     @Override
-    public void delete(Book book) {
+    @Transactional
+    public void delete(Book book) throws DBException {
+        Collection<Author> authors = authorDao.getByBook(book.getTitle());
+        authors.forEach(a -> {
+            a.getBooks().remove(book);
+            authorDao.update(a);
+        });
         bookDao.delete(book);
     }
 

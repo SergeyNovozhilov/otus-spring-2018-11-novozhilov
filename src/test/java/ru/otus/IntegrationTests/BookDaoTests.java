@@ -10,10 +10,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.DaoImpl.BookDaoImpl;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
 import ru.otus.Domain.Genre;
+import ru.otus.Exceptions.DBException;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -99,24 +101,18 @@ public class BookDaoTests {
 	@Test
 	public void delete() {
 		Book expected = createAndPersistBook("Book", "Thriller", "Steven King");
+		Book expected1 = createAndPersistBook("Book 1", "Thriller", "Steven King");
 		Book actual = BookDaoImpl.getById(expected.getId());
 		assertEquals(actual, expected);
-		BookDaoImpl.delete(expected);
+		try {
+			BookDaoImpl.delete(expected);
+		} catch (DBException e) {
+			fail();
+		}
 		actual = testEntityManager.find(Book.class, expected.getId());
 		assertNull(actual);
-	}
-
-	@Test
-	public void deleteTest() {
-		Book expected = createAndPersistBook("Book", "Thriller", "Steven King");
-		Book actual = BookDaoImpl.getById(expected.getId());
-		assertEquals(actual, expected);
-		BookDaoImpl.delete(expected);
-//		actual = testEntityManager.find(Book.class, expected.getId());
-//		assertNull(actual);
-
-		Collection<Book> all = BookDaoImpl.getAll();
-		assertTrue(all.isEmpty());
+		actual = testEntityManager.find(Book.class, expected1.getId());
+		assertEquals(actual, expected1);
 	}
 
 	@Test

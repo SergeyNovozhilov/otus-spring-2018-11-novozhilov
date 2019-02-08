@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Genre;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.Collection;
@@ -98,7 +99,11 @@ public class GenreManagerTest {
 
 	@Test
 	public void deleteTest() {
-		underTest.delete(expected);
-		verify(genreDao).delete(expected);
+		try {
+			underTest.delete(expected);
+			verify(genreDao).delete(expected);
+		} catch (DBException e) {
+			e.printStackTrace();
+		}
 	}
 }

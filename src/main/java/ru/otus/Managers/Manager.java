@@ -1,6 +1,7 @@
 package ru.otus.Managers;
 
 import ru.otus.Domain.Base;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.Collection;
@@ -12,5 +13,5 @@ public interface Manager <T extends Base>{
 
     T update(T object);
 
-    void delete(T object);
+    void delete(T object) throws DBException;
 }
