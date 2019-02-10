@@ -7,6 +7,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -17,8 +18,6 @@ public class Author extends Base{
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	private String name;
-	@Transient
-	private Collection<Genre> genres = new HashSet<>();
 	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy = "authors")
 	private Collection<Book> books;
 
@@ -29,42 +28,21 @@ public class Author extends Base{
 		this.name = name;
 	}
 
-	public void addGenre(Genre genre) {
-		if (this.genres == null) {
-			this.genres = new HashSet<>();
-		}
-		this.genres.add(genre);
-	}
-
-	public void addGenres(Collection<Genre> genres) {
-		if (this.genres == null) {
-			this.genres = new HashSet<>();
-		}
-		this.genres.addAll(genres);
-	}
-
 	@Override
 	public void print() {
+		Set<String> genres = new HashSet<>();
 		System.out.println(" Name: " + this.name);
-		System.out.println("Genres:");
-		if (this.genres != null && !this.genres.isEmpty()) {
-			for (Genre genre : this.genres) {
-				System.out.println("   " + genre.getName());
-			}
-		}
 		System.out.println("Books:");
 		if (this.books != null && !this.books.isEmpty()) {
 			for (Book book : this.books) {
+				genres.add(book.getGenre().getName());
 				System.out.println("   " + book.getTitle());
 			}
 		}
-	}
-
-	public Collection<Genre> getGenres() {
-		if (this.genres == null) {
-			this.genres = new HashSet<>();
+		System.out.println("Genres:");
+		for (String genre : genres) {
+			System.out.println("   " + genre);
 		}
-		return genres;
 	}
 
 	public UUID getId() {
@@ -77,10 +55,6 @@ public class Author extends Base{
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public void setGenres(Collection<Genre> genres) {
-		this.genres = genres;
 	}
 
 	public Collection<Book> getBooks() {

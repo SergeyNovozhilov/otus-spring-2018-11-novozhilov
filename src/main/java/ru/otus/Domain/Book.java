@@ -24,6 +24,7 @@ public class Book extends Base{
 	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
 	private Collection<Author> authors;
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name = "genre_id")
 	private Genre genre;
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Collection<Comment> comments;
