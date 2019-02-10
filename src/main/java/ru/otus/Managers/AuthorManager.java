@@ -3,17 +3,14 @@ package ru.otus.Managers;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.otus.Domain.Author;
-import ru.otus.Domain.Genre;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Repositories.AuthorRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Service
 public class AuthorManager implements Manager<Author> {
-    public static final int AUTHOR = 0;
-    public static final int GENRE_ID = 1;
-    public static final int GENRE_NAME = 2;
 
     private AuthorRepository authorRepository;
 
@@ -45,12 +42,12 @@ public class AuthorManager implements Manager<Author> {
                 }
                 authors.add(author);
             } else if (StringUtils.isNotBlank(book)) {
-                authors.addAll(getAuthors(authorRepository.findByBook(book)));
+                authors.addAll(authorRepository.findByBook(book));
                 if (authors.isEmpty()) {
                     throw new NotFoundException("Authors of book: " + book + " not found");
                 }
             } else if (StringUtils.isNotBlank(genre)) {
-                authors.addAll(getAuthors(authorRepository.findByGenre(genre)));
+                authors.addAll(authorRepository.findByGenre(genre));
                 if (authors.isEmpty()) {
                     throw new NotFoundException("No authors with genre: " + genre);
                 }
@@ -67,24 +64,5 @@ public class AuthorManager implements Manager<Author> {
     @Override
     public void delete(Author author) {
         authorRepository.delete(author);
-    }
-
-    private Collection<Author> getAuthors(List<Object[]> results) {
-        Map<UUID, Author> authorMap = new HashMap<>();
-
-        for (Object[] result : results) {
-            Genre g = new Genre((UUID) result[GENRE_ID], (String) result[GENRE_NAME]);
-            Author a = (Author) result[AUTHOR];
-            Author author = authorMap.get(a.getId());
-            if (author == null) {
-                authorMap.put(a.getId(), a);
-                author = a;
-            }
-            if (g.getName() != null && g.getId() != null) {
-                author.getGenres().add(g);
-            }
-        }
-
-        return new HashSet<>(authorMap.values());
     }
 }
