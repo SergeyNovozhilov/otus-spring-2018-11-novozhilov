@@ -16,6 +16,7 @@ public class Genre extends Base{
 	private UUID id;
 	private String name;
 	@OneToMany(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name = "book_id")
 	private Collection<Book> book;
 	public Genre() {
 	}

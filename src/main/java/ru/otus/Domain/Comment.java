@@ -17,7 +17,6 @@ public class Comment extends Base{
     private UUID id;
     private String comment;
     @ManyToOne
-    @JoinColumn(name = "book_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Book book;
 
