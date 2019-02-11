@@ -18,9 +18,10 @@ public class Book extends Base{
 	private String title;
 	@ManyToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
 	private Collection<Author> authors;
-	@OneToOne
+	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
 	private Genre genre;
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "comment_id")
 	private Collection<Comment> comments;
 	public Book() {
 	}

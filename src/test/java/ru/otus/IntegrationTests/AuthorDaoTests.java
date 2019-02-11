@@ -16,9 +16,6 @@ import ru.otus.Repositories.AuthorRepository;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static ru.otus.Managers.AuthorManager.AUTHOR;
-import static ru.otus.Managers.AuthorManager.GENRE_ID;
-import static ru.otus.Managers.AuthorManager.GENRE_NAME;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -51,7 +48,7 @@ public class AuthorDaoTests {
 	public void getByName() {
 		Author expected = new Author("Steven King");
 		testEntityManager.persistAndFlush(expected);
-		Author actual = getAuthors(authorRepository.findByName(expected.getName())).stream().findAny().orElse(new Author());
+		Author actual = authorRepository.findByName(expected.getName());
 		assertEquals(expected, actual);
 	}
 
@@ -68,7 +65,7 @@ public class AuthorDaoTests {
 		String bookTitle = "Book by Jack London";
 		String authorName = "Jack London";
 		createAndPersistBook(bookTitle, "Genre", authorName);
-		Collection<Author> actual = getAuthors(authorRepository.findByBook(bookTitle));
+		Collection<Author> actual = authorRepository.findByBook(bookTitle);
 		assertTrue(actual.size() == 1);
 		Author a = actual.stream().findAny().orElse(new Author());
 		assertEquals(a.getName(), authorName);
@@ -80,7 +77,7 @@ public class AuthorDaoTests {
 		String genreName = "Thriller";
 		String authorName = "Steven King";
 		createAndPersistBook("Book", genreName, authorName);
-		Collection<Author> actual = getAuthors(authorRepository.findByGenre(genreName));
+		Collection<Author> actual = authorRepository.findByGenre(genreName);
 		assertTrue(actual.size() == 1);
 		assertNotNull(actual.stream().map(Author::getName).filter(name -> name.equals(authorName)).findAny().orElse(null));
 	}
@@ -133,24 +130,5 @@ public class AuthorDaoTests {
 		testEntityManager.persist(book);
 		testEntityManager.flush();
 		return book;
-	}
-
-	private Collection<Author> getAuthors(List<Object[]> results) {
-		Map<UUID, Author> authorMap = new HashMap<>();
-
-		for (Object[] result : results) {
-			Genre g = new Genre((UUID) result[GENRE_ID], (String) result[GENRE_NAME]);
-			Author a = (Author) result[AUTHOR];
-			Author author = authorMap.get(a.getId());
-			if (author == null) {
-				authorMap.put(a.getId(), a);
-				author = a;
-			}
-			if (g.getName() != null && g.getId() != null) {
-				author.getGenres().add(g);
-			}
-		}
-
-		return new HashSet<>(authorMap.values());
 	}
 }

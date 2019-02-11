@@ -14,8 +14,6 @@ public class Author extends Base{
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	private String name;
-	@Transient
-	private Collection<Genre> genres = new HashSet<>();
 	@ManyToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "authors")
 	private Collection<Book> books;
 
@@ -24,20 +22,6 @@ public class Author extends Base{
 
 	public Author(String name) {
 		this.name = name;
-	}
-
-	public void addGenre(Genre genre) {
-		if (this.genres == null) {
-			this.genres = new HashSet<>();
-		}
-		this.genres.add(genre);
-	}
-
-	public void addGenres(Collection<Genre> genres) {
-		if (this.genres == null) {
-			this.genres = new HashSet<>();
-		}
-		this.genres.addAll(genres);
 	}
 
 	@Override
@@ -66,14 +50,6 @@ public class Author extends Base{
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public Collection<Genre> getGenres() {
-		return genres;
-	}
-
-	public void setGenres(Collection<Genre> genres) {
-		this.genres = genres;
 	}
 
 	public Collection<Book> getBooks() {

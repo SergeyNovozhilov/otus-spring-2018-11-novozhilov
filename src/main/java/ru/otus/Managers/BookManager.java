@@ -47,7 +47,7 @@ public class BookManager implements Manager<Book> {
     public Book addAuthors(Book book, List<String> authors) {
         authors.forEach(a -> {
             Author author = null;
-            if (authorRepository.findByName(a).size() == 0) {
+            if (authorRepository.findByName(a) == null) {
                 author = new Author(a);
                 authorRepository.save(author);
             }
