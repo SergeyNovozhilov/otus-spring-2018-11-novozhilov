@@ -10,55 +10,55 @@ import java.util.UUID;
 @Table(name = "GENRES")
 @Entity
 public class Genre extends Base{
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
-	private String name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+    private String name;
 
-	public Genre() {
-	}
+    public Genre() {
+    }
 
-	public Genre(String name) {
-		this.name = name;
-	}
+    public Genre(String name) {
+        this.name = name;
+    }
 
-	public Genre(UUID id, String name) {
-		this.id = id;
-		this.name = name;
-	}
+    public Genre(UUID id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
-	@Override
-	public void print() {
-		System.out.println("Name: " + this.name);
-	}
+    @Override
+    public void print() {
+        System.out.println("Name: " + this.name);
+    }
 
-	public UUID getId() {
-		return id;
-	}
+    public UUID getId() {
+        return id;
+    }
 
-	public void setId(UUID id) {
-		this.id = id;
-	}
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	@Override public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		Genre genre = (Genre) o;
-		return Objects.equals(id, genre.id) && Objects.equals(name, genre.name);
-	}
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Genre genre = (Genre) o;
+        return Objects.equals(id, genre.id) && Objects.equals(name, genre.name);
+    }
 
-	@Override public int hashCode() {
+    @Override public int hashCode() {
 
-		return Objects.hash(id, name);
-	}
+        return Objects.hash(id, name);
+    }
 }

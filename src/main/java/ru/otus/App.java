@@ -1,25 +1,10 @@
 package ru.otus;
 
-import org.h2.tools.Console;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import ru.otus.Dao.AuthorDao;
-import ru.otus.Dao.BookDao;
-import ru.otus.Dao.GenreDao;
-import ru.otus.Domain.Author;
-import ru.otus.Domain.Book;
-import ru.otus.Domain.Comment;
-import ru.otus.Domain.Genre;
-import ru.otus.Exceptions.DataBaseException;
-import ru.otus.Exceptions.NotFoundException;
-import ru.otus.Managers.AuthorManager;
-import ru.otus.Managers.BookManager;
-import ru.otus.Managers.GenreManager;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
 
 @SpringBootApplication
 public class App {
