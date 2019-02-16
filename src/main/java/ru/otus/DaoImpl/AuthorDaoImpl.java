@@ -19,7 +19,7 @@ public class AuthorDaoImpl implements AuthorDao {
     public Collection<Author> getAll() {
         try {
             TypedQuery<Author> query = em.createQuery(
-                    "select distinct a from Author a left join a.books b", Author.class);
+                    "select a from Author a ", Author.class);
             return query.getResultList();
         } catch (NoResultException e) {
             return  Collections.EMPTY_SET;
@@ -29,7 +29,7 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     public Author getByName(String name) {
         try {
-            TypedQuery<Author> query = em.createQuery("select a from Author a left join a.books b where a.name = :name", Author.class);
+            TypedQuery<Author> query = em.createQuery("select a from Author a where a.name = :name", Author.class);
             query.setParameter("name", name);
             return query.getSingleResult();
         } catch (NoResultException e) {
