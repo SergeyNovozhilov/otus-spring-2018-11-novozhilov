@@ -14,7 +14,7 @@ public class Author extends Base{
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	private String name;
-	@ManyToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "authors")
+	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy = "authors")
 	private Collection<Book> books;
 
 	public Author() {
@@ -30,8 +30,8 @@ public class Author extends Base{
 		System.out.println("Books:");
 		if (this.books != null) {
 			for (Book book : this.books) {
-				System.out.println("   " + book.getTitle());
-				System.out.println(" Genre:   " + book.getGenre().getName());
+				System.out.println(" Title: " + book.getTitle());
+				System.out.println("  Genre: " + book.getGenre().getName());
 			}
 		}
 	}

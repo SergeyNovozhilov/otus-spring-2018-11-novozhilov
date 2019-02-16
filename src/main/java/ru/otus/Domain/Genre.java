@@ -19,6 +19,7 @@ public class Genre extends Base{
     @JoinColumn(name = "book_id")
     private Collection<Book> book;
 
+
     public Genre() {
     }
 

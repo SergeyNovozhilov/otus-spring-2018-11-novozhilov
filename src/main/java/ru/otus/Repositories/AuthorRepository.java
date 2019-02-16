@@ -6,12 +6,14 @@ import org.springframework.data.repository.query.Param;
 import ru.otus.Domain.Author;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public interface AuthorRepository extends JpaRepository<Author, UUID> {
 
-	@Query("select a from Author a left join a.books b")
-	Collection<Author> getAll();
+	@Override
+	@Query("select a from Author a")
+	List<Author> findAll();
 
 	@Query("select a from Author a left join a.books b where a.name = :name")
 	Author findByName(@Param("name") String name);

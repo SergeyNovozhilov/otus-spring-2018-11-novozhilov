@@ -11,14 +11,14 @@ import java.util.UUID;
 @Table(name = "COMMENTS")
 @Entity
 public class Comment extends Base{
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
-    private String comment;
-    @ManyToOne
-    @JoinColumn(name = "book_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Book book;
+   @Id
+   @GeneratedValue(strategy = GenerationType.AUTO)
+   private UUID id;
+   private String comment;
+   @ManyToOne
+   @OnDelete(action = OnDeleteAction.CASCADE)
+   private Book book;
+
 
     public Comment() {
     }
