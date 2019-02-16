@@ -7,6 +7,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,12 +37,9 @@ public class Author extends Base{
 		if (this.books != null && !this.books.isEmpty()) {
 			for (Book book : this.books) {
 				genres.add(book.getGenre().getName());
-				System.out.println("   " + book.getTitle());
+				System.out.println(" Title: " + book.getTitle());
+				System.out.println("  Genre: " + Optional.ofNullable(book.getGenre()).orElse(new Genre()).getName());
 			}
-		}
-		System.out.println("Genres:");
-		for (String genre : genres) {
-			System.out.println("   " + genre);
 		}
 	}
 
