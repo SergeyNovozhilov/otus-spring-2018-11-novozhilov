@@ -11,14 +11,9 @@ import java.util.UUID;
 
 public interface AuthorRepository extends JpaRepository<Author, UUID> {
 
-	@Override
-	@Query("select a from Author a")
-	List<Author> findAll();
-
-	@Query("select a from Author a left join a.books b where a.name = :name")
 	Author findByName(@Param("name") String name);
 
-	@Query("select a from Author a join a.books b join Genre g on g.id=b.genre where a in (select a from Author a join a.books b join Genre g on g.id=b.genre where g.name=:genre)")
+	@Query("select distinct a from Author a join a.books b join Genre g on g.id=b.genre where a in (select a from Author a join a.books b join Genre g on g.id=b.genre where g.name=:genre)")
 	Collection<Author> findByGenre(@Param("genre") String genre);
 
 	@Query("select a from Author a join a.books b join Genre g on b.genre = g.id where b.title = :title")
