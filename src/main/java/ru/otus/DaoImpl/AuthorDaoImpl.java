@@ -19,7 +19,7 @@ public class AuthorDaoImpl implements AuthorDao {
     public Collection<Author> getAll() {
         try {
             TypedQuery<Author> query = em.createQuery(
-                    "select a from Author a ", Author.class);
+                    "select a from Author a left join fetch a.books b", Author.class);
             return query.getResultList();
         } catch (NoResultException e) {
             return  Collections.EMPTY_SET;

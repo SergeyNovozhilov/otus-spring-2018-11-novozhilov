@@ -22,7 +22,7 @@ public class BookDaoImpl implements BookDao {
     @Override
     public Collection<Book> getAll() {
         try {
-            TypedQuery<Book> query = em.createQuery("select distinct b from Book b left join fetch b.comments c", Book.class);
+            TypedQuery<Book> query = em.createQuery("select distinct b from Book b left join fetch b.authors a", Book.class);
             Collection<Book> books = query.getResultList();
             return books;
         } catch (Exception e) {
@@ -33,7 +33,7 @@ public class BookDaoImpl implements BookDao {
     @Override
     public Collection<Book> getByTitle(String title) {
         try {
-            TypedQuery<Book> query = em.createQuery("select distinct b from Book b left join fetch b.comments c where b.title = : title",
+            TypedQuery<Book> query = em.createQuery("select distinct b from Book b left join fetch b.authors a where b.title = : title",
                     Book.class);
             query.setParameter("title", title);
             return query.getResultList();
@@ -54,7 +54,7 @@ public class BookDaoImpl implements BookDao {
     @Override
     public Collection<Book> getByAuthor(String author) {
         try {
-            TypedQuery<Book> query = em.createQuery("SELECT distinct b FROM Book b JOIN b.authors a left join fetch b.comments c where a.name = :author", Book.class);
+            TypedQuery<Book> query = em.createQuery("select distinct b from Book b left join b.authors a where a.name = :author", Book.class);
             query.setParameter("author", author);
             return query.getResultList();
         } catch (Exception e) {
@@ -65,7 +65,7 @@ public class BookDaoImpl implements BookDao {
     @Override
     public Collection<Book> getByGenre(String genre) {
         try {
-            TypedQuery<Book> query = em.createQuery("SELECT distinct b FROM Book b left join fetch b.comments c JOIN b.genre g where g.name = :genre", Book.class);
+            TypedQuery<Book> query = em.createQuery("SELECT distinct b FROM Book b left join fetch b.authors a join b.genre g where g.name = :genre", Book.class);
             query.setParameter("genre", genre);
             return query.getResultList();
         } catch (Exception e) {

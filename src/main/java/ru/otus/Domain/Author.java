@@ -19,7 +19,7 @@ public class Author extends Base{
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	private String name;
-	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy = "authors")
+	@ManyToMany(fetch=FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy = "authors")
 	private Collection<Book> books;
 
 	public Author() {
