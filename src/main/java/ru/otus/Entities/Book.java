@@ -1,4 +1,4 @@
-package ru.otus.Domain;
+package ru.otus.Entities;
 
 import lombok.Data;
 
@@ -11,16 +11,17 @@ import java.util.UUID;
 @Data
 @Table(name = "BOOKS")
 @Entity
-public class Book extends Base{
+public class Book {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	private String title;
-	@ManyToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch=FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
 	private Collection<Author> authors;
-	@OneToOne
+	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
 	private Genre genre;
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumn(name = "comment_id")
 	private Collection<Comment> comments;
 	public Book() {
 	}
@@ -41,24 +42,6 @@ public class Book extends Base{
 			this.authors = new HashSet<>();
 		}
 		this.authors.addAll(authors);
-	}
-
-	@Override
-	public void print() {
-		System.out.println(" Title: " + this.title);
-		System.out.println(" Genre: " + this.genre.getName());
-		System.out.println("Authors:");
-		if (this.authors != null && !this.authors.isEmpty()) {
-			for (Author author : this.authors) {
-				System.out.println("   " + author.getName());
-			}
-		}
-		System.out.println("Comments:");
-		if (this.comments != null && !this.comments.isEmpty()) {
-			for (Comment comment : this.comments) {
-				System.out.println("   " + comment.getComment());
-			}
-		}
 	}
 
 	public void addComment(Comment comment) {

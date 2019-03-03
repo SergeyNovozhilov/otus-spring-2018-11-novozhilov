@@ -9,9 +9,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.Domain.Author;
-import ru.otus.Domain.Book;
-import ru.otus.Domain.Genre;
+import ru.otus.Entities.Author;
+import ru.otus.Entities.Book;
+import ru.otus.Entities.Genre;
 import ru.otus.Repositories.BookRepository;
 
 import java.util.Arrays;
@@ -34,7 +34,7 @@ public class BookDaoTests {
 	@Ignore
 	@Test
 	public void getAll() {
-		List<Book> expected = Arrays.asList(new Book("Book"), new Book("Book1"));
+		List<Book> expected = Arrays.asList(new Book("BookDto"), new Book("Book1"));
 		expected.forEach(e -> testEntityManager.persist(e));
 		testEntityManager.flush();
 		Collection<Book> actual = bookRepository.findAll();
@@ -43,7 +43,7 @@ public class BookDaoTests {
 
 	@Test
 	public void getByTitle() {
-		Book expected = new Book("Book by Steven King");
+		Book expected = new Book("BookDto by Steven King");
 		testEntityManager.persistAndFlush(expected);
 		Collection<Book> actual = bookRepository.findByTitle(expected.getTitle());
 		assertTrue(actual.size() == 1);
@@ -52,7 +52,7 @@ public class BookDaoTests {
 
 	@Test
 	public void getById() {
-		Book expected = new Book("Book by Steven King");
+		Book expected = new Book("BookDto by Steven King");
 		testEntityManager.persistAndFlush(expected);
 		Book actual = bookRepository.findById(expected.getId()).orElse(new Book());
 		assertEquals(actual, expected);
@@ -60,12 +60,12 @@ public class BookDaoTests {
 
 	@Test
 	public void getByAuthor() {
-		String bookTitle = "Book by Jack London";
+		String bookTitle = "BookDto by Jack London";
 		String authorName = "Jack London";
-		createAndPersistBook(bookTitle, "Genre", authorName);
+		createAndPersistBook(bookTitle, "GenreDto", authorName);
 		Collection<Book> actual = bookRepository.findByAuthor(authorName);
 		assertTrue(actual.size() == 1);
-		assertEquals(actual.iterator().next().getTitle(), "Book by Jack London");
+		assertEquals(actual.iterator().next().getTitle(), "BookDto by Jack London");
 		assertTrue(true);
 	}
 
@@ -73,7 +73,7 @@ public class BookDaoTests {
 	public void getByGenre() {
 		String genreName = "Thriller";
 		String authorName = "Steven King";
-		String bookTitle = "Book";
+		String bookTitle = "BookDto";
 		createAndPersistBook(bookTitle, genreName, authorName);
 		Collection<Book> actual = bookRepository.findByGenre(genreName);
 		assertTrue(actual.size() == 1);
@@ -82,7 +82,7 @@ public class BookDaoTests {
 
 	@Test
 	public void save() {
-		Book expected = new Book("Book by Steven King");
+		Book expected = new Book("BookDto by Steven King");
 		bookRepository.save(expected);
 		Book actual = testEntityManager.find(Book.class, expected.getId());
 		assertEquals(actual, expected);
@@ -90,7 +90,7 @@ public class BookDaoTests {
 
 	@Test
 	public void delete() {
-		Book expected = createAndPersistBook("Book", "Thriller", "Steven King");
+		Book expected = createAndPersistBook("BookDto", "Thriller", "Steven King");
 		Book actual = bookRepository.findById(expected.getId()).orElse(new Book());
 		assertEquals(actual, expected);
 		bookRepository.delete(expected);
@@ -101,8 +101,8 @@ public class BookDaoTests {
 
 	@Test
 	public void update() {
-		String newTitle = "Book by Steven Not King";
-		Book expected = new Book("Book by Steven King");
+		String newTitle = "BookDto by Steven Not King";
+		Book expected = new Book("BookDto by Steven King");
 		bookRepository.save(expected);
 		Book actual = testEntityManager.find(Book.class, expected.getId());
 		assertEquals(actual, expected);

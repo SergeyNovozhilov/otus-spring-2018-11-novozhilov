@@ -12,14 +12,14 @@ public class App {
 	public static void main(String[] args) throws SQLException {
 		ApplicationContext context = SpringApplication.run(App.class, args);
 //		GenreManager genreManager = context.getBean(GenreManager.class);
-//		Genre g = genreManager.create("Genre");
+//		GenreDto g = genreManager.create("GenreDto");
 //
 //		BookManager bookManager = context.getBean(BookManager.class);
 //
 //		AuthorManager authorManager = context.getBean(AuthorManager.class);
 //
-//		Book bk = bookManager.create("Book");
-//		bookManager.addGenre(bk, "Genre");
+//		BookDto bk = bookManager.create("BookDto");
+//		bookManager.addGenre(bk, "GenreDto");
 //		bookManager.addAuthor(bk, "author");
 //		try {
 //			bookManager.update(bk);
@@ -27,8 +27,8 @@ public class App {
 //			e.printStackTrace();
 //		}
 //
-//		Book bk1 = bookManager.create("Book 1");
-//		bookManager.addGenre(bk1, "Genre 1");
+//		BookDto bk1 = bookManager.create("BookDto 1");
+//		bookManager.addGenre(bk1, "GenreDto 1");
 //		bookManager.addAuthor(bk1, "author");
 //		try {
 //			bookManager.update(bk1);
@@ -36,7 +36,7 @@ public class App {
 //			e.printStackTrace();
 //		}
 //
-//		Collection<Book> bks = null;
+//		Collection<BookDto> bks = null;
 //		try {
 //			bks = bookManager.get("", "", "");
 //		} catch (NotFoundException e) {
@@ -59,7 +59,7 @@ public class App {
 //			});
 //		}
 //
-//		Collection<Author> as = null;
+//		Collection<AuthorDto> as = null;
 //		try {
 //			as = authorManager.get("", "", "");
 //		} catch (NotFoundException e) {
@@ -69,13 +69,13 @@ public class App {
 //            System.out.println("---- Authors ----");
 //		    as.forEach(au -> {
 //                System.out.println(au.getName());
-//                Collection<Book> books = au.getBooks();
+//                Collection<BookDto> books = au.getBooks();
 //                    if (books != null && !books.isEmpty()) {
 //                        books.forEach(b -> {
 //                            System.out.println("  " + b.getTitle());
 //                        });
 //                    }
-//                    Collection<Genre> gs = au.getGenres();
+//                    Collection<GenreDto> gs = au.getGenres();
 //				if (gs != null && !gs.isEmpty()) {
 //					gs.forEach(b -> {
 //						System.out.println("  " + b.getName());

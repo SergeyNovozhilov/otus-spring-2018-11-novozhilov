@@ -8,9 +8,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.Domain.Author;
-import ru.otus.Domain.Book;
-import ru.otus.Domain.Genre;
+import ru.otus.Entities.Author;
+import ru.otus.Entities.Book;
+import ru.otus.Entities.Genre;
 import ru.otus.Repositories.GenreRepository;
 
 import java.util.Arrays;
@@ -58,7 +58,7 @@ public class GenreDaoTests {
     @Test
     public void getByAuthor() {
         String expectedGenreName = "Novel";
-        String bookTitle = "Book by Jack London";
+        String bookTitle = "BookDto by Jack London";
         String author = "Jack London";
         Book book = createBook(bookTitle, expectedGenreName, author);
         book = testEntityManager.persistAndFlush(book);
@@ -71,7 +71,7 @@ public class GenreDaoTests {
     @Test
     public void getByBook() {
         String expectedGenreName = "Novel";
-        String book = "Book by Jack London";
+        String book = "BookDto by Jack London";
         testEntityManager.persistAndFlush(createBook(book, expectedGenreName, ""));
         Genre actual = genreRepository.findByBook(book);
         assertEquals(actual.getName(), expectedGenreName);

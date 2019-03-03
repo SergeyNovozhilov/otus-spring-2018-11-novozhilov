@@ -1,6 +1,6 @@
 package ru.otus.Managers;
 
-import ru.otus.Domain.Base;
+import ru.otus.Dtos.Base;
 import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
 

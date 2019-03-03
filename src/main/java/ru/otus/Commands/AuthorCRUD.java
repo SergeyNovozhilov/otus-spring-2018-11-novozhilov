@@ -5,8 +5,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
-import ru.otus.Domain.Author;
-import ru.otus.Exceptions.DataBaseException;
+import ru.otus.Entities.Author;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.AuthorManager;
 
@@ -26,7 +25,7 @@ public class AuthorCRUD {
 		this.cache = cache;
 	}
 
-	@ShellMethod("Get Author cache")
+	@ShellMethod("Get AuthorDto cache")
 	public void getAuthorCache() {
 		List<Author> authors = (List<Author>)this.cache.get(Author.class);
 		printAuthor(authors);
@@ -50,7 +49,7 @@ public class AuthorCRUD {
 		}
 	}
 
-	@ShellMethod("Update Author by index")
+	@ShellMethod("Update AuthorDto by index")
 	public void updateAuthor(int index, @ShellOption(defaultValue = "")String name) {
 		Author author = (Author)cache.get(Author.class, index);
 		if (author != null) {
@@ -62,7 +61,7 @@ public class AuthorCRUD {
 		}
 	}
 
-	@ShellMethod("Delete Author by index")
+	@ShellMethod("Delete AuthorDto by index")
 	public void deleteAuthor(int index) {
 		Author author = (Author)cache.get(Author.class, index);
 		if (author != null) {

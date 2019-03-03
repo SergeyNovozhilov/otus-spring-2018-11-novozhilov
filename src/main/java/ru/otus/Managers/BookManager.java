@@ -2,10 +2,10 @@ package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import ru.otus.Domain.Author;
-import ru.otus.Domain.Book;
-import ru.otus.Domain.Comment;
-import ru.otus.Domain.Genre;
+import ru.otus.Entities.Author;
+import ru.otus.Entities.Book;
+import ru.otus.Entities.Comment;
+import ru.otus.Entities.Genre;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Repositories.AuthorRepository;
 import ru.otus.Repositories.BookRepository;

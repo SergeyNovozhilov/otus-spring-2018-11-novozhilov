@@ -2,7 +2,7 @@ package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import ru.otus.Domain.Author;
+import ru.otus.Entities.Author;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Repositories.AuthorRepository;
 
@@ -38,7 +38,7 @@ public class AuthorManager implements Manager<Author> {
             if (StringUtils.isNotBlank(name)) {
                 Author author = authorRepository.findByName(name);
                 if (author == null) {
-                    throw new NotFoundException("Author with name: " + name + " not found");
+                    throw new NotFoundException("AuthorDto with name: " + name + " not found");
                 }
                 authors.add(author);
             } else if (StringUtils.isNotBlank(book)) {

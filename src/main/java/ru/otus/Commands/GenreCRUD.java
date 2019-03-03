@@ -5,8 +5,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
-import ru.otus.Domain.Genre;
-import ru.otus.Exceptions.DataBaseException;
+import ru.otus.Entities.Genre;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.GenreManager;
 
@@ -22,7 +21,7 @@ public class GenreCRUD {
 		this.cache = cache;
 	}
 
-	@ShellMethod("Get Genre cache")
+	@ShellMethod("Get GenreDto cache")
 	public void getGenreCache() {
 		List<Genre> genres = (List<Genre>)this.cache.get(Genre.class);
 		printGenre(genres);
@@ -46,7 +45,7 @@ public class GenreCRUD {
         }
     }
 
-	@ShellMethod("Update Genre by index")
+	@ShellMethod("Update GenreDto by index")
 	public void updateGenre(int index, @ShellOption(defaultValue = "")String name) {
 		Genre genre = (Genre) cache.get(Genre.class, index);
 		if (genre != null) {

@@ -2,7 +2,8 @@ package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import ru.otus.Domain.Genre;
+import ru.otus.Dtos.GenreDto;
+import ru.otus.Entities.Genre;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Repositories.GenreRepository;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Service
-public class GenreManager implements Manager<Genre> {
+public class GenreManager implements Manager<GenreDto> {
     private GenreRepository genreRepository;
 
     public GenreManager(GenreRepository genreRepository) {
@@ -18,7 +19,7 @@ public class GenreManager implements Manager<Genre> {
     }
 
     @Override
-    public Genre create(String name) {
+    public GenreDto create(String name) {
         Genre genre = new Genre(name);
         genreRepository.save(genre);
         return genre;
@@ -33,19 +34,19 @@ public class GenreManager implements Manager<Genre> {
             if (StringUtils.isNotBlank(name)) {
                 Genre genre = genreRepository.findByName(name);
                 if (genre == null) {
-                    throw new NotFoundException("Genre with name: " + name + " not found.");
+                    throw new NotFoundException("GenreDto with name: " + name + " not found.");
                 }
                 genres.add(genre);
             } else if (StringUtils.isNotBlank(book)) {
                 Genre genre = genreRepository.findByBook(book);
                 if (genre == null) {
-                    throw new NotFoundException("Genre of book: " + name + " not found");
+                    throw new NotFoundException("GenreDto of book: " + name + " not found");
                 }
                 genres.add(genre);
             } else if (StringUtils.isNotBlank(author)) {
                 genres.addAll(genreRepository.findByAuthor(author));
                 if (genres.isEmpty()) {
-                    throw new NotFoundException("Genre of author: " + author + " not found");
+                    throw new NotFoundException("GenreDto of author: " + author + " not found");
                 }
             }
         }

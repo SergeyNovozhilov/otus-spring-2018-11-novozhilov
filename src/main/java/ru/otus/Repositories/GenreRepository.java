@@ -3,7 +3,7 @@ package ru.otus.Repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import ru.otus.Domain.Genre;
+import ru.otus.Entities.Genre;
 
 import java.util.Collection;
 import java.util.UUID;

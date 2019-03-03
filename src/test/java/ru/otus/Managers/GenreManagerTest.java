@@ -8,7 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.Domain.Genre;
+import ru.otus.Entities.Genre;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Repositories.GenreRepository;
 
@@ -39,7 +39,7 @@ public class GenreManagerTest {
 	@Autowired
 	private GenreManager underTest;
 
-	private String genreName = "Genre";
+	private String genreName = "GenreDto";
 	private Genre expected;
 
 
@@ -67,7 +67,7 @@ public class GenreManagerTest {
 
 	@Test
 	public void getByBookTest() {
-		String title = "Book";
+		String title = "BookDto";
 		try {
 			when(genreRepository.findByBook(title)).thenReturn(expected);
 			Collection<Genre> actual = underTest.get("", title, "");
@@ -79,7 +79,7 @@ public class GenreManagerTest {
 
 	@Test
 	public void getByAuthorTest() {
-		String author = "Author";
+		String author = "AuthorDto";
 		try {
 			when(genreRepository.findByAuthor(author)).thenReturn(Collections.singleton(expected));
 			Collection<Genre> actual = underTest.get("", "", author);

@@ -8,7 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.Domain.Book;
+import ru.otus.Entities.Book;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Repositories.AuthorRepository;
 import ru.otus.Repositories.BookRepository;
@@ -49,7 +49,7 @@ public class BookManagerTest {
 	@Autowired
 	private BookManager underTest;
 
-	private String book = "Book";
+	private String book = "BookDto";
 	private Book expected;
 
 
@@ -78,7 +78,7 @@ public class BookManagerTest {
 
 	@Test
 	public void getByAuthorTest() {
-		String name = "Author";
+		String name = "AuthorDto";
 		try {
 			when(bookRepository.findByAuthor(name)).thenReturn(Collections.singleton(expected));
 			Collection<Book> actual = underTest.get("", "", name);
@@ -90,7 +90,7 @@ public class BookManagerTest {
 
 	@Test
 	public void getByGenreTest() {
-		String genre = "Genre";
+		String genre = "GenreDto";
 		try {
 			when(bookRepository.findByGenre(genre)).thenReturn(Collections.singleton(expected));
 			Collection<Book> actual = underTest.get("", genre, "");

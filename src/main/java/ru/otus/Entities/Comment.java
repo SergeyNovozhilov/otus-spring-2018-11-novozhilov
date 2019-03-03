@@ -1,4 +1,4 @@
-package ru.otus.Domain;
+package ru.otus.Entities;
 
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
@@ -10,13 +10,12 @@ import java.util.UUID;
 @Data
 @Table(name = "COMMENTS")
 @Entity
-public class Comment extends Base{
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String comment;
     @ManyToOne
-    @JoinColumn(name = "book_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Book book;
 
@@ -25,11 +24,6 @@ public class Comment extends Base{
 
     public Comment(String comment) {
         this.comment = comment;
-    }
-
-    @Override
-    public void print() {
-        System.out.println(this.comment);
     }
 
     public UUID getId() {

@@ -8,12 +8,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.Domain.Author;
+import ru.otus.Entities.Author;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Repositories.AuthorRepository;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
@@ -39,7 +38,7 @@ public class AuthorManagerTest {
 	@Autowired
 	private AuthorManager underTest;
 
-	private String authorName = "Author";
+	private String authorName = "AuthorDto";
 	private Author expected;
 
 
@@ -68,10 +67,10 @@ public class AuthorManagerTest {
 
 	@Test
 	public void getByBookTest() {
-//		String title = "Book";
+//		String title = "BookDto";
 //		try {
 //			when(authorRepository.findByBook(title)).thenReturn(Collections.singleton(expected));
-//			Collection<Author> actual = underTest.get("", "", title);
+//			Collection<AuthorDto> actual = underTest.get("", "", title);
 //			assertTrue(actual.contains(expected));
 //		} catch (NotFoundException e) {
 //			fail();
@@ -80,10 +79,10 @@ public class AuthorManagerTest {
 
 	@Test
 	public void getByGenreTest() {
-//		String genre = "Genre";
+//		String genre = "GenreDto";
 //		try {
 //			when(authorRepository.findByGenre(genre)).thenReturn(Collections.singleton(expected));
-//			Collection<Author> actual = underTest.get("", genre, "");
+//			Collection<AuthorDto> actual = underTest.get("", genre, "");
 //			assertTrue(actual.contains(expected));
 //		} catch (NotFoundException e) {
 //			fail();

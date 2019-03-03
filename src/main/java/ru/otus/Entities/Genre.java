@@ -1,4 +1,4 @@
-package ru.otus.Domain;
+package ru.otus.Entities;
 
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data
 @Table(name = "GENRES")
 @Entity
-public class Genre extends Base{
+public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -25,11 +25,6 @@ public class Genre extends Base{
     public Genre(UUID id, String name) {
         this.id = id;
         this.name = name;
-    }
-
-    @Override
-    public void print() {
-        System.out.println("Name: " + this.name);
     }
 
     public UUID getId() {

@@ -5,7 +5,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
-import ru.otus.Domain.Book;
+import ru.otus.Entities.Book;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.BookManager;
 
@@ -24,13 +24,13 @@ public class BookCRUD {
 		this.cache = cache;
 	}
 
-	@ShellMethod("Get Book cache")
+	@ShellMethod("Get BookDto cache")
 	public void getBookCache() {
 		List<Book> books = (List<Book>)this.cache.get(Book.class);
 		printBook(books);
 	}
 
-	@ShellMethod("Create Book with title, genre and authors")
+	@ShellMethod("Create BookDto with title, genre and authors")
 	public void createBook(String title, String genre, String author) {
 		Book book = bookManager.create(title);
 		if (book != null) {
@@ -47,7 +47,7 @@ public class BookCRUD {
 		}
 	}
 
-	@ShellMethod("Get Book by title and/or by genre and/or by author ")
+	@ShellMethod("Get BookDto by title and/or by genre and/or by author ")
 	public void getBook(@ShellOption(defaultValue = "") String title, @ShellOption(defaultValue = "") String genre, @ShellOption(defaultValue = "") String author) {
 		try {
 			Collection<Book> books = bookManager.get(title, genre, author);
@@ -58,7 +58,7 @@ public class BookCRUD {
 		}
 	}
 
-	@ShellMethod("Update Book by index")
+	@ShellMethod("Update BookDto by index")
 	public void updateBook(int index, @ShellOption(defaultValue = "")String title, @ShellOption(defaultValue = "") String genre, @ShellOption(defaultValue = "")String author) {
 		Book book = (Book)cache.get(Book.class, index);
 		if (book != null) {
@@ -105,7 +105,7 @@ public class BookCRUD {
 		}
 	}
 
-	@ShellMethod("Delete Book by index")
+	@ShellMethod("Delete BookDto by index")
 	public void deleteBook(int index) {
 		Book book = (Book)cache.get(Book.class, index);
 			bookManager.delete(book);

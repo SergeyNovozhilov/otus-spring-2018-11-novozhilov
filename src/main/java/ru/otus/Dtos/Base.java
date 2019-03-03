@@ -1,8 +1,6 @@
-package ru.otus.Domain;
+package ru.otus.Dtos;
 
 import lombok.Getter;
-
-import java.util.UUID;
 
 @Getter
 public abstract class Base {

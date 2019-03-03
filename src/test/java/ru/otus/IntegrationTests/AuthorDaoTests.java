@@ -8,17 +8,14 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.Domain.Author;
-import ru.otus.Domain.Book;
-import ru.otus.Domain.Genre;
+import ru.otus.Entities.Author;
+import ru.otus.Entities.Book;
+import ru.otus.Entities.Genre;
 import ru.otus.Repositories.AuthorRepository;
 
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static ru.otus.Managers.AuthorManager.AUTHOR;
-import static ru.otus.Managers.AuthorManager.GENRE_ID;
-import static ru.otus.Managers.AuthorManager.GENRE_NAME;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -65,10 +62,10 @@ public class AuthorDaoTests {
 
 	@Test
 	public void getByBook() {
-		String bookTitle = "Book by Jack London";
+		String bookTitle = "BookDto by Jack London";
 		String authorName = "Jack London";
-		createAndPersistBook(bookTitle, "Genre", authorName);
-		Collection<Author> actual = getAuthors(authorRepository.findByBook(bookTitle));
+		createAndPersistBook(bookTitle, "GenreDto", authorName);
+		Collection<Author> actual = authorRepository.findByBook(bookTitle);
 		assertTrue(actual.size() == 1);
 		Author a = actual.stream().findAny().orElse(new Author());
 		assertEquals(a.getName(), authorName);
@@ -79,8 +76,8 @@ public class AuthorDaoTests {
 	public void getByGenre() {
 		String genreName = "Thriller";
 		String authorName = "Steven King";
-		createAndPersistBook("Book", genreName, authorName);
-		Collection<Author> actual = getAuthors(authorRepository.findByGenre(genreName));
+		createAndPersistBook("BookDto", genreName, authorName);
+		Collection<Author> actual = authorRepository.findByGenre(genreName);
 		assertTrue(actual.size() == 1);
 		assertNotNull(actual.stream().map(Author::getName).filter(name -> name.equals(authorName)).findAny().orElse(null));
 	}
@@ -133,24 +130,5 @@ public class AuthorDaoTests {
 		testEntityManager.persist(book);
 		testEntityManager.flush();
 		return book;
-	}
-
-	private Collection<Author> getAuthors(List<Object[]> results) {
-		Map<UUID, Author> authorMap = new HashMap<>();
-
-		for (Object[] result : results) {
-			Genre g = new Genre((UUID) result[GENRE_ID], (String) result[GENRE_NAME]);
-			Author a = (Author) result[AUTHOR];
-			Author author = authorMap.get(a.getId());
-			if (author == null) {
-				authorMap.put(a.getId(), a);
-				author = a;
-			}
-			if (g.getName() != null && g.getId() != null) {
-				author.getGenres().add(g);
-			}
-		}
-
-		return new HashSet<>(authorMap.values());
 	}
 }
