@@ -1,6 +1,7 @@
 package ru.otus.Cache;
 
 import org.springframework.stereotype.Service;
+import ru.otus.Dtos.Base;
 
 import java.util.ArrayList;
 import java.util.HashMap;

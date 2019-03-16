@@ -1,8 +1,10 @@
 package ru.otus;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 
 import java.sql.SQLException;
 
@@ -97,5 +99,10 @@ public class App {
 //		}
 //
 //		Console.main(args);
+	}
+
+	@Bean
+	public ModelMapper modelMapper() {
+		return new ModelMapper();
 	}
 }

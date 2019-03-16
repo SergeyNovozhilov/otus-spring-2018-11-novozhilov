@@ -5,6 +5,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
+import ru.otus.Dtos.GenreDto;
 import ru.otus.Entities.Genre;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.GenreManager;
@@ -23,22 +24,22 @@ public class GenreCRUD {
 
 	@ShellMethod("Get GenreDto cache")
 	public void getGenreCache() {
-		List<Genre> genres = (List<Genre>)this.cache.get(Genre.class);
+		List<GenreDto> genres = (List<GenreDto>)this.cache.get(GenreDto.class);
 		printGenre(genres);
 	}
 
 	@ShellMethod("Create genre")
 	public void createGenre(String name) {
-	    Genre genre = genreManager.create(name);
-	    cache.add(Genre.class, Collections.singletonList(genre));
+	    GenreDto genre = genreManager.create(name);
+	    cache.add(GenreDto.class, Collections.singletonList(genre));
 	    printGenre(genre);
 	}
 
 	@ShellMethod("Get genre by name or by author or by book")
 	public void getGenre(@ShellOption(defaultValue = "") String name, @ShellOption(defaultValue = "") String author, @ShellOption(defaultValue = "") String book) {
         try {
-            Collection<Genre> genres = genreManager.get(name, book, author);
-            cache.add(Genre.class, new ArrayList<>(genres));
+            Collection<GenreDto> genres = genreManager.get(name, book, author);
+            cache.add(GenreDto.class, new ArrayList<>(genres));
             printGenre(genres);
         } catch (NotFoundException e) {
             System.out.println(e.getMessage());
@@ -47,12 +48,12 @@ public class GenreCRUD {
 
 	@ShellMethod("Update GenreDto by index")
 	public void updateGenre(int index, @ShellOption(defaultValue = "")String name) {
-		Genre genre = (Genre) cache.get(Genre.class, index);
+		GenreDto genre = (GenreDto) cache.get(GenreDto.class, index);
 		if (genre != null) {
 			genre.setName(name);
 			genreManager.update(genre);
-			cache.deleteAll(Genre.class);
-			cache.add(Genre.class, Collections.singletonList(genre));
+			cache.deleteAll(GenreDto.class);
+			cache.add(GenreDto.class, Collections.singletonList(genre));
 			printGenre(genre);
 		}
     }
@@ -60,21 +61,21 @@ public class GenreCRUD {
 
 	@ShellMethod("Delete genre by index")
 	public void deleteGenre(int index) {
-		Genre genre = (Genre)cache.get(Genre.class, index);
+		GenreDto genre = (GenreDto)cache.get(GenreDto.class, index);
         if (genre != null) {
 			genreManager.delete(genre);
-			cache.delete(Genre.class, index);
+			cache.delete(GenreDto.class, index);
 		}
 	}
 
-	private void printGenre(Genre genre) {
+	private void printGenre(GenreDto genre) {
 		printGenre(Collections.singletonList(genre));
 	}
 
-	private void printGenre(Collection<Genre> genres) {
-		List<Genre> array = new ArrayList<>(genres);
+	private void printGenre(Collection<GenreDto> genres) {
+		List<GenreDto> array = new ArrayList<>(genres);
 		for (int i = 0; i < array.size(); i ++) {
-			Genre genre = array.get(i);
+			GenreDto genre = array.get(i);
 			System.out.println(i + ")");
 			genre.print();
 		}
