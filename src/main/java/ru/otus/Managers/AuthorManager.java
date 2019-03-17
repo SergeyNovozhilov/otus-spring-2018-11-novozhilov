@@ -3,8 +3,10 @@ package ru.otus.Managers;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.otus.Dao.AuthorDao;
+import ru.otus.Dao.BookDao;
 import ru.otus.Domain.Author;
-import ru.otus.Exceptions.DataBaseException;
+import ru.otus.Domain.Book;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.ArrayList;
@@ -13,16 +15,17 @@ import java.util.Collection;
 @Service
 public class AuthorManager implements Manager<Author> {
     private AuthorDao authorDao;
+    private BookDao bookDao;
 
-    public AuthorManager(AuthorDao authorDao) {
+    public AuthorManager(AuthorDao authorDao, BookDao bookDao) {
+        this.bookDao = bookDao;
         this.authorDao = authorDao;
     }
 
     @Override
     public Author create(String name) {
         Author author = new Author(name);
-        authorDao.save(author);
-        return author;
+        return authorDao.save(author);
     }
 
     @Override
@@ -57,22 +60,16 @@ public class AuthorManager implements Manager<Author> {
     }
 
     @Override
-    public int update(Author author) throws DataBaseException {
-        int res = authorDao.update(author);
-        if (res > 0) {
-            return  res;
-        } else {
-            throw new DataBaseException("Cannot update Author");
-        }
+    public Author update(Author author) {
+        return authorDao.update(author);
     }
 
     @Override
-    public int delete(Author author) throws DataBaseException {
-        int res = authorDao.delete(author);
-        if (res > 0) {
-            return res;
-        } else {
-            throw new DataBaseException("Cannot delete Author");
+    public void delete(Author author) throws DBException {
+        Collection<Book> book = bookDao.getByAuthor(author.getName());
+        if (!book.isEmpty()) {
+            throw new DBException("Cannot delete Author. Delete Books first");
         }
+        authorDao.delete(author);
     }
 }

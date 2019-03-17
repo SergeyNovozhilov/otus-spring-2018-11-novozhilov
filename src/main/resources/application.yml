@@ -1,2 +1,11 @@
-locale: "es_ES"
-languages: "es_ES, ru_RU, en_US"
+spring:
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+logging:
+  level:
+    org:
+      hibernate:
+        type: trace

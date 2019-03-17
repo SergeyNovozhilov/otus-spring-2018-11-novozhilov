@@ -1,17 +1,19 @@
 package ru.otus.Commands;
 
 import org.apache.commons.lang3.StringUtils;
-//import org.jetbrains.annotations.NotNull;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.Cache.Cache;
 import ru.otus.Domain.Book;
-import ru.otus.Exceptions.DataBaseException;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.BookManager;
 
 import java.util.*;
+
+//import org.jetbrains.annotations.NotNull;
 
 @ShellComponent
 public class BookCRUD {
@@ -33,22 +35,17 @@ public class BookCRUD {
 	@ShellMethod("Create Book with title, genre and authors")
 	public void createBook(String title, String genre, String author) {
 		Book book = bookManager.create(title);
-		bookManager.addGenre(book, genre);
+		if (book != null) {
+			book = bookManager.addGenre(book, genre);
 
-		String[] authors = author.split(",");
-		if (authors != null && authors.length > 0) {
-			// to be refactored to batch operation
-			for (String a : authors) {
-				bookManager.addAuthor(book, a);
+			String[] authors = author.split(",");
+
+			if (authors != null && authors.length > 0) {
+				book = bookManager.addAuthors(book, Arrays.asList(authors));
 			}
-		}
 
-		try {
-			bookManager.update(book);
 			cache.add(Book.class, Collections.singletonList(book));
 			printBook(book);
-		} catch (DataBaseException e) {
-			System.out.println(e.getMessage());
 		}
 	}
 
@@ -66,38 +63,57 @@ public class BookCRUD {
 	@ShellMethod("Update Book by index")
 	public void updateBook(int index, @ShellOption(defaultValue = "")String title, @ShellOption(defaultValue = "") String genre, @ShellOption(defaultValue = "")String author) {
 		Book book = (Book)cache.get(Book.class, index);
-		if (StringUtils.isNotBlank(title)) {
-			book.setTitle(title);
-		} else {
-			return;
-		}
-		bookManager.addGenre(book, genre);
+		if (book != null) {
+			if (StringUtils.isNotBlank(title)) {
+				book.setTitle(title);
+				bookManager.update(book);
+			} else {
+				return;
+			}
+			book = bookManager.addGenre(book, genre);
 
-		if (StringUtils.isNotBlank(author)) {
-			String[] authors = author.split(",");
-			if (authors != null && authors.length > 0) {
-				book.setAuthors(new HashSet<>());
-				// to be refactored to batch operation
-				for (String a : authors) {
-					bookManager.addAuthor(book, a);
+			if (StringUtils.isNotBlank(author)) {
+				String[] authors = author.split(",");
+				if (authors != null && authors.length > 0) {
+					book = bookManager.addAuthors(book, Arrays.asList(authors));
 				}
 			}
-		}
-		try {
-			bookManager.update(book);
+
 			cache.deleteAll(Book.class);
-		} catch (DataBaseException e) {
-			System.out.println(e.getMessage());
+			cache.add(Book.class, Collections.singletonList(book));
+			printBook(book);
+		}
+	}
+
+	@ShellMethod("Add comment by book's index")
+	public void addComment(int index, String comment) {
+		Book book = (Book)cache.get(Book.class, index);
+		if (book != null) {
+			book = bookManager.addComment(book, comment);
+			cache.delete(Book.class, index);
+			cache.add(Book.class, Collections.singletonList(book));
+			printBook(book);
+		}
+	}
+
+	@ShellMethod("Remove comment by book's index")
+	public void removeComment(int index, String comment) {
+		Book book = (Book)cache.get(Book.class, index);
+		if (book != null) {
+			book = bookManager.removeComment(book, comment);
+			cache.delete(Book.class, index);
+			cache.add(Book.class, Collections.singletonList(book));
+			printBook(book);
 		}
 	}
 
 	@ShellMethod("Delete Book by index")
 	public void deleteBook(int index) {
-		Book book = (Book)cache.get(Book.class, index);
 		try {
+			Book book = (Book) cache.get(Book.class, index);
 			bookManager.delete(book);
 			cache.delete(Book.class, index);
-		} catch (DataBaseException e) {
+		} catch (DBException e) {
 			System.out.println(e.getMessage());
 		}
 	}

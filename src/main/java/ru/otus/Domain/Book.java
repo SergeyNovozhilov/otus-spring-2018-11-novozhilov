@@ -2,27 +2,37 @@ package ru.otus.Domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.*;
+import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.UUID;
 
 @Data
-@EqualsAndHashCode(exclude = {"authors", "genre"})
+@EqualsAndHashCode(exclude = {"authors", "comments"})
+@Table(name = "BOOKS")
+@Entity
 public class Book extends Base{
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private UUID id;
 	private String title;
+	@ManyToMany(fetch=FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
 	private Collection<Author> authors;
+	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
 	private Genre genre;
-
-	public Book(String title) {
-		super();
-		this.title = title;
-		this.authors = new HashSet<>();
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumn(name = "comment_id")
+	private Collection<Comment> comments;
+	public Book() {
 	}
 
-	public Book(UUID id, String title, Genre genre) {
-		super(id);
+	public Book(String title) {
 		this.title = title;
-		this.genre = genre;
-		this.authors = new HashSet<>();
 	}
 
 	public void addAuthor(Author author) {
@@ -49,6 +59,23 @@ public class Book extends Base{
 				System.out.println("   " + author.getName());
 			}
 		}
+		System.out.println("Comments:");
+		if (this.comments != null && !this.comments.isEmpty()) {
+			for (Comment comment : this.comments) {
+				System.out.println("   " + comment.getComment());
+			}
+		}
+	}
+
+	public void addComment(Comment comment) {
+		if (this.comments == null) {
+			this.comments = new HashSet<>();
+		}
+		this.comments.add(comment);
+	}
+
+	public UUID getId() {
+		return id;
 	}
 
 	public String getTitle() {
@@ -75,17 +102,54 @@ public class Book extends Base{
 		this.genre = genre;
 	}
 
+	public Collection<Comment> getComments() {
+		return comments;
+	}
+
+	public void setComments(Collection<Comment> comments) {
+		this.comments = comments;
+	}
+
 	@Override public boolean equals(Object o) {
 		if (this == o)
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
 		Book book = (Book) o;
-		return Objects.equals(title, book.title)/* && Objects.equals(genre, book.genre)*/;
+		if (!Objects.equals(id, book.id)) {
+			return false;
+		}
+		if (!Objects.equals(title, book.title)) {
+			return false;
+		}
+		if (!Objects.equals(genre, book.genre)) {
+			return false;
+		}
+
+		if (authors != null && book.getAuthors() != null) {
+			if(authors.size() != book.authors.size()) {
+				return false;
+			}
+
+			for (Author e : authors) {
+				Author a = book.authors.stream().filter(x -> x.getId().equals(e.getId())).findFirst().orElse(null);
+				if (a == null) {
+					return false;
+				}
+				if (!StringUtils.equalsIgnoreCase(e.getName(), a.getName())) {
+					return false;
+				}
+			}
+			return true;
+		} else if (authors == null && book.getAuthors() == null){
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override public int hashCode() {
 
-		return Objects.hash(title/*, genre*/);
+		return Objects.hash(id, title, authors, genre);
 	}
 }

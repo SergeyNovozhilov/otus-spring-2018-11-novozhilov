@@ -2,17 +2,20 @@ package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.Dao.AuthorDao;
 import ru.otus.Dao.BookDao;
 import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Author;
 import ru.otus.Domain.Book;
+import ru.otus.Domain.Comment;
 import ru.otus.Domain.Genre;
-import ru.otus.Exceptions.DataBaseException;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class BookManager implements Manager<Book> {
@@ -29,30 +32,44 @@ public class BookManager implements Manager<Book> {
     @Override
     public Book create(String title) {
         Book book = new Book(title);
-        bookDao.save(book);
-        return book;
+        return bookDao.save(book);
     }
 
     public Book addGenre(Book book, String genreName) {
-        Genre genre = null;
-        genre = genreDao.getByName(genreName);
+        Genre genre = genreDao.getByName(genreName);
         if (genre == null) {
             genre = new Genre(genreName);
             genreDao.save(genre);
         }
         book.setGenre(genre);
-        return book;
+
+        return bookDao.update(book);
     }
 
-    public Book addAuthor(Book book, String authorName) {
-        Author author = null;
-        author = authorDao.getByName(authorName);
-        if (author == null) {
-            author = new Author(authorName);
-            authorDao.save(author);
-        }
-        book.addAuthor(author);
-        return book;
+    public Book addAuthors(Book book, List<String> authors) {
+        authors.forEach(a -> {
+            Author author = authorDao.getByName(a);
+            if (author == null) {
+                author = new Author(a);
+                authorDao.save(author);
+            }
+            book.addAuthor(author);
+        });
+
+        return bookDao.update(book);
+    }
+
+    public Book addComment(Book book, String comment) {
+        book.addComment(new Comment(comment));
+
+        return bookDao.update(book);
+    }
+
+    public Book removeComment(Book book, String comment) {
+        Comment commentObj = book.getComments().stream().filter(c -> StringUtils.equalsIgnoreCase(c.getComment(), comment)).findAny().orElse(null);
+        book.getComments().remove(commentObj);
+
+        return bookDao.update(book);
     }
 
     @Override
@@ -109,23 +126,19 @@ public class BookManager implements Manager<Book> {
     }
 
     @Override
-    public int update(Book book) throws DataBaseException {
-        int res = bookDao.update(book);
-        if (res > 0) {
-            return  res;
-        } else {
-            throw new DataBaseException("Cannot update Book");
-        }
+    public Book update(Book book) {
+        return bookDao.update(book);
     }
 
     @Override
-    public int delete(Book book) throws DataBaseException {
-        int res = bookDao.delete(book);
-        if (res > 0) {
-            return  res;
-        } else {
-            throw new DataBaseException("Cannot delete Book");
-        }
+    @Transactional
+    public void delete(Book book) throws DBException {
+        Collection<Author> authors = authorDao.getByBook(book.getTitle());
+        authors.forEach(a -> {
+            a.getBooks().remove(book);
+            authorDao.update(a);
+        });
+        bookDao.delete(book);
     }
 
     private Collection<Book> returnBooks(Collection<Book> books) throws NotFoundException{

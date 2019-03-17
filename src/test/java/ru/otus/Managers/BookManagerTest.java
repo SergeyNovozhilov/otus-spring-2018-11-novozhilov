@@ -12,13 +12,14 @@ import ru.otus.Dao.AuthorDao;
 import ru.otus.Dao.BookDao;
 import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Book;
-import ru.otus.Exceptions.DataBaseException;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -60,8 +61,9 @@ public class BookManagerTest {
 
 	@Test
 	public void createTest() {
+		when(bookDao.save(expected)).thenReturn(expected);
 		Book actual = underTest.create(book);
-		assertEquals(actual, expected);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -101,21 +103,17 @@ public class BookManagerTest {
 
 	@Test
 	public void updateTest() {
-		try {
-			when(bookDao.update(expected)).thenReturn(1);
-			assertTrue(underTest.update(expected) == 1);
-		} catch (DataBaseException e) {
-			fail();
-		}
+		underTest.update(expected);
+		verify(bookDao).update(expected);
 	}
 
 
 	@Test
 	public void deleteTest() {
 		try {
-			when(bookDao.delete(expected)).thenReturn(1);
-			assertTrue(underTest.delete(expected) == 1);
-		} catch (DataBaseException e) {
+			underTest.delete(expected);
+			verify(bookDao).delete(expected);
+		} catch (DBException e) {
 			fail();
 		}
 	}

@@ -10,13 +10,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.Dao.GenreDao;
 import ru.otus.Domain.Genre;
-import ru.otus.Exceptions.DataBaseException;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -91,22 +92,18 @@ public class GenreManagerTest {
 
 	@Test
 	public void updateTest() {
-		try {
-			when(genreDao.update(expected)).thenReturn(1);
-			assertTrue(underTest.update(expected) == 1);
-		} catch (DataBaseException e) {
-			fail();
-		}
+		underTest.update(expected);
+		verify(genreDao).update(expected);
 	}
 
 
 	@Test
 	public void deleteTest() {
 		try {
-			when(genreDao.delete(expected)).thenReturn(1);
-			assertTrue(underTest.delete(expected) == 1);
-		} catch (DataBaseException e) {
-			fail();
+			underTest.delete(expected);
+			verify(genreDao).delete(expected);
+		} catch (DBException e) {
+			e.printStackTrace();
 		}
 	}
 }

@@ -3,35 +3,43 @@ package ru.otus.Managers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.Dao.AuthorDao;
+import ru.otus.Dao.BookDao;
 import ru.otus.Domain.Author;
-import ru.otus.Exceptions.DataBaseException;
+import ru.otus.Exceptions.DBException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class AuthorManagerTest {
 	@MockBean
 	private AuthorDao authorDao;
+	@MockBean
+	private BookDao bookDao;
 
 	@Configuration
 	static class AuthorManagerConfiguration {
 		@Autowired
 		private AuthorDao authorDao;
+		@Autowired
+		private BookDao bookDao;
+
 
 		@Bean
 		public AuthorManager getAuthorManager() {
-			return new AuthorManager(authorDao);
+			return new AuthorManager(authorDao, bookDao);
 		}
 	}
 
@@ -50,6 +58,7 @@ public class AuthorManagerTest {
 
 	@Test
 	public void createTest() {
+		when(authorDao.save(Mockito.any(Author.class))).thenReturn(expected);
 		Author actual = underTest.create(authorName);
 		assertEquals(actual, expected);
 	}
@@ -91,22 +100,18 @@ public class AuthorManagerTest {
 
 	@Test
 	public void updateTest() {
-		try {
-			when(authorDao.update(expected)).thenReturn(1);
-			assertTrue(underTest.update(expected) == 1);
-		} catch (DataBaseException e) {
-			fail();
-		}
+		underTest.update(expected);
+		verify(authorDao).update(expected);
 	}
 
 
 	@Test
 	public void deleteTest() {
 		try {
-			when(authorDao.delete(expected)).thenReturn(1);
-			assertTrue(underTest.delete(expected) == 1);
-		} catch (DataBaseException e) {
+			underTest.delete(expected);
+		} catch (DBException e) {
 			fail();
 		}
+		verify(authorDao).delete(expected);
 	}
 }

@@ -1,55 +1,50 @@
 package ru.otus.Domain;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.*;
+import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Data
-@EqualsAndHashCode(exclude = "genres")
+@Table(name = "AUTHORS")
+@Entity
 public class Author extends Base{
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private UUID id;
 	private String name;
-	private Collection<Genre> genres;
+	@ManyToMany(fetch=FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy = "authors")
+	private Collection<Book> books;
+
+	public Author() {
+	}
 
 	public Author(String name) {
-		super();
 		this.name = name;
-	}
-
-	public Author(UUID id ,String name) {
-		super(id);
-		this.name = name;
-	}
-
-	public Author(UUID id ,String name, List<Genre> genres) {
-		super(id);
-		this.name = name;
-		this.genres = genres;
-	}
-
-	public void addGenre(Genre genre) {
-		if (this.genres == null) {
-			this.genres = new HashSet<>();
-		}
-		this.genres.add(genre);
-	}
-
-	public void addGenres(Collection<Genre> genres) {
-		if (this.genres == null) {
-			this.genres = new HashSet<>();
-		}
-		this.genres.addAll(genres);
 	}
 
 	@Override
 	public void print() {
+		Set<String> genres = new HashSet<>();
 		System.out.println(" Name: " + this.name);
-		System.out.println("Genres:");
-		if (this.genres != null && !this.genres.isEmpty()) {
-			for (Genre genre : this.genres) {
-				System.out.println("   " + genre.getName());
+		System.out.println("Books:");
+		if (this.books != null && !this.books.isEmpty()) {
+			for (Book book : this.books) {
+				genres.add(book.getGenre().getName());
+				System.out.println(" Title: " + book.getTitle());
+				System.out.println("  Genre: " + Optional.ofNullable(book.getGenre()).orElse(new Genre()).getName());
 			}
 		}
+	}
+
+	public UUID getId() {
+		return id;
 	}
 
 	public String getName() {
@@ -60,25 +55,11 @@ public class Author extends Base{
 		this.name = name;
 	}
 
-	public Collection<Genre> getGenres() {
-		return genres;
+	public Collection<Book> getBooks() {
+		return books;
 	}
 
-	public void setGenres(Collection<Genre> genres) {
-		this.genres = genres;
-	}
-
-	@Override public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		Author author = (Author) o;
-		return Objects.equals(name, author.name);
-	}
-
-	@Override public int hashCode() {
-
-		return Objects.hash(name);
+	public void setBooks(Collection<Book> books) {
+		this.books = books;
 	}
 }
