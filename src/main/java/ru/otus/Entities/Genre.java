@@ -3,6 +3,7 @@ package ru.otus.Entities;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -14,6 +15,10 @@ public class Genre {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String name;
+    @OneToMany(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "book_id")
+    private Collection<Book> book;
+
 
     public Genre() {
     }
