@@ -2,43 +2,50 @@ package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.otus.Dtos.AuthorDto;
 import ru.otus.Entities.Author;
+import org.modelmapper.ModelMapper;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Repositories.AuthorRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
-public class AuthorManager implements Manager<Author> {
+@Transactional
+public class AuthorManager implements Manager<AuthorDto> {
 
     private AuthorRepository authorRepository;
+    private ModelMapper modelMapper;
 
-    public AuthorManager(AuthorRepository authorRepository) {
+    public AuthorManager(AuthorRepository authorRepository, ModelMapper modelMapper) {
         this.authorRepository = authorRepository;
+        this.modelMapper= modelMapper;
     }
 
     @Override
-    public Author create(String name) {
+    public AuthorDto create(String name) {
         Author author = new Author(name);
         authorRepository.save(author);
-        return author;
+        return modelMapper.map(author, AuthorDto.class);
     }
 
     @Override
-    public Collection<Author> get(String name, String genre, String book) throws NotFoundException {
+    public Collection<AuthorDto> get(String name, String genre, String book) throws NotFoundException {
         Collection<Author> authors = new ArrayList<>();
         if (StringUtils.isBlank(name) && StringUtils.isBlank(genre) && StringUtils.isBlank(book)) {
             authors.addAll(authorRepository.findAll());
             if (authors == null || authors.isEmpty()) {
                 throw new NotFoundException("No Authors not found");
             }
-            return authors;
+            return authors.stream().map(a -> modelMapper.map(a, AuthorDto.class)).collect(Collectors.toList());
         } else {
             if (StringUtils.isNotBlank(name)) {
                 Author author = authorRepository.findByName(name);
                 if (author == null) {
-                    throw new NotFoundException("AuthorDto with name: " + name + " not found");
+                    throw new NotFoundException("Author with name: " + name + " not found");
                 }
                 authors.add(author);
             } else if (StringUtils.isNotBlank(book)) {
@@ -53,16 +60,16 @@ public class AuthorManager implements Manager<Author> {
                 }
             }
         }
-        return authors;
+        return authors.stream().map(a -> modelMapper.map(a, AuthorDto.class)).collect(Collectors.toList());
     }
 
     @Override
-    public Author update(Author author) {
-        return authorRepository.save(author);
+    public AuthorDto update(AuthorDto author) {
+        return modelMapper.map(authorRepository.save(modelMapper.map(author, Author.class)), AuthorDto.class);
     }
 
     @Override
-    public void delete(Author author) {
-        authorRepository.delete(author);
+    public void delete(AuthorDto author) {
+        authorRepository.delete(modelMapper.map(author, Author.class));
     }
 }

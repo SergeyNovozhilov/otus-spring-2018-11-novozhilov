@@ -8,15 +8,9 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Data
-@Table(name = "COMMENTS")
-@Entity
 public class CommentDto extends Base {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String comment;
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private BookDto bookDto;
 
     public CommentDto() {

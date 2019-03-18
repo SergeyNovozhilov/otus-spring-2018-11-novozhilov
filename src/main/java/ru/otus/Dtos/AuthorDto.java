@@ -10,6 +10,9 @@ public class AuthorDto extends Base {
 	private String name;
 	private Collection<BookDto> books;
 
+	public AuthorDto() {
+	}
+
 	public AuthorDto(String name) {
 		this.name = name;
 	}

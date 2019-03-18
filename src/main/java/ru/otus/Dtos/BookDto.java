@@ -15,6 +15,9 @@ public class BookDto extends Base {
 	private GenreDto genre;
 	private Collection<CommentDto> comments;
 
+	public BookDto() {
+	}
+
 	public BookDto(String title) {
 		this.title = title;
 	}
@@ -36,7 +39,7 @@ public class BookDto extends Base {
 	@Override
 	public void print() {
 		System.out.println(" Title: " + this.title);
-		System.out.println(" GenreDto: " + this.genre.getName());
+		System.out.println(" Genre: " + this.genre.getName());
 		System.out.println("Authors:");
 		if (this.authors != null && !this.authors.isEmpty()) {
 			for (AuthorDto authorDto : this.authors) {

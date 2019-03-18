@@ -3,6 +3,7 @@ package ru.otus.Managers;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.Dtos.GenreDto;
 import ru.otus.Entities.Genre;
 import ru.otus.Exceptions.NotFoundException;
@@ -13,6 +14,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class GenreManager implements Manager<GenreDto> {
     private GenreRepository genreRepository;
     private ModelMapper modelMapper;

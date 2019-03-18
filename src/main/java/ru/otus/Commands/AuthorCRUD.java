@@ -5,6 +5,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
+import ru.otus.Dtos.AuthorDto;
 import ru.otus.Entities.Author;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.AuthorManager;
@@ -27,22 +28,22 @@ public class AuthorCRUD {
 
 	@ShellMethod("Get AuthorDto cache")
 	public void getAuthorCache() {
-		List<Author> authors = (List<Author>)this.cache.get(Author.class);
+		List<AuthorDto> authors = (List<AuthorDto>)this.cache.get(AuthorDto.class);
 		printAuthor(authors);
 	}
 
 	@ShellMethod("Create author with name")
 	public void createAuthor(String name) {
-		Author author = authorManager.create(name);
-		cache.add(Author.class, Collections.singletonList(author));
+		AuthorDto author = authorManager.create(name);
+		cache.add(AuthorDto.class, Collections.singletonList(author));
 		printAuthor(author);
 	}
 
 	@ShellMethod("Get author by name and/or by genre and/or by book ")
 	public void getAuthor(@ShellOption(defaultValue = "") String name, @ShellOption(defaultValue = "") String genre, @ShellOption(defaultValue = "") String book) {
 		try {
-			Collection<Author> authors = authorManager.get(name, genre, book);
-			cache.add(Author.class, new ArrayList<>(authors));
+			Collection<AuthorDto> authors = authorManager.get(name, genre, book);
+			cache.add(AuthorDto.class, new ArrayList<>(authors));
 			printAuthor(authors);
 		} catch (NotFoundException e) {
 			System.out.println(e.getMessage());
@@ -51,33 +52,33 @@ public class AuthorCRUD {
 
 	@ShellMethod("Update AuthorDto by index")
 	public void updateAuthor(int index, @ShellOption(defaultValue = "")String name) {
-		Author author = (Author)cache.get(Author.class, index);
+		AuthorDto author = (AuthorDto)cache.get(AuthorDto.class, index);
 		if (author != null) {
 			author.setName(name);
 			author = authorManager.update(author);
-			cache.deleteAll(Author.class);
-			cache.add(Author.class, Collections.singletonList(author));
+			cache.deleteAll(AuthorDto.class);
+			cache.add(AuthorDto.class, Collections.singletonList(author));
 			printAuthor(author);
 		}
 	}
 
 	@ShellMethod("Delete AuthorDto by index")
 	public void deleteAuthor(int index) {
-		Author author = (Author)cache.get(Author.class, index);
+		AuthorDto author = (AuthorDto)cache.get(AuthorDto.class, index);
 		if (author != null) {
 			authorManager.delete(author);
-			cache.delete(Author.class, index);
+			cache.delete(AuthorDto.class, index);
 		}
 	}
 
-	private void printAuthor(Author author) {
+	private void printAuthor(AuthorDto author) {
 		printAuthor(Collections.singletonList(author));
 	}
 
-	private void printAuthor(Collection<Author> authors) {
-		List<Author> array = new ArrayList<>(authors);
+	private void printAuthor(Collection<AuthorDto> authors) {
+		List<AuthorDto> array = new ArrayList<>(authors);
 		for (int i = 0; i < array.size(); i ++) {
-			Author author = array.get(i);
+			AuthorDto author = array.get(i);
 			System.out.println(i + ")");
 			author.print();
 		}
