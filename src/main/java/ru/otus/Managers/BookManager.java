@@ -1,15 +1,10 @@
 package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.otus.Dtos.AuthorDto;
-import ru.otus.Dtos.BookDto;
-import ru.otus.Dtos.CommentDto;
-import ru.otus.Dtos.GenreDto;
 import ru.otus.Entities.Author;
 import ru.otus.Entities.Book;
+import ru.otus.Entities.Comment;
 import ru.otus.Entities.Genre;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Repositories.AuthorRepository;
@@ -19,68 +14,64 @@ import ru.otus.Repositories.GenreRepository;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@Transactional
-public class BookManager implements Manager<BookDto> {
+public class BookManager implements Manager<Book> {
     private AuthorRepository authorRepository;
     private GenreRepository genreRepository;
     private BookRepository bookRepository;
-    private ModelMapper modelMapper;
 
-    public BookManager(AuthorRepository authorRepository, GenreRepository genreRepository, BookRepository bookRepository, ModelMapper modelMapper) {
+    public BookManager(AuthorRepository authorRepository, GenreRepository genreRepository, BookRepository bookRepository) {
         this.authorRepository = authorRepository;
         this.genreRepository = genreRepository;
         this.bookRepository = bookRepository;
-        this.modelMapper = modelMapper;
     }
 
     @Override
-    public BookDto create(String title) {
+    public Book create(String title) {
         Book book = new Book(title);
-        return modelMapper.map(bookRepository.save(book), BookDto.class);
+        return bookRepository.save(book);
     }
 
-    public BookDto addGenre(BookDto book, String genreName) {
+    public Book addGenre(Book book, String genreName) {
         Genre genre = genreRepository.findByName(genreName);
         if (genre == null) {
             genre = new Genre(genreName);
             genreRepository.save(genre);
         }
-        book.setGenre(modelMapper.map(genre, GenreDto.class));
+        book.setGenre(genre);
 
-        return modelMapper.map(bookRepository.save(modelMapper.map(book, Book.class)), BookDto.class);
+        return bookRepository.save(book);
     }
 
-    public BookDto addAuthors(BookDto book, List<String> authors) {
+    public Book addAuthors(Book book, List<String> authors) {
         authors.forEach(a -> {
             Author author = authorRepository.findByName(a);
             if (author == null) {
                 author = new Author(a);
                 authorRepository.save(author);
             }
-            book.addAuthor(modelMapper.map(author, AuthorDto.class));
+            book.addAuthor(author);
         });
 
-        return modelMapper.map(bookRepository.save(modelMapper.map(book, Book.class)), BookDto.class);
+        return bookRepository.save(book);
     }
 
-    public BookDto addComment(BookDto book, String comment) {
-        book.addComment(new CommentDto(comment));
+    public Book addComment(Book book, String comment) {
+        book.addComment(new Comment(comment));
 
-        return modelMapper.map(bookRepository.save(modelMapper.map(book, Book.class)), BookDto.class);
+        return bookRepository.save(book);
     }
 
-    public BookDto removeComment(BookDto book, String comment) {
-        CommentDto commentObj = book.getComments().stream().filter(c -> StringUtils.equalsIgnoreCase(c.getComment(), comment)).findAny().orElse(null);
+    public Book removeComment(Book book, String comment) {
+        Comment commentObj = book.getComments().stream().filter(c -> StringUtils.equalsIgnoreCase(c.getComment(), comment)).findAny().orElse(null);
         book.getComments().remove(commentObj);
 
-        return modelMapper.map(bookRepository.save(modelMapper.map(book, Book.class)), BookDto.class);
+        return bookRepository.save(book);
     }
 
     @Override
-    public Collection<BookDto> get(String title, String genre, String author) throws NotFoundException {
+    public Collection<Book> get(String title, String genre, String author) throws NotFoundException {
         Collection<Book> books = new ArrayList<>();
         Collection<Book> booksByTitle = null;
         Collection<Book> booksByGenre = null;
@@ -133,19 +124,19 @@ public class BookManager implements Manager<BookDto> {
     }
 
     @Override
-    public BookDto update(BookDto book) {
-        return modelMapper.map(bookRepository.save(modelMapper.map(book, Book.class)), BookDto.class);
+    public Book update(Book book) {
+        return bookRepository.save(book);
     }
 
     @Override
-    public void delete(BookDto book) {
-        bookRepository.delete(modelMapper.map(book, Book.class));
+    public void delete(Book book) {
+        bookRepository.delete(book);
     }
 
-    private Collection<BookDto> returnBooks(Collection<Book> books) throws NotFoundException{
+    private Collection<Book> returnBooks(Collection<Book> books) throws NotFoundException{
         if (books == null || books.isEmpty()) {
             throw new NotFoundException("No Books were found.");
         }
-        return books.stream().map(b -> modelMapper.map(b, BookDto.class)).collect(Collectors.toSet());
+        return books;
     }
 }

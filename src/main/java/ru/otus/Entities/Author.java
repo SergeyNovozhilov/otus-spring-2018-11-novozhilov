@@ -8,7 +8,7 @@ import java.util.*;
 @Data
 @Table(name = "AUTHORS")
 @Entity
-public class Author {
+public class Author implements IPrint{
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
@@ -60,5 +60,10 @@ public class Author {
 	@Override public int hashCode() {
 
 		return Objects.hash(id, name);
+	}
+
+	@Override
+	public void print() {
+		System.out.println(name);
 	}
 }

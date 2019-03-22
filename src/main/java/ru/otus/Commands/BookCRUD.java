@@ -5,7 +5,6 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.Cache.Cache;
-import ru.otus.Dtos.BookDto;
 import ru.otus.Entities.Book;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.BookManager;
@@ -25,15 +24,15 @@ public class BookCRUD {
 		this.cache = cache;
 	}
 
-	@ShellMethod("Get BookDto cache")
+	@ShellMethod("Get Book cache")
 	public void getBookCache() {
-		List<BookDto> books = (List<BookDto>)this.cache.get(BookDto.class);
+		List<Book> books = (List<Book>)this.cache.get(Book.class);
 		printBook(books);
 	}
 
-	@ShellMethod("Create BookDto with title, genre and authors")
+	@ShellMethod("Create Book with title, genre and authors")
 	public void createBook(String title, String genre, String author) {
-		BookDto book = bookManager.create(title);
+		Book book = bookManager.create(title);
 		if (book != null) {
 			book = bookManager.addGenre(book, genre);
 
@@ -43,25 +42,25 @@ public class BookCRUD {
 				book = bookManager.addAuthors(book, Arrays.asList(authors));
 			}
 
-			cache.add(BookDto.class, Collections.singletonList(book));
+			cache.add(Book.class, Collections.singletonList(book));
 			printBook(book);
 		}
 	}
 
-	@ShellMethod("Get BookDto by title and/or by genre and/or by author ")
+	@ShellMethod("Get Book by title and/or by genre and/or by author ")
 	public void getBook(@ShellOption(defaultValue = "") String title, @ShellOption(defaultValue = "") String genre, @ShellOption(defaultValue = "") String author) {
 		try {
-			Collection<BookDto> books = bookManager.get(title, genre, author);
-			cache.add(BookDto.class, new ArrayList<>(books));
+			Collection<Book> books = bookManager.get(title, genre, author);
+			cache.add(Book.class, new ArrayList<>(books));
 			printBook(books);
 		} catch (NotFoundException e) {
 			System.out.println(e.getMessage());
 		}
 	}
 
-	@ShellMethod("Update BookDto by index")
+	@ShellMethod("Update Book by index")
 	public void updateBook(int index, @ShellOption(defaultValue = "")String title, @ShellOption(defaultValue = "") String genre, @ShellOption(defaultValue = "")String author) {
-		BookDto book = (BookDto)cache.get(BookDto.class, index);
+		Book book = (Book)cache.get(Book.class, index);
 		if (book != null) {
 			if (StringUtils.isNotBlank(title)) {
 				book.setTitle(title);
@@ -78,49 +77,49 @@ public class BookCRUD {
 				}
 			}
 
-			cache.deleteAll(BookDto.class);
-			cache.add(BookDto.class, Collections.singletonList(book));
+			cache.deleteAll(Book.class);
+			cache.add(Book.class, Collections.singletonList(book));
 			printBook(book);
 		}
 	}
 
 	@ShellMethod("Add comment by book's index")
 	public void addComment(int index, String comment) {
-		BookDto book = (BookDto)cache.get(BookDto.class, index);
+		Book book = (Book)cache.get(Book.class, index);
 		if (book != null) {
 			book = bookManager.addComment(book, comment);
-			cache.delete(BookDto.class, index);
-			cache.add(BookDto.class, Collections.singletonList(book));
+			cache.delete(Book.class, index);
+			cache.add(Book.class, Collections.singletonList(book));
 			printBook(book);
 		}
 	}
 
 	@ShellMethod("Remove comment by book's index")
 	public void removeComment(int index, String comment) {
-		BookDto book = (BookDto)cache.get(BookDto.class, index);
+		Book book = (Book)cache.get(Book.class, index);
 		if (book != null) {
 			book = bookManager.removeComment(book, comment);
-			cache.delete(BookDto.class, index);
-			cache.add(BookDto.class, Collections.singletonList(book));
+			cache.delete(Book.class, index);
+			cache.add(Book.class, Collections.singletonList(book));
 			printBook(book);
 		}
 	}
 
 	@ShellMethod("Delete Book by index")
 	public void deleteBook(int index) {
-		BookDto book = (BookDto)cache.get(BookDto.class, index);
+		Book book = (Book)cache.get(Book.class, index);
 		bookManager.delete(book);
 		cache.delete(Book.class, index);
 	}
 
-	private void printBook(/*@NotNull */ BookDto book) {
+	private void printBook(/*@NotNull */ Book book) {
 		printBook(Collections.singletonList(book));
 	}
 
-	private void printBook(/*@NotNull*/ Collection<BookDto> books) {
-		List<BookDto> array = new ArrayList<>(books);
+	private void printBook(/*@NotNull*/ Collection<Book> books) {
+		List<Book> array = new ArrayList<>(books);
 		for (int i = 0; i < array.size(); i ++) {
-			BookDto book = array.get(i);
+			Book book = array.get(i);
 			System.out.println(i + ")");
 			book.print();
 		}

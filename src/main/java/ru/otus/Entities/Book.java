@@ -11,7 +11,7 @@ import java.util.UUID;
 @Data
 @Table(name = "BOOKS")
 @Entity
-public class Book {
+public class Book implements IPrint{
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
@@ -120,5 +120,17 @@ public class Book {
 	@Override public int hashCode() {
 
 		return Objects.hash(id, title, genre);
+	}
+
+	@Override
+	public void print() {
+		System.out.println("Title: " + title);
+		if (genre != null) {
+			System.out.println("  Genre: " + genre.getName());
+		}
+		if (authors != null) {
+			System.out.println("  Authors: ");
+			authors.forEach(a -> System.out.println("   " + a.getName()));
+		}
 	}
 }

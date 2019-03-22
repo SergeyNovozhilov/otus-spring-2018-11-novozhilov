@@ -10,7 +10,7 @@ import java.util.UUID;
 @Data
 @Table(name = "COMMENTS")
 @Entity
-public class Comment {
+public class Comment implements IPrint{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -49,5 +49,10 @@ public class Comment {
 
     public void setBook(Book book) {
         this.book = book;
+    }
+
+    @Override
+    public void print() {
+        System.out.println(comment);
     }
 }

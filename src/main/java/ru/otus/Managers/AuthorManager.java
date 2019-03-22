@@ -2,45 +2,38 @@ package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.otus.Dtos.AuthorDto;
 import ru.otus.Entities.Author;
-import org.modelmapper.ModelMapper;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Repositories.AuthorRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Service
-@Transactional
-public class AuthorManager implements Manager<AuthorDto> {
+public class AuthorManager implements Manager<Author> {
 
     private AuthorRepository authorRepository;
-    private ModelMapper modelMapper;
 
-    public AuthorManager(AuthorRepository authorRepository, ModelMapper modelMapper) {
+    public AuthorManager(AuthorRepository authorRepository) {
         this.authorRepository = authorRepository;
-        this.modelMapper= modelMapper;
     }
 
     @Override
-    public AuthorDto create(String name) {
+    public Author create(String name) {
         Author author = new Author(name);
-        authorRepository.save(author);
-        return modelMapper.map(author, AuthorDto.class);
+
+        return authorRepository.save(author);
     }
 
     @Override
-    public Collection<AuthorDto> get(String name, String genre, String book) throws NotFoundException {
+    public Collection<Author> get(String name, String genre, String book) throws NotFoundException {
         Collection<Author> authors = new ArrayList<>();
         if (StringUtils.isBlank(name) && StringUtils.isBlank(genre) && StringUtils.isBlank(book)) {
             authors.addAll(authorRepository.findAll());
             if (authors == null || authors.isEmpty()) {
                 throw new NotFoundException("No Authors not found");
             }
-            return authors.stream().map(a -> modelMapper.map(a, AuthorDto.class)).collect(Collectors.toList());
+            return authors;
         } else {
             if (StringUtils.isNotBlank(name)) {
                 Author author = authorRepository.findByName(name);
@@ -60,16 +53,16 @@ public class AuthorManager implements Manager<AuthorDto> {
                 }
             }
         }
-        return authors.stream().map(a -> modelMapper.map(a, AuthorDto.class)).collect(Collectors.toList());
+        return authors;
     }
 
     @Override
-    public AuthorDto update(AuthorDto author) {
-        return modelMapper.map(authorRepository.save(modelMapper.map(author, Author.class)), AuthorDto.class);
+    public Author update(Author author) {
+        return authorRepository.save(author);
     }
 
     @Override
-    public void delete(AuthorDto author) {
-        authorRepository.delete(modelMapper.map(author, Author.class));
+    public void delete(Author author) {
+        authorRepository.delete(author);
     }
 }
