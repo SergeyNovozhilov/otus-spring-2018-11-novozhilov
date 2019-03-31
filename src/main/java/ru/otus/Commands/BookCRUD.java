@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.Cache.Cache;
 import ru.otus.Entities.Book;
 import ru.otus.Exceptions.NotFoundException;
@@ -48,6 +49,7 @@ public class BookCRUD {
 	}
 
 	@ShellMethod("Get Book by title and/or by genre and/or by author ")
+	@Transactional
 	public void getBook(@ShellOption(defaultValue = "") String title, @ShellOption(defaultValue = "") String genre, @ShellOption(defaultValue = "") String author) {
 		try {
 			Collection<Book> books = bookManager.get(title, genre, author);

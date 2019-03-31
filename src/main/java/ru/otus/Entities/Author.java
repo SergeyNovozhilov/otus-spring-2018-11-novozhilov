@@ -65,5 +65,12 @@ public class Author implements IPrint{
 	@Override
 	public void print() {
 		System.out.println(name);
+		if (books != null) {
+			System.out.println("Books");
+			books.forEach(book -> {
+				System.out.println(" " + book.getTitle());
+				System.out.println(" Genre: " + book.getGenre().getName());
+			});
+		}
 	}
 }

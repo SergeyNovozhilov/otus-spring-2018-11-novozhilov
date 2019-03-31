@@ -4,6 +4,7 @@ package ru.otus.Commands;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.Cache.Cache;
 import ru.otus.Entities.Author;
 import ru.otus.Exceptions.NotFoundException;
@@ -39,6 +40,7 @@ public class AuthorCRUD {
 	}
 
 	@ShellMethod("Get author by name and/or by genre and/or by book ")
+	@Transactional
 	public void getAuthor(@ShellOption(defaultValue = "") String name, @ShellOption(defaultValue = "") String genre, @ShellOption(defaultValue = "") String book) {
 		try {
 			Collection<Author> authors = authorManager.get(name, genre, book);
