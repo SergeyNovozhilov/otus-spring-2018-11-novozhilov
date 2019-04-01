@@ -76,7 +76,11 @@ public class GenreCRUD {
 		for (int i = 0; i < array.size(); i ++) {
 			Genre genre = array.get(i);
 			System.out.println(i + ")");
-			genre.print();
+			print(genre);
 		}
+	}
+
+	private void print(Genre genre) {
+		System.out.println(genre.getName());
 	}
 }

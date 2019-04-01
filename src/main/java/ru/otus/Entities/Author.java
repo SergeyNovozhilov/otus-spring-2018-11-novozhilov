@@ -8,7 +8,7 @@ import java.util.*;
 @Data
 @Table(name = "AUTHORS")
 @Entity
-public class Author implements IPrint{
+public class Author implements IEntity{
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
@@ -60,17 +60,5 @@ public class Author implements IPrint{
 	@Override public int hashCode() {
 
 		return Objects.hash(id, name);
-	}
-
-	@Override
-	public void print() {
-		System.out.println(name);
-		if (books != null) {
-			System.out.println("Books");
-			books.forEach(book -> {
-				System.out.println(" " + book.getTitle());
-				System.out.println(" Genre: " + book.getGenre().getName());
-			});
-		}
 	}
 }

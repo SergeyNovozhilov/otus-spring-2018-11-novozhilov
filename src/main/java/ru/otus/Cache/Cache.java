@@ -1,7 +1,7 @@
 package ru.otus.Cache;
 
 import org.springframework.stereotype.Service;
-import ru.otus.Entities.IPrint;
+import ru.otus.Entities.IEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,13 +10,13 @@ import java.util.Map;
 
 @Service
 public class Cache {
-	private final Map<Class<? extends IPrint>, List<? extends IPrint>> cache;
+	private final Map<Class<? extends IEntity>, List<? extends IEntity>> cache;
 
 	public Cache() {
 		this.cache = new HashMap<>();
 	}
 
-	public void add(Class<? extends IPrint> clazz, List objects) {
+	public void add(Class<? extends IEntity> clazz, List objects) {
 		deleteAll(clazz);
 		if (!cache.containsKey(clazz)) {
 			cache.put(clazz, new ArrayList<>());
@@ -31,21 +31,21 @@ public class Cache {
 		cache.get(clazz).remove(index);
 	}
 
-	public void deleteAll(Class<? extends IPrint> clazz) {
+	public void deleteAll(Class<? extends IEntity> clazz) {
 		if (!cache.containsKey(clazz)) {
 			return;
 		}
 		cache.replace(clazz, cache.get(clazz), new ArrayList<>());
 	}
 
-	public List<? extends IPrint> get(Class<? extends IPrint> clazz) {
+	public List<? extends IEntity> get(Class<? extends IEntity> clazz) {
 		if (!cache.containsKey(clazz)) {
 			return new ArrayList<>();
 		}
 		return cache.get(clazz);
 	}
 
-	public IPrint get(Class<? extends IPrint> clazz, int index) {
+	public IEntity get(Class<? extends IEntity> clazz, int index) {
 		if (!cache.containsKey(clazz) || cache.get(clazz).size() < index - 1) {
 			return null;
 		}

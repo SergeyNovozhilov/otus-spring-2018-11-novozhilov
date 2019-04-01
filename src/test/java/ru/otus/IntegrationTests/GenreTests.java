@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class GenreDaoTests {
+public class GenreTests {
 
     @Autowired
     private TestEntityManager testEntityManager;

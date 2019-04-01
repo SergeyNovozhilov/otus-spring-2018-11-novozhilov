@@ -1,12 +1,12 @@
 package ru.otus.Managers;
 
-import ru.otus.Entities.IPrint;
+import ru.otus.Entities.IEntity;
 import ru.otus.Exceptions.DataBaseException;
 import ru.otus.Exceptions.NotFoundException;
 
 import java.util.Collection;
 
-public interface Manager <T extends IPrint>{
+public interface Manager <T extends IEntity>{
     T create(String name);
 
     Collection<T> get(String arg0, String arg1, String arg2) throws NotFoundException;

@@ -4,14 +4,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.annotation.Id;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.Dtos.BookDto;
 import ru.otus.Entities.Book;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Repositories.AuthorRepository;
@@ -21,7 +18,9 @@ import ru.otus.Repositories.GenreRepository;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,12 +42,10 @@ public class BookManagerTest {
 		private AuthorRepository authorRepository;
 		@Autowired
 		private GenreRepository genreRepository;
-		@Autowired
-		private ModelMapper modelMapper;
 
 		@Bean
 		public BookManager getBookManager() {
-			return new BookManager(authorRepository, genreRepository, bookRepository, modelMapper);
+			return new BookManager(authorRepository, genreRepository, bookRepository);
 		}
 	}
 
@@ -56,7 +53,7 @@ public class BookManagerTest {
 	@Autowired
 	private BookManager underTest;
 
-	private String book = "BookDto";
+	private String book = "Book";
 	private Book expected;
 
 
@@ -68,7 +65,7 @@ public class BookManagerTest {
 	@Test
 	public void createTest() {
 		when(bookRepository.save(expected)).thenReturn(expected);
-		BookDto actual = underTest.create(book);
+		Book actual = underTest.create(book);
 		assertEquals(expected, actual);
 	}
 
@@ -76,7 +73,7 @@ public class BookManagerTest {
 	public void getByTitleTest() {
 		try {
 			when(bookRepository.findByTitle(book)).thenReturn(Collections.singleton(expected));
-			Collection<BookDto> actual = underTest.get(book, "", "");
+			Collection<Book> actual = underTest.get(book, "", "");
 			assertTrue(actual.contains(expected));
 		} catch (NotFoundException e) {
 			fail();
@@ -85,10 +82,10 @@ public class BookManagerTest {
 
 	@Test
 	public void getByAuthorTest() {
-		String name = "AuthorDto";
+		String name = "Author";
 		try {
 			when(bookRepository.findByAuthor(name)).thenReturn(Collections.singleton(expected));
-			Collection<BookDto> actual = underTest.get("", "", name);
+			Collection<Book> actual = underTest.get("", "", name);
 			assertTrue(actual.contains(expected));
 		} catch (NotFoundException e) {
 			fail();
@@ -97,10 +94,10 @@ public class BookManagerTest {
 
 	@Test
 	public void getByGenreTest() {
-		String genre = "GenreDto";
+		String genre = "Genre";
 		try {
 			when(bookRepository.findByGenre(genre)).thenReturn(Collections.singleton(expected));
-			Collection<BookDto> actual = underTest.get("", genre, "");
+			Collection<Book> actual = underTest.get("", genre, "");
 			assertTrue(actual.contains(expected));
 		} catch (NotFoundException e) {
 			fail();
@@ -109,14 +106,14 @@ public class BookManagerTest {
 
 	@Test
 	public void updateTest() {
-//		underTest.update(expected);
-//		verify(bookRepository).save(expected);
+		underTest.update(expected);
+		verify(bookRepository).save(expected);
 	}
 
 
 	@Test
 	public void deleteTest() {
-//		underTest.delete(expected);
-//		verify(bookRepository).delete(expected);
+		underTest.delete(expected);
+		verify(bookRepository).delete(expected);
 	}
 }

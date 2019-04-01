@@ -81,7 +81,18 @@ public class AuthorCRUD {
 		for (int i = 0; i < array.size(); i ++) {
 			Author author = array.get(i);
 			System.out.println(i + ")");
-			author.print();
+			print(author);
+		}
+	}
+
+	private void print (Author author) {
+		System.out.println(author.getName());
+		if (author.getBooks() != null) {
+			System.out.println("Books");
+			author.getBooks().forEach(book -> {
+				System.out.println(" " + book.getTitle());
+				System.out.println(" Genre: " + book.getGenre().getName());
+			});
 		}
 	}
 }

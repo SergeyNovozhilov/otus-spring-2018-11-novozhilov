@@ -15,7 +15,7 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
 	@Query("select distinct b from Book b left join fetch b.authors a")
 	List<Book> findAll();
 
-	@Query("select distinct b from Book b left join fetch b.authors a where b.title = : title")
+	@Query("select distinct b from Book b left join fetch b.authors a where b.title = :title")
 	Collection<Book> findByTitle(@Param("title") String title);
 
 	@Query("select distinct b from Book b left join b.authors a where a.name = :author")

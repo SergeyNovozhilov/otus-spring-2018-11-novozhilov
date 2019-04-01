@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class BookDaoTests {
+public class BookTests {
 
 	@Autowired
 	private TestEntityManager testEntityManager;
@@ -31,19 +31,18 @@ public class BookDaoTests {
 	@Autowired
 	private BookRepository bookRepository;
 
-	@Ignore
 	@Test
 	public void getAll() {
-		List<Book> expected = Arrays.asList(new Book("BookDto"), new Book("Book1"));
+		List<Book> expected = Arrays.asList(new Book("Book"), new Book("Book1"));
 		expected.forEach(e -> testEntityManager.persist(e));
 		testEntityManager.flush();
 		Collection<Book> actual = bookRepository.findAll();
-		assertEquals(actual, expected);
+		assertTrue(actual.containsAll(expected));
 	}
 
 	@Test
 	public void getByTitle() {
-		Book expected = new Book("BookDto by Steven King");
+		Book expected = new Book("Book by Steven King");
 		testEntityManager.persistAndFlush(expected);
 		Collection<Book> actual = bookRepository.findByTitle(expected.getTitle());
 		assertTrue(actual.size() == 1);

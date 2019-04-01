@@ -4,13 +4,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.Dtos.GenreDto;
 import ru.otus.Entities.Genre;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Repositories.GenreRepository;
@@ -18,7 +16,9 @@ import ru.otus.Repositories.GenreRepository;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,12 +32,10 @@ public class GenreManagerTest {
 	static class GenreManagerConfiguration {
 		@Autowired
 		private GenreRepository genreRepository;
-		@Autowired
-		private ModelMapper modelMapper;
 
 		@Bean
 		public GenreManager getGenreManager() {
-			return new GenreManager(genreRepository, modelMapper);
+			return new GenreManager(genreRepository);
 		}
 	}
 
@@ -56,7 +54,7 @@ public class GenreManagerTest {
 
 	@Test
 	public void createTest() {
-		GenreDto actual = underTest.create(genreName);
+		Genre actual = underTest.create(genreName);
 		assertEquals(actual, expected);
 	}
 
@@ -64,7 +62,7 @@ public class GenreManagerTest {
 	public void getByNameTest() {
 		try {
 			when(genreRepository.findByName(genreName)).thenReturn(expected);
-			Collection<GenreDto> actual = underTest.get(genreName, "", "");
+			Collection<Genre> actual = underTest.get(genreName, "", "");
 			assertTrue(actual.contains(expected));
 		} catch (NotFoundException e) {
 			fail();
@@ -73,10 +71,10 @@ public class GenreManagerTest {
 
 	@Test
 	public void getByBookTest() {
-		String title = "BookDto";
+		String title = "Book";
 		try {
 			when(genreRepository.findByBook(title)).thenReturn(expected);
-			Collection<GenreDto> actual = underTest.get("", title, "");
+			Collection<Genre> actual = underTest.get("", title, "");
 			assertTrue(actual.contains(expected));
 		} catch (NotFoundException e) {
 			fail();
@@ -85,10 +83,10 @@ public class GenreManagerTest {
 
 	@Test
 	public void getByAuthorTest() {
-		String author = "AuthorDto";
+		String author = "Author";
 		try {
 			when(genreRepository.findByAuthor(author)).thenReturn(Collections.singleton(expected));
-			Collection<GenreDto> actual = underTest.get("", "", author);
+			Collection<Genre> actual = underTest.get("", "", author);
 			assertTrue(actual.contains(expected));
 		} catch (NotFoundException e) {
 			fail();
@@ -97,14 +95,14 @@ public class GenreManagerTest {
 
 	@Test
 	public void updateTest() {
-//		underTest.update(expected);
-//		verify(genreRepository).save(expected);
+		underTest.update(expected);
+		verify(genreRepository).save(expected);
 	}
 
 
 	@Test
 	public void deleteTest() {
-//		underTest.delete(expected);
-//		verify(genreRepository).delete(expected);
+		underTest.delete(expected);
+		verify(genreRepository).delete(expected);
 	}
 }

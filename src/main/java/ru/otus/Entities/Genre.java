@@ -10,7 +10,7 @@ import java.util.UUID;
 @Data
 @Table(name = "GENRES")
 @Entity
-public class Genre implements IPrint{
+public class Genre implements IEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -60,10 +60,5 @@ public class Genre implements IPrint{
     @Override public int hashCode() {
 
         return Objects.hash(id, name);
-    }
-
-    @Override
-    public void print() {
-        System.out.println(name);
     }
 }

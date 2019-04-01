@@ -123,7 +123,22 @@ public class BookCRUD {
 		for (int i = 0; i < array.size(); i ++) {
 			Book book = array.get(i);
 			System.out.println(i + ")");
-			book.print();
+			print(book);
+		}
+	}
+
+	private void print(Book book) {
+		System.out.println("Title: " + book.getTitle());
+		if (book.getGenre() != null) {
+			System.out.println("  Genre: " + book.getGenre().getName());
+		}
+		if (book.getAuthors() != null) {
+			System.out.println("  Authors: ");
+			book.getAuthors().forEach(a -> System.out.println("   " + a.getName()));
+		}
+		if (book.getComments() != null) {
+			System.out.println("  Comments: ");
+			book.getComments().forEach(c -> System.out.println("   " + c.getComment()));
 		}
 	}
 }
