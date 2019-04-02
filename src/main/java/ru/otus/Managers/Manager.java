@@ -1,12 +1,12 @@
-package ru.otus.Managers;
+package ru.otus.managers;
 
-import ru.otus.Entities.IEntity;
-import ru.otus.Exceptions.DataBaseException;
-import ru.otus.Exceptions.NotFoundException;
+import ru.otus.entities.Entity;
+import ru.otus.exceptions.DataBaseException;
+import ru.otus.exceptions.NotFoundException;
 
 import java.util.Collection;
 
-public interface Manager <T extends IEntity>{
+public interface Manager <T extends Entity>{
     T create(String name);
 
     Collection<T> get(String arg0, String arg1, String arg2) throws NotFoundException;

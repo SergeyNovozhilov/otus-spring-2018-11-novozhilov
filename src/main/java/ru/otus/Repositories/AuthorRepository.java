@@ -1,9 +1,9 @@
-package ru.otus.Repositories;
+package ru.otus.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import ru.otus.Entities.Author;
+import ru.otus.entities.Author;
 
 import java.util.Collection;
 import java.util.UUID;

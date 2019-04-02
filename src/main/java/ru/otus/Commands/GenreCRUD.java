@@ -1,13 +1,13 @@
-package ru.otus.Commands;
+package ru.otus.commands;
 
-//import org.jetbrains.annotations.NotNull;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import ru.otus.Cache.Cache;
-import ru.otus.Entities.Genre;
-import ru.otus.Exceptions.NotFoundException;
-import ru.otus.Managers.GenreManager;
+import ru.otus.cache.Cache;
+import ru.otus.entities.Genre;
+import ru.otus.exceptions.NotFoundException;
+import ru.otus.managers.GenreManager;
+import ru.otus.services.EntityPrinter;
 
 import java.util.*;
 
@@ -23,15 +23,14 @@ public class GenreCRUD {
 
 	@ShellMethod("Get Genre cache")
 	public void getGenreCache() {
-		List<Genre> genres = (List<Genre>)this.cache.get(Genre.class);
-		printGenre(genres);
+		EntityPrinter.print(Collections.unmodifiableList(this.cache.get(Genre.class)));
 	}
 
 	@ShellMethod("Create genre")
 	public void createGenre(String name) {
 	    Genre genre = genreManager.create(name);
 	    cache.add(Genre.class, Collections.singletonList(genre));
-	    printGenre(genre);
+		EntityPrinter.print(genre);
 	}
 
 	@ShellMethod("Get genre by name or by author or by book")
@@ -39,7 +38,7 @@ public class GenreCRUD {
         try {
             Collection<Genre> genres = genreManager.get(name, book, author);
             cache.add(Genre.class, new ArrayList<>(genres));
-            printGenre(genres);
+			  EntityPrinter.print(Collections.unmodifiableCollection(genres));
         } catch (NotFoundException e) {
             System.out.println(e.getMessage());
         }
@@ -53,7 +52,7 @@ public class GenreCRUD {
 			genreManager.update(genre);
 			cache.deleteAll(Genre.class);
 			cache.add(Genre.class, Collections.singletonList(genre));
-			printGenre(genre);
+			EntityPrinter.print(genre);
 		}
     }
 
@@ -65,22 +64,5 @@ public class GenreCRUD {
 			genreManager.delete(genre);
 			cache.delete(Genre.class, index);
 		}
-	}
-
-	private void printGenre(Genre genre) {
-		printGenre(Collections.singletonList(genre));
-	}
-
-	private void printGenre(Collection<Genre> genres) {
-		List<Genre> array = new ArrayList<>(genres);
-		for (int i = 0; i < array.size(); i ++) {
-			Genre genre = array.get(i);
-			System.out.println(i + ")");
-			print(genre);
-		}
-	}
-
-	private void print(Genre genre) {
-		System.out.println(genre.getName());
 	}
 }

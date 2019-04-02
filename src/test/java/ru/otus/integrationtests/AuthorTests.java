@@ -1,4 +1,4 @@
-package ru.otus.IntegrationTests;
+package ru.otus.integrationtests;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -8,10 +8,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.Entities.Author;
-import ru.otus.Entities.Book;
-import ru.otus.Entities.Genre;
-import ru.otus.Repositories.AuthorRepository;
+import ru.otus.entities.Author;
+import ru.otus.entities.Book;
+import ru.otus.entities.Genre;
+import ru.otus.repositories.AuthorRepository;
 
 import java.util.*;
 

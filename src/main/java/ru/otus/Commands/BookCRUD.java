@@ -1,18 +1,17 @@
-package ru.otus.Commands;
+package ru.otus.commands;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.Cache.Cache;
-import ru.otus.Entities.Book;
-import ru.otus.Exceptions.NotFoundException;
-import ru.otus.Managers.BookManager;
+import ru.otus.cache.Cache;
+import ru.otus.entities.Book;
+import ru.otus.exceptions.NotFoundException;
+import ru.otus.managers.BookManager;
+import ru.otus.services.EntityPrinter;
 
 import java.util.*;
-
-//import org.jetbrains.annotations.NotNull;
 
 @ShellComponent
 public class BookCRUD {
@@ -27,8 +26,7 @@ public class BookCRUD {
 
 	@ShellMethod("Get Book cache")
 	public void getBookCache() {
-		List<Book> books = (List<Book>)this.cache.get(Book.class);
-		printBook(books);
+		EntityPrinter.print(Collections.unmodifiableList(this.cache.get(Book.class)));
 	}
 
 	@ShellMethod("Create Book with title, genre and authors")
@@ -44,7 +42,7 @@ public class BookCRUD {
 			}
 
 			cache.add(Book.class, Collections.singletonList(book));
-			printBook(book);
+			EntityPrinter.print(book);
 		}
 	}
 
@@ -54,7 +52,7 @@ public class BookCRUD {
 		try {
 			Collection<Book> books = bookManager.get(title, genre, author);
 			cache.add(Book.class, new ArrayList<>(books));
-			printBook(books);
+			EntityPrinter.print(Collections.unmodifiableCollection(books));
 		} catch (NotFoundException e) {
 			System.out.println(e.getMessage());
 		}
@@ -81,7 +79,8 @@ public class BookCRUD {
 
 			cache.deleteAll(Book.class);
 			cache.add(Book.class, Collections.singletonList(book));
-			printBook(book);
+
+			EntityPrinter.print(book);
 		}
 	}
 
@@ -92,7 +91,7 @@ public class BookCRUD {
 			book = bookManager.addComment(book, comment);
 			cache.delete(Book.class, index);
 			cache.add(Book.class, Collections.singletonList(book));
-			printBook(book);
+			EntityPrinter.print(book);
 		}
 	}
 
@@ -103,7 +102,7 @@ public class BookCRUD {
 			book = bookManager.removeComment(book, comment);
 			cache.delete(Book.class, index);
 			cache.add(Book.class, Collections.singletonList(book));
-			printBook(book);
+			EntityPrinter.print(book);
 		}
 	}
 
@@ -112,33 +111,5 @@ public class BookCRUD {
 		Book book = (Book)cache.get(Book.class, index);
 		bookManager.delete(book);
 		cache.delete(Book.class, index);
-	}
-
-	private void printBook(/*@NotNull */ Book book) {
-		printBook(Collections.singletonList(book));
-	}
-
-	private void printBook(/*@NotNull*/ Collection<Book> books) {
-		List<Book> array = new ArrayList<>(books);
-		for (int i = 0; i < array.size(); i ++) {
-			Book book = array.get(i);
-			System.out.println(i + ")");
-			print(book);
-		}
-	}
-
-	private void print(Book book) {
-		System.out.println("Title: " + book.getTitle());
-		if (book.getGenre() != null) {
-			System.out.println("  Genre: " + book.getGenre().getName());
-		}
-		if (book.getAuthors() != null) {
-			System.out.println("  Authors: ");
-			book.getAuthors().forEach(a -> System.out.println("   " + a.getName()));
-		}
-		if (book.getComments() != null) {
-			System.out.println("  Comments: ");
-			book.getComments().forEach(c -> System.out.println("   " + c.getComment()));
-		}
 	}
 }

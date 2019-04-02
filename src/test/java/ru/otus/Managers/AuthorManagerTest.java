@@ -1,4 +1,4 @@
-package ru.otus.Managers;
+package ru.otus.managers;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -9,9 +9,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.Entities.Author;
-import ru.otus.Exceptions.NotFoundException;
-import ru.otus.Repositories.AuthorRepository;
+import ru.otus.entities.Author;
+import ru.otus.exceptions.NotFoundException;
+import ru.otus.repositories.AuthorRepository;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package ru.otus.Entities;
+package ru.otus.entities;
 
 import lombok.Data;
 
@@ -10,8 +10,8 @@ import java.util.UUID;
 
 @Data
 @Table(name = "BOOKS")
-@Entity
-public class Book implements IEntity {
+@javax.persistence.Entity
+public class Book implements Entity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;

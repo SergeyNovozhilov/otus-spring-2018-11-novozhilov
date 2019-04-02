@@ -1,15 +1,15 @@
-package ru.otus.Managers;
+package ru.otus.managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import ru.otus.Entities.Author;
-import ru.otus.Entities.Book;
-import ru.otus.Entities.Comment;
-import ru.otus.Entities.Genre;
-import ru.otus.Exceptions.NotFoundException;
-import ru.otus.Repositories.AuthorRepository;
-import ru.otus.Repositories.BookRepository;
-import ru.otus.Repositories.GenreRepository;
+import ru.otus.entities.Author;
+import ru.otus.entities.Book;
+import ru.otus.entities.Comment;
+import ru.otus.entities.Genre;
+import ru.otus.exceptions.NotFoundException;
+import ru.otus.repositories.AuthorRepository;
+import ru.otus.repositories.BookRepository;
+import ru.otus.repositories.GenreRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;

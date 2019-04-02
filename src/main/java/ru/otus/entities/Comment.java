@@ -1,4 +1,4 @@
-package ru.otus.Entities;
+package ru.otus.entities;
 
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
@@ -9,8 +9,8 @@ import java.util.UUID;
 
 @Data
 @Table(name = "COMMENTS")
-@Entity
-public class Comment implements IEntity {
+@javax.persistence.Entity
+public class Comment implements Entity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;

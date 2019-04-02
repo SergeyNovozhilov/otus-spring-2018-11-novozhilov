@@ -1,19 +1,18 @@
-package ru.otus.Commands;
+package ru.otus.commands;
 
-//import org.jetbrains.annotations.NotNull;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.Cache.Cache;
-import ru.otus.Entities.Author;
-import ru.otus.Exceptions.NotFoundException;
-import ru.otus.Managers.AuthorManager;
+import ru.otus.cache.Cache;
+import ru.otus.entities.Author;
+import ru.otus.exceptions.NotFoundException;
+import ru.otus.managers.AuthorManager;
+import ru.otus.services.EntityPrinter;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 @ShellComponent
 public class AuthorCRUD {
@@ -28,15 +27,14 @@ public class AuthorCRUD {
 
 	@ShellMethod("Get Author cache")
 	public void getAuthorCache() {
-		List<Author> authors = (List<Author>)this.cache.get(Author.class);
-		printAuthor(authors);
+		EntityPrinter.print(Collections.unmodifiableList(this.cache.get(Author.class)));
 	}
 
 	@ShellMethod("Create author with name")
 	public void createAuthor(String name) {
 		Author author = authorManager.create(name);
 		cache.add(Author.class, Collections.singletonList(author));
-		printAuthor(author);
+		EntityPrinter.print(author);
 	}
 
 	@ShellMethod("Get author by name and/or by genre and/or by book ")
@@ -45,7 +43,7 @@ public class AuthorCRUD {
 		try {
 			Collection<Author> authors = authorManager.get(name, genre, book);
 			cache.add(Author.class, new ArrayList<>(authors));
-			printAuthor(authors);
+			EntityPrinter.print(Collections.unmodifiableCollection(authors));
 		} catch (NotFoundException e) {
 			System.out.println(e.getMessage());
 		}
@@ -59,7 +57,7 @@ public class AuthorCRUD {
 			author = authorManager.update(author);
 			cache.deleteAll(Author.class);
 			cache.add(Author.class, Collections.singletonList(author));
-			printAuthor(author);
+			EntityPrinter.print(author);
 		}
 	}
 
@@ -69,30 +67,6 @@ public class AuthorCRUD {
 		if (author != null) {
 			authorManager.delete(author);
 			cache.delete(Author.class, index);
-		}
-	}
-
-	private void printAuthor(Author author) {
-		printAuthor(Collections.singletonList(author));
-	}
-
-	private void printAuthor(Collection<Author> authors) {
-		List<Author> array = new ArrayList<>(authors);
-		for (int i = 0; i < array.size(); i ++) {
-			Author author = array.get(i);
-			System.out.println(i + ")");
-			print(author);
-		}
-	}
-
-	private void print (Author author) {
-		System.out.println(author.getName());
-		if (author.getBooks() != null) {
-			System.out.println("Books");
-			author.getBooks().forEach(book -> {
-				System.out.println(" " + book.getTitle());
-				System.out.println(" Genre: " + book.getGenre().getName());
-			});
 		}
 	}
 }
