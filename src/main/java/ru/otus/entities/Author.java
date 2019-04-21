@@ -1,19 +1,15 @@
-package ru.otus.Entities;
+package ru.otus.entities;
 
 import lombok.Data;
 
-import javax.persistence.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.UUID;
 
 @Data
-@Table(name = "AUTHORS")
-@Entity
 public class Author implements IEntity{
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
+	private String id;
 	private String name;
-	@ManyToMany(fetch=FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy = "authors")
 	private Collection<Book> books;
 
 	public Author() {
@@ -23,11 +19,11 @@ public class Author implements IEntity{
 		this.name = name;
 	}
 
-	public UUID getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

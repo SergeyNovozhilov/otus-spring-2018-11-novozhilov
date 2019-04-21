@@ -3,9 +3,8 @@ package ru.otus.Managers;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.Entities.Genre;
+import ru.otus.entities.Genre;
 import ru.otus.Exceptions.NotFoundException;
-import ru.otus.Repositories.GenreRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;

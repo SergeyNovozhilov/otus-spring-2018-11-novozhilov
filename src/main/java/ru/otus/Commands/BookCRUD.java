@@ -6,7 +6,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.Cache.Cache;
-import ru.otus.Entities.Book;
+import ru.otus.entities.Book;
 import ru.otus.Exceptions.NotFoundException;
 import ru.otus.Managers.BookManager;
 

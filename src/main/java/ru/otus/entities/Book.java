@@ -1,27 +1,18 @@
-package ru.otus.Entities;
+package ru.otus.entities;
 
 import lombok.Data;
 
-import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.UUID;
 
 @Data
-@Table(name = "BOOKS")
-@Entity
 public class Book implements IEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
+	private String id;
 	private String title;
-	@ManyToMany(fetch=FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
 	private Collection<Author> authors;
-	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
 	private Genre genre;
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "comment_id")
 	private Collection<Comment> comments;
 
 	public Book() {
@@ -59,11 +50,11 @@ public class Book implements IEntity {
 		this.comments.remove(comment);
 	}
 
-	public UUID getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

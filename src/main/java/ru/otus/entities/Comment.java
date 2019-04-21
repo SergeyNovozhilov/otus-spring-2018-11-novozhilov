@@ -1,22 +1,13 @@
-package ru.otus.Entities;
+package ru.otus.entities;
 
 import lombok.Data;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.*;
 import java.util.UUID;
 
 @Data
-@Table(name = "COMMENTS")
-@Entity
-public class Comment implements IEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+public class Comment {
+    private String id;
     private String comment;
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Book book;
 
 
@@ -27,11 +18,11 @@ public class Comment implements IEntity {
         this.comment = comment;
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 

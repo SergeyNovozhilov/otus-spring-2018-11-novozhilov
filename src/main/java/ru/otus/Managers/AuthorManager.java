@@ -2,9 +2,8 @@ package ru.otus.Managers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import ru.otus.Entities.Author;
+import ru.otus.entities.Author;
 import ru.otus.Exceptions.NotFoundException;
-import ru.otus.Repositories.AuthorRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;

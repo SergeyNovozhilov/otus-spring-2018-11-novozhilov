@@ -1,4 +1,4 @@
-package ru.otus.Entities;
+package ru.otus.entities;
 
 public interface IEntity {
 }
